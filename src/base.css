@@ -1,0 +1,503 @@
+/* =====================================================================
+   base.css — mise en page commune, mobile-first.
+   Les themes ne redefinissent que des variables + leurs ornements.
+   ===================================================================== */
+
+:root {
+  /* Valeurs de repli : chaque theme les ecrase. */
+  --bg: #f4f1ea;
+  --surface: #fffdf8;
+  --ink: #2a2724;
+  --muted: #6d6760;
+  --rule: rgba(0, 0, 0, .14);
+  --font-titre: Georgia, "Times New Roman", serif;
+  --font-corps: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-he: "Frank Ruhl Libre", "David Libre", Georgia, serif;
+  --radius: 14px;
+  --carte-w: 480px;
+  --ombre: 0 18px 48px rgba(0, 0, 0, .13);
+
+  /* --accent / --accent-ink / --accent-soft / --accent-on :
+     injectes par le build depuis la cellule « Couleur principale ». */
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+
+/* L'attribut [hidden] doit toujours gagner, meme face a un display:flex
+   d'auteur (ex. .ecran--accueil) qui a la meme specificite. */
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-corps);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: hidden;            /* aucune barre de defilement horizontale */
+  overflow-wrap: break-word;
+  min-height: 100vh;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+/* ------------------------------------------------------------------ *
+ * Decor de fond (chaque theme habille ces 3 couches)
+ * ------------------------------------------------------------------ */
+
+.decor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.decor__layer { position: absolute; inset: 0; display: block; }
+
+/* ------------------------------------------------------------------ *
+ * Conteneur : pleine largeur sur mobile, carte centree sur ordinateur
+ * ------------------------------------------------------------------ */
+
+.app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--carte-w);
+  margin: 0 auto;
+  background: var(--surface);
+  min-height: 100vh;
+}
+
+@supports (min-height: 100svh) {
+  .app { min-height: 100svh; }
+}
+
+@media (min-width: 560px) {
+  body { padding: 28px 16px; }
+  .app {
+    min-height: 0;
+    border-radius: var(--radius);
+    box-shadow: var(--ombre);
+    overflow: hidden;
+  }
+}
+
+.ecran { position: relative; }
+
+/* ------------------------------------------------------------------ *
+ * Accueil
+ * ------------------------------------------------------------------ */
+
+.ecran--accueil {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 22px calc(40px + env(safe-area-inset-bottom));
+}
+@supports (min-height: 100svh) {
+  .ecran--accueil { min-height: 100svh; }
+}
+@media (min-width: 560px) {
+  .ecran--accueil { min-height: 640px; }
+}
+
+.accueil__inner {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.bsd {
+  margin: 0 0 20px;
+  font-family: var(--font-he);
+  font-size: 15px;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.filet {
+  display: block;
+  width: 56px;
+  height: 1px;
+  margin: 18px auto;
+  background: var(--accent-soft, var(--rule));
+  opacity: .75;
+}
+
+.noms {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-weight: 400;
+  font-size: clamp(34px, 12vw, 50px);
+  line-height: 1.12;
+  letter-spacing: .01em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.noms__lien {
+  font-size: .48em;
+  color: var(--accent-ink);
+  line-height: 1;
+  margin: 4px 0;
+}
+.noms__prenom { display: block; }
+
+.noms-he {
+  margin: 12px 0 0;
+  font-family: var(--font-he);
+  font-size: clamp(16px, 4.6vw, 19px);
+  line-height: 1.7;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+}
+.noms-he__sep { color: var(--accent-ink); font-size: .8em; }
+
+.verset {
+  margin: 22px 0 0;
+  font-family: var(--font-he);
+  font-size: clamp(15px, 4.2vw, 18px);
+  line-height: 1.9;
+  color: var(--ink);
+  max-width: 19em;
+}
+
+.accueil__date {
+  margin: 4px 0 0;
+  font-size: 15px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  font-weight: 500;
+}
+.accueil__date-he {
+  margin: 6px 0 0;
+  font-family: var(--font-he);
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Compte a rebours ------------------------------------------------- */
+
+.compte { margin: 26px 0 30px; width: 100%; }
+
+.compte__grille {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.compte__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 2px;
+  border-radius: 10px;
+}
+.compte__n {
+  font-family: var(--font-titre);
+  font-size: clamp(22px, 7vw, 28px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  color: var(--ink);
+}
+.compte__l {
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.compte__fini {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-size: clamp(24px, 8vw, 32px);
+  color: var(--accent-ink);
+}
+
+/* Boutons ----------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 26px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--font-corps);
+  font-size: 14px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(.97); }
+
+.btn--principal {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+  font-weight: 500;
+  padding-inline: 32px;
+}
+
+.btn--carte {
+  flex: 1 1 0;
+  min-width: 0;
+  background: transparent;
+  color: var(--accent-ink);
+  border-color: var(--accent-soft);
+  font-size: 12.5px;
+  padding-inline: 12px;
+}
+.btn--carte:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+/* ------------------------------------------------------------------ *
+ * Invitation
+ * ------------------------------------------------------------------ */
+
+.invitation__inner {
+  padding: 0 0 calc(44px + env(safe-area-inset-bottom));
+}
+
+.couverture { margin: 0 0 26px; }
+.couverture img { width: 100%; }
+
+.familles {
+  margin: 0;
+  padding: 0 24px;
+  text-align: center;
+}
+.familles__parents {
+  margin: 0 0 6px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.familles__gp {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.familles__gp:first-of-type { margin-top: 12px; }
+
+.phrase {
+  margin: 22px 0 10px;
+  padding: 0 28px;
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.invitation__noms {
+  margin: 0 0 8px;
+  padding: 0 20px;
+  text-align: center;
+  font-family: var(--font-titre);
+  font-size: clamp(28px, 9.5vw, 38px);
+  line-height: 1.18;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.invitation__noms .noms__lien { font-size: .5em; color: var(--accent-ink); margin: 2px 0; }
+
+/* Cartes evenement -------------------------------------------------- */
+
+.evenements {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 18px 0;
+}
+
+.event {
+  padding: 18px 18px 16px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: transparent;
+}
+
+.event__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.event__titre {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--accent-ink);
+}
+.event__titre-he {
+  margin: 0;
+  font-family: var(--font-he);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: right;        /* hebreu aligne a droite */
+  flex: none;
+}
+
+.event__filet {
+  display: block;
+  height: 1px;
+  margin: 12px 0 14px;
+  background: var(--rule);
+}
+
+.event__quand { margin: 0 0 12px; }
+.event__date {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+.event__date-he {
+  margin: 3px 0 0;
+  font-family: var(--font-he);
+  font-size: 13.5px;
+  color: var(--muted);
+  text-align: right;        /* hebreu aligne a droite */
+}
+.event__heure {
+  margin: 6px 0 0;
+  font-size: 14px;
+  letter-spacing: .08em;
+  color: var(--accent-ink);
+  font-weight: 500;
+}
+
+.event__ou { margin: 0 0 14px; }
+.event__lieu { margin: 0; font-size: 14.5px; font-weight: 500; line-height: 1.45; }
+.event__adresse { margin: 3px 0 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+.event__actions { display: flex; gap: 8px; }
+
+.mazal {
+  margin: 34px 0 0;
+  text-align: center;
+  font-family: var(--font-he);
+  font-size: 26px;
+  line-height: 1.5;
+  color: var(--accent-ink);
+}
+
+/* ------------------------------------------------------------------ *
+ * Bouton son flottant
+ * ------------------------------------------------------------------ */
+
+.son {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 40;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--accent-soft);
+  background: var(--surface);
+  color: var(--accent-ink);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+  -webkit-tap-highlight-color: transparent;
+}
+.son__icone { display: grid; place-items: center; }
+.son .son__barre { opacity: 0; transition: opacity .18s ease; }
+.son .son__ondes { opacity: 1; transition: opacity .18s ease; }
+.son--coupe .son__barre { opacity: 1; }
+.son--coupe .son__ondes { opacity: 0; }
+
+/* ------------------------------------------------------------------ *
+ * Transitions accueil <-> invitation
+ * ------------------------------------------------------------------ */
+
+.ecran--sort {
+  animation: sortie .56s ease forwards;
+}
+.ecran--invitation {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.ecran--invitation.ecran--entre {
+  animation: entree .62s .08s ease forwards;
+}
+
+@keyframes sortie {
+  to { opacity: 0; transform: scale(1.03); }
+}
+@keyframes entree {
+  to { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Bandeau des pages d'apercu
+ * ------------------------------------------------------------------ */
+
+.apercu-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(14, 16, 20, .9);
+  color: #f2eee7;
+  font: 400 12px/1 system-ui, sans-serif;
+  backdrop-filter: blur(6px);
+}
+.apercu-bar__back { color: #cfd4de; text-decoration: none; padding: 6px 4px; }
+.apercu-bar__name { font-weight: 500; letter-spacing: .04em; }
+.apercu-bar__dot { width: 10px; height: 10px; border-radius: 50%; margin-left: auto; }
+body:has(.apercu-bar) .app { margin-top: 30px; }
+body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
+
+/* ------------------------------------------------------------------ *
+ * Accessibilite : mouvement reduit
+ * ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ecran--invitation { opacity: 1; transform: none; }
+}

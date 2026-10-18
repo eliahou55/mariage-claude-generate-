@@ -1,0 +1,17 @@
+{
+  "name": "invitations-mariage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generateur d'invitations de mariage juif, alimente par invitation_mariage.xlsx",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "npx --yes serve dist -l 3000"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1"
+  }
+}

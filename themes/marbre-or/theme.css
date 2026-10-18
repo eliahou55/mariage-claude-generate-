@@ -1,0 +1,107 @@
+/* Marbre & Or — blanc casse veine de marbre, filets dores, serif classique */
+
+:root {
+  --bg: #EDE8DE;
+  --surface: #FBF8F2;
+  --ink: #2B2722;
+  --muted: #7A7066;
+  --rule: rgba(43, 39, 34, .13);
+  --font-titre: "Cormorant Garamond", Georgia, serif;
+  --font-corps: "Jost", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 2px;
+  --ombre: 0 24px 60px rgba(60, 50, 35, .18);
+}
+
+/* Veines de marbre : deux couches de degrades obliques + grain clair */
+.decor__layer--1 {
+  background:
+    linear-gradient(118deg, transparent 0 46%, rgba(255,255,255,.9) 46.4% 47.2%, transparent 47.6%),
+    linear-gradient(132deg, transparent 0 62%, rgba(255,255,255,.75) 62.3% 62.9%, transparent 63.3%),
+    linear-gradient(104deg, transparent 0 24%, rgba(160,145,120,.16) 24.3% 24.8%, transparent 25.2%),
+    linear-gradient(145deg, transparent 0 78%, rgba(160,145,120,.12) 78.2% 78.7%, transparent 79.1%),
+    radial-gradient(120% 90% at 10% 0%, rgba(255,255,255,.85), transparent 60%),
+    radial-gradient(100% 80% at 95% 100%, rgba(201,164,76,.1), transparent 55%);
+}
+.decor__layer--2 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'><g fill='none' stroke='rgba(150,133,105,0.22)' stroke-width='1.1'><path d='M-20 180 C 160 120, 240 260, 420 200 S 700 120, 840 230'/><path d='M-20 520 C 140 470, 300 610, 470 540 S 720 470, 840 560'/><path d='M120 -20 C 180 160, 60 300, 170 460 S 120 700, 210 830'/></g></svg>");
+  background-size: 760px 760px;
+  opacity: .55;
+}
+.decor__layer--3 { background: none; }
+
+/* Filets dores autour de la carte */
+@media (min-width: 560px) {
+  .app {
+    border: 1px solid var(--accent-soft);
+    outline: 1px solid rgba(255, 255, 255, .7);
+    outline-offset: -7px;
+  }
+}
+
+.filet {
+  width: 92px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 1;
+  position: relative;
+}
+.filet::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  transform: rotate(45deg);
+  background: var(--accent);
+}
+
+.noms {
+  font-weight: 300;
+  letter-spacing: .02em;
+}
+.noms__lien { font-style: italic; }
+
+/* Lueur doree qui traverse lentement les prenoms */
+.noms__prenom {
+  background: linear-gradient(100deg, var(--ink) 38%, var(--accent-ink) 48%, var(--ink) 58%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: marbre-lueur 9s ease-in-out infinite;
+}
+@keyframes marbre-lueur {
+  0%, 100% { background-position: 120% 0; }
+  50% { background-position: -20% 0; }
+}
+
+.accueil__date { font-size: 13px; letter-spacing: .22em; }
+
+.event {
+  border: none;
+  border-top: 1px solid var(--accent-soft);
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  padding-inline: 4px;
+}
+.event__titre { letter-spacing: .04em; }
+.event__filet { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+
+.btn--principal { border-radius: 0; letter-spacing: .2em; font-size: 12.5px; }
+.btn--carte { border-radius: 0; }
+
+.compte__n { font-weight: 300; }
+.mazal { letter-spacing: .08em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .noms__prenom {
+    animation: none;
+    -webkit-text-fill-color: var(--ink);
+    color: var(--ink);
+    background: none;
+  }
+}

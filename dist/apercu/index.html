@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aperçus — Ilan &amp; Yaël</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:wght@400;600&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;padding:28px 18px 56px;background:#14161a;color:#efeae1;font:400 16px/1.5 Jost,system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto}
+h1{font:600 30px/1.2 "Cormorant Garamond",Georgia,serif;margin:0 0 6px;letter-spacing:.01em}
+p.sous{margin:0 0 26px;color:#9fa6b2;font-size:14px}
+.grille{display:grid;gap:12px;grid-template-columns:1fr}
+@media (min-width:560px){.grille{grid-template-columns:1fr 1fr}}
+.carte{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:72px;border:1px solid #2b3040;border-radius:14px;background:#1b1f27;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s;position:relative}
+.carte:hover,.carte:focus-visible{border-color:#6b738c;transform:translateY(-2px)}
+.carte--actif{border-color:#c9a44c}
+.carte__swatch{width:44px;height:44px;border-radius:50%;border:2px solid;display:grid;place-items:center;flex:none}
+.carte__swatch span{width:16px;height:16px;border-radius:50%;display:block}
+.carte__texte{display:flex;flex-direction:column;gap:2px;min-width:0}
+.carte__texte strong{font-weight:500;font-size:15px}
+.carte__texte em{font-style:normal;font-size:12px;color:#8d94a3;font-family:ui-monospace,Menlo,Consolas,monospace}
+.carte__badge{position:absolute;top:-9px;right:12px;background:#c9a44c;color:#1a1a1a;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:500}
+footer{margin-top:30px;color:#767d8c;font-size:13px;line-height:1.7}
+code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Ilan &amp; Yaël</h1>
+<p class="sous">Les 10 thèmes, avec les données réelles de l’Excel et la couleur « Or ».</p>
+<div class="grille">
+  <a class="carte carte--actif" href="marbre-or/index.html">
+    <span class="carte__swatch" style="background:#FBF8F2;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Marbre &amp; Or</strong><em>marbre-or</em></span>
+    <span class="carte__badge">Choisi dans l’Excel</span>
+  </a>
+  <a class="carte" href="botanique-sauge/index.html">
+    <span class="carte__swatch" style="background:#F6F4EC;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Botanique sauge</strong><em>botanique-sauge</em></span>
+    
+  </a>
+  <a class="carte" href="nuit-etoilee/index.html">
+    <span class="carte__swatch" style="background:#101B33;border-color:#C9A44C"><span style="background:#C9A44C"></span></span>
+    <span class="carte__texte"><strong>Nuit étoilée</strong><em>nuit-etoilee</em></span>
+    
+  </a>
+  <a class="carte" href="mediterranee/index.html">
+    <span class="carte__swatch" style="background:#F7F3E4;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Méditerranée (olivier &amp; citrons)</strong><em>mediterranee</em></span>
+    
+  </a>
+  <a class="carte" href="rose-poudre/index.html">
+    <span class="carte__swatch" style="background:#FDF6F4;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Rosé poudré</strong><em>rose-poudre</em></span>
+    
+  </a>
+  <a class="carte" href="jardin-blanc/index.html">
+    <span class="carte__swatch" style="background:#FFFFFF;border-color:#897034"><span style="background:#897034"></span></span>
+    <span class="carte__texte"><strong>Jardin blanc</strong><em>jardin-blanc</em></span>
+    
+  </a>
+  <a class="carte" href="esquisse-illustree/index.html">
+    <span class="carte__swatch" style="background:#FAF4E6;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Esquisse illustrée</strong><em>esquisse-illustree</em></span>
+    
+  </a>
+  <a class="carte" href="diner-chandelles/index.html">
+    <span class="carte__swatch" style="background:#2A0E16;border-color:#C9A44C"><span style="background:#C9A44C"></span></span>
+    <span class="carte__texte"><strong>Dîner aux chandelles</strong><em>diner-chandelles</em></span>
+    
+  </a>
+  <a class="carte" href="epure-minimaliste/index.html">
+    <span class="carte__swatch" style="background:#FAF8F5;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Épuré minimaliste</strong><em>epure-minimaliste</em></span>
+    
+  </a>
+  <a class="carte" href="boheme-terracotta/index.html">
+    <span class="carte__swatch" style="background:#FBF2E7;border-color:#816931"><span style="background:#816931"></span></span>
+    <span class="carte__texte"><strong>Bohème terracotta</strong><em>boheme-terracotta</em></span>
+    
+  </a>
+</div>
+<footer>Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</footer>
+</div>
+</body>
+</html>

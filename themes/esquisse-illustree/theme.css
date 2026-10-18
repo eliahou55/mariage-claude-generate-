@@ -1,0 +1,102 @@
+/* Esquisse illustree — trait d'encre cobalt dessine a la main, papier creme */
+
+:root {
+  --bg: #EFE4CC;
+  --surface: #FAF4E6;
+  --ink: #23324F;
+  --muted: #5C6B86;
+  --rule: rgba(31, 79, 163, .3);
+  --font-titre: "EB Garamond", Georgia, serif;
+  --font-corps: "EB Garamond", Georgia, serif;
+  --font-main: "Caveat", "Segoe Script", cursive;
+  --font-he: "David Libre", Georgia, serif;
+  --radius: 6px;
+  --ombre: 0 20px 48px rgba(53, 63, 84, .26);
+}
+
+/* Papier creme granuleux */
+.decor__layer--1 {
+  background:
+    radial-gradient(90% 70% at 20% 10%, rgba(255, 252, 240, .9), transparent 60%),
+    linear-gradient(160deg, #F4EAD3, #E8DBBE);
+}
+.decor__layer--2 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23g)' opacity='0.4'/></svg>");
+  background-size: 190px 190px;
+  opacity: .32;
+  mix-blend-mode: multiply;
+}
+
+/* Griffonnages d'encre cobalt dans les marges */
+.decor__layer--3 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400'><g fill='none' stroke='rgba(31,79,163,0.4)' stroke-width='1.6' stroke-linecap='round'><path d='M30 40 C 60 20, 74 58, 48 72 C 26 84, 20 52, 40 44'/><path d='M44 72 C 50 110, 36 150, 54 186'/><path d='M54 186 C 30 196, 24 222, 48 230'/><path d='M250 300 C 276 286, 288 318, 266 330 C 246 340, 238 312, 256 304'/><path d='M262 330 C 258 356, 272 372, 258 388'/><path d='M240 60 l 24 -14 M246 74 l 26 -10 M254 88 l 22 -16'/></g></svg>");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: .7;
+}
+
+/* Cadre a main levee autour de la carte */
+.app { position: relative; }
+.app::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1.6px solid var(--accent-soft);
+  border-radius: 150px 14px 170px 12px / 14px 140px 16px 160px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bsd { font-family: var(--font-he); }
+
+.filet {
+  width: 120px;
+  height: 14px;
+  background: none;
+  position: relative;
+}
+.filet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 14'><path d='M2 9 C 24 2, 42 12, 60 7 C 78 2, 98 12, 118 5' fill='none' stroke='rgb(31,79,163)' stroke-width='1.7' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: .72;
+}
+.filet::after { display: none; }
+
+.noms {
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: clamp(42px, 15vw, 62px);
+  line-height: 1;
+}
+.noms__lien { font-family: var(--font-main); font-size: .55em; }
+.invitation__noms { font-family: var(--font-main); font-size: clamp(34px, 11vw, 46px); }
+
+.verset { font-family: var(--font-he); }
+.phrase { font-family: var(--font-corps); font-size: 15.5px; }
+
+.accueil__date { font-family: var(--font-main); font-size: 21px; letter-spacing: .02em; text-transform: none; }
+.compte__n { font-family: var(--font-main); font-size: clamp(26px, 8vw, 34px); }
+.compte__l { font-family: var(--font-corps); letter-spacing: .08em; }
+
+.event {
+  border: 1.4px solid var(--accent-soft);
+  border-radius: 90px 10px 80px 12px / 10px 84px 12px 76px;
+  background: rgba(255, 253, 245, .55);
+}
+.event__titre { font-family: var(--font-main); font-size: 28px; font-weight: 600; }
+.event__filet {
+  height: 2px;
+  background: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 3' preserveAspectRatio='none'><path d='M0 2 C 40 0, 70 3, 110 1.4 C 150 0, 180 3, 200 1.6' fill='none' stroke='rgba(31,79,163,0.45)' stroke-width='1.4'/></svg>");
+  background-size: 100% 100%;
+}
+
+.btn { font-family: var(--font-corps); letter-spacing: .1em; }
+.btn--principal { border-radius: 40px 8px 44px 10px / 8px 40px 10px 42px; }
+.btn--carte { border-radius: 30px 6px 34px 8px / 6px 30px 8px 32px; border-width: 1.4px; }
+.mazal { font-family: var(--font-he); }

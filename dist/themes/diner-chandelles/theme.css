@@ -1,0 +1,113 @@
+/* Diner aux chandelles — bordeaux, ivoire, lueur de bougies animee */
+
+:root {
+  --bg: #140509;
+  --surface: #2A0E16;
+  --ink: #F4E8DA;
+  --muted: #C7A491;
+  --rule: rgba(244, 232, 218, .2);
+  --font-titre: "Bodoni Moda", Georgia, serif;
+  --font-corps: "Lato", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 3px;
+  --ombre: 0 28px 72px rgba(0, 0, 0, .68);
+}
+
+.decor__layer--1 {
+  background:
+    radial-gradient(120% 80% at 50% 110%, #5A1A28 0%, #2E0D16 42%, #140509 78%),
+    linear-gradient(180deg, #1A060B, #0E0407);
+}
+
+/* Trois halos de bougies, chacun vacillant a son rythme */
+.decor__layer--2 {
+  background:
+    radial-gradient(30% 24% at 18% 78%, rgba(255, 186, 94, .4), transparent 72%),
+    radial-gradient(26% 20% at 82% 66%, rgba(255, 176, 86, .34), transparent 72%);
+  animation: bougie-a 3.6s ease-in-out infinite;
+}
+.decor__layer--3 {
+  background:
+    radial-gradient(38% 30% at 50% 22%, rgba(255, 198, 112, .32), transparent 70%),
+    radial-gradient(22% 18% at 62% 88%, rgba(255, 170, 80, .3), transparent 74%);
+  animation: bougie-b 5.1s ease-in-out .7s infinite;
+}
+
+@keyframes bougie-a {
+  0%, 100% { opacity: .72; transform: scale(1); }
+  38% { opacity: 1; transform: scale(1.05); }
+  61% { opacity: .64; transform: scale(.98); }
+}
+@keyframes bougie-b {
+  0%, 100% { opacity: .58; transform: scale(1.02); }
+  44% { opacity: .95; transform: scale(.97); }
+  72% { opacity: .7; transform: scale(1.04); }
+}
+
+.app {
+  background:
+    radial-gradient(130% 55% at 50% 0%, rgba(255, 186, 94, .11), transparent 60%),
+    var(--surface);
+  border: 1px solid rgba(244, 232, 218, .14);
+}
+
+.bsd { color: var(--accent-ink); }
+
+.filet {
+  width: 140px;
+  height: 11px;
+  background: none;
+  position: relative;
+}
+.filet::before {
+  content: "";
+  position: absolute;
+  inset: 5px 0;
+  background: linear-gradient(90deg, transparent, var(--accent-soft) 30%, var(--accent-soft) 70%, transparent);
+}
+.filet::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 11px;
+  margin: -5.5px 0 0 -3.5px;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 70%, #FFD79A, var(--accent));
+  box-shadow: 0 0 14px rgba(255, 186, 94, .75);
+  animation: flamme 2.4s ease-in-out infinite;
+}
+@keyframes flamme {
+  0%, 100% { transform: scaleY(1) translateX(0); }
+  33% { transform: scaleY(1.16) translateX(.6px); }
+  66% { transform: scaleY(.92) translateX(-.6px); }
+}
+
+.noms {
+  font-weight: 400;
+  font-size: clamp(32px, 11vw, 46px);
+  letter-spacing: .03em;
+}
+.noms__lien { font-style: italic; }
+
+.compte__cell {
+  border: 1px solid rgba(244, 232, 218, .16);
+  background: rgba(255, 186, 94, .05);
+  border-radius: 3px;
+}
+
+.event {
+  border: 1px solid rgba(244, 232, 218, .16);
+  background: linear-gradient(180deg, rgba(255, 186, 94, .055), rgba(255, 255, 255, .015));
+  border-radius: 3px;
+}
+.event__titre { font-weight: 600; letter-spacing: .05em; }
+.btn--principal { border-radius: 2px; letter-spacing: .22em; box-shadow: 0 0 26px rgba(255, 186, 94, .28); }
+.btn--carte { border-radius: 2px; }
+.son { background: #3A1420; }
+.mazal { text-shadow: 0 0 26px rgba(255, 186, 94, .4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .decor__layer--2, .decor__layer--3, .filet::after { animation: none; }
+}

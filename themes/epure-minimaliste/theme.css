@@ -1,0 +1,123 @@
+/* Epure minimaliste — creme et taupe, beaucoup d'espace, typographie fine */
+
+:root {
+  --bg: #EDE9E3;
+  --surface: #FAF8F5;
+  --ink: #2E2A25;
+  --muted: #8B7D6B;
+  --rule: rgba(139, 125, 107, .25);
+  --font-titre: "Jost", system-ui, sans-serif;
+  --font-corps: "Jost", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 0px;
+  --carte-w: 460px;
+  --ombre: 0 18px 44px rgba(90, 80, 68, .14);
+}
+
+.decor__layer--1 { background: linear-gradient(180deg, #F1EEE9, #E6E1DA); }
+/* Une seule ligne verticale, comme un repere de maquette */
+.decor__layer--2 {
+  background: linear-gradient(90deg, transparent calc(50% - .5px), rgba(139, 125, 107, .16) calc(50% - .5px), rgba(139, 125, 107, .16) calc(50% + .5px), transparent calc(50% + .5px));
+}
+.decor__layer--3 { background: none; }
+
+.app { border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+
+/* Beaucoup d'air */
+.ecran--accueil { padding: 76px 30px 76px; }
+.accueil__inner { gap: 0; }
+.invitation__inner { padding-bottom: 72px; }
+.evenements { gap: 0; padding: 40px 30px 0; }
+.familles { padding-inline: 30px; }
+
+.bsd {
+  margin-bottom: 44px;
+  font-size: 12px;
+  letter-spacing: .3em;
+  font-weight: 300;
+}
+
+.filet {
+  width: 1px;
+  height: 46px;
+  margin: 30px auto;
+  background: var(--accent-soft);
+}
+.filet::after { display: none; }
+
+.noms {
+  font-weight: 200;
+  font-size: clamp(28px, 9vw, 38px);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  text-indent: .28em;
+  gap: 10px;
+}
+.noms__lien {
+  font-size: .5em;
+  letter-spacing: 0;
+  text-indent: 0;
+  font-weight: 200;
+  margin: 8px 0;
+}
+.noms-he { margin-top: 24px; font-size: 15px; }
+
+.verset {
+  margin-top: 40px;
+  font-size: 15px;
+  line-height: 2.2;
+  color: var(--muted);
+}
+
+.accueil__date {
+  font-size: 11px;
+  letter-spacing: .34em;
+  font-weight: 300;
+  margin-top: 0;
+}
+.accueil__date-he { margin-top: 10px; }
+
+.compte { margin: 48px 0 44px; }
+.compte__grille { gap: 0; max-width: 300px; }
+.compte__cell { border-radius: 0; padding: 6px 0; }
+.compte__cell + .compte__cell { border-left: 1px solid var(--rule); }
+.compte__n { font-weight: 200; font-size: clamp(20px, 6vw, 25px); }
+.compte__l { font-size: 8.5px; letter-spacing: .2em; font-weight: 300; }
+
+.btn {
+  letter-spacing: .3em;
+  font-size: 10.5px;
+  font-weight: 300;
+  border-radius: 0;
+}
+.btn--principal {
+  background: transparent;
+  color: var(--accent-ink);
+  border: 1px solid var(--accent-ink);
+  padding-inline: 40px;
+}
+.btn--principal:hover { background: var(--accent); color: var(--accent-on); }
+
+.phrase { font-style: normal; font-size: 12.5px; letter-spacing: .06em; margin-top: 38px; }
+.invitation__noms { font-weight: 200; letter-spacing: .2em; text-transform: uppercase; font-size: clamp(22px, 7.5vw, 30px); }
+
+.event {
+  border: none;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 34px 0 30px;
+}
+.event__titre {
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+}
+.event__filet { display: none; }
+.event__quand { margin-top: 16px; }
+.event__date { font-weight: 300; }
+.event__heure { font-weight: 300; letter-spacing: .16em; }
+.event__actions { margin-top: 18px; }
+
+.mazal { margin-top: 58px; font-size: 22px; letter-spacing: .14em; }
+.son { border-radius: 0; }

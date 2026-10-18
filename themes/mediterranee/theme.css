@@ -1,0 +1,84 @@
+/* Mediterranee (olivier & citrons) — vert olive, creme, branches et citrons */
+
+:root {
+  --bg: #EDE5CE;
+  --surface: #F7F3E4;
+  --ink: #33381F;
+  --muted: #6E7449;
+  --rule: rgba(107, 122, 58, .24);
+  --font-titre: "Playfair Display", Georgia, serif;
+  --font-corps: "Karla", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 10px;
+  --ombre: 0 22px 52px rgba(90, 96, 48, .24);
+}
+
+.decor__layer--1 {
+  background:
+    radial-gradient(70% 55% at 85% 8%, rgba(240, 206, 90, .3), transparent 60%),
+    radial-gradient(80% 60% at 8% 92%, rgba(107, 122, 58, .24), transparent 62%),
+    linear-gradient(165deg, #F2EBD6, #E6DDC2);
+}
+
+/* Branche d'olivier en haut a gauche */
+.decor__layer--2 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 320'><path d='M-10 26 C 60 44, 120 92, 168 168 C 190 204, 202 246, 206 290' fill='none' stroke='rgba(92,106,52,0.55)' stroke-width='2'/><g fill='rgba(107,122,58,0.5)'><ellipse cx='40' cy='18' rx='19' ry='7.5' transform='rotate(24 40 18)'/><ellipse cx='74' cy='46' rx='20' ry='8' transform='rotate(34 74 46)'/><ellipse cx='106' cy='82' rx='19' ry='7.5' transform='rotate(42 106 82)'/><ellipse cx='134' cy='124' rx='18' ry='7' transform='rotate(52 134 124)'/><ellipse cx='156' cy='170' rx='17' ry='7' transform='rotate(62 156 170)'/><ellipse cx='32' cy='52' rx='17' ry='7' transform='rotate(70 32 52)'/><ellipse cx='64' cy='86' rx='17.5' ry='7' transform='rotate(76 64 86)'/><ellipse cx='94' cy='128' rx='16' ry='6.5' transform='rotate(82 94 128)'/></g><g fill='rgba(74,88,40,0.55)'><circle cx='58' cy='66' r='5.5'/><circle cx='120' cy='104' r='5'/><circle cx='148' cy='150' r='5.2'/></g></svg>");
+  background-repeat: no-repeat;
+  background-position: -22px -10px;
+  background-size: 320px 320px;
+  animation: medit-souffle 14s ease-in-out infinite;
+}
+
+/* Citrons en bas a droite */
+.decor__layer--3 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 260'><g><ellipse cx='188' cy='196' rx='34' ry='25' transform='rotate(-22 188 196)' fill='rgb(238,201,84)'/><path d='M218 178 l9 -7' stroke='rgb(146,124,44)' stroke-width='3' stroke-linecap='round'/><ellipse cx='132' cy='236' rx='27' ry='20' transform='rotate(-14 132 236)' fill='rgb(243,214,112)'/></g><g fill='rgba(92,106,52,0.6)'><ellipse cx='222' cy='160' rx='19' ry='8' transform='rotate(-32 222 160)'/><ellipse cx='244' cy='180' rx='17' ry='7' transform='rotate(18 244 180)'/><ellipse cx='156' cy='212' rx='16' ry='6.5' transform='rotate(-40 156 212)'/></g></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% + 24px) calc(100% + 18px);
+  background-size: 270px 270px;
+  opacity: .85;
+  animation: medit-souffle 17s ease-in-out 1.5s infinite reverse;
+}
+
+@keyframes medit-souffle {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(5px, -7px) rotate(-1.2deg); }
+}
+
+.filet {
+  width: 120px;
+  height: 10px;
+  background: none;
+  position: relative;
+}
+.filet::before {
+  content: "";
+  position: absolute;
+  inset: 4.5px 16px;
+  background: var(--accent-soft);
+}
+.filet::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 7px;
+  margin: -3.5px 0 0 -8px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: rotate(-20deg);
+}
+
+.noms { font-weight: 400; }
+.noms__lien { font-style: italic; font-family: "Playfair Display", serif; }
+
+.event {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  background: rgba(255, 255, 255, .45);
+}
+.event__titre { font-weight: 600; }
+.compte__cell { border-bottom: 2px solid var(--accent-soft); border-radius: 8px 8px 0 0; }
+.btn--principal { border-radius: 8px; }
+.btn--carte { border-radius: 8px; }

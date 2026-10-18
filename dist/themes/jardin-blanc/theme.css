@@ -1,0 +1,83 @@
+/* Jardin blanc — arche de fleurs blanches, vert sauge, plein air */
+
+:root {
+  --bg: #E7EDE6;
+  --surface: #FFFFFF;
+  --ink: #343C33;
+  --muted: #76826F;
+  --rule: rgba(118, 130, 111, .22);
+  --font-titre: "Cormorant", Georgia, serif;
+  --font-corps: "Montserrat", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 0px;
+  --ombre: 0 24px 60px rgba(96, 114, 92, .22);
+}
+
+.decor__layer--1 {
+  background:
+    radial-gradient(100% 60% at 50% 0%, rgba(255, 255, 255, .95), transparent 58%),
+    linear-gradient(175deg, #EFF3EE 0%, #DFE7DD 55%, #D4DED2 100%);
+}
+
+/* Lumiere diffuse de plein air */
+.decor__layer--2 {
+  background: radial-gradient(45% 30% at 50% 6%, rgba(255, 255, 255, .9), transparent 70%);
+  animation: jardin-lumiere 15s ease-in-out infinite;
+}
+.decor__layer--3 { background: none; }
+
+@keyframes jardin-lumiere {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+
+/* L'arche fleurie coiffe l'accueil */
+.ecran--accueil { padding-top: 112px; overflow: hidden; }
+.ecran--accueil::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, 112%);
+  height: 190px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 190'><path d='M22 190 C 22 70, 110 16, 210 16 C 310 16, 398 70, 398 190' fill='none' stroke='rgba(140,158,132,0.55)' stroke-width='2.4'/><g fill='rgb(255,255,255)' stroke='rgba(140,158,132,0.5)' stroke-width='1'><circle cx='40' cy='142' r='13'/><circle cx='30' cy='104' r='10'/><circle cx='58' cy='96' r='11.5'/><circle cx='84' cy='66' r='13'/><circle cx='118' cy='44' r='11'/><circle cx='150' cy='29' r='13.5'/><circle cx='186' cy='20' r='11'/><circle cx='222' cy='19' r='13'/><circle cx='258' cy='27' r='11.5'/><circle cx='292' cy='42' r='13'/><circle cx='324' cy='63' r='11'/><circle cx='350' cy='92' r='13'/><circle cx='376' cy='104' r='10'/><circle cx='384' cy='144' r='12.5'/></g><g fill='rgba(146,166,136,0.65)'><circle cx='40' cy='142' r='3.4'/><circle cx='84' cy='66' r='3.2'/><circle cx='150' cy='29' r='3.4'/><circle cx='222' cy='19' r='3.2'/><circle cx='292' cy='42' r='3.4'/><circle cx='350' cy='92' r='3.2'/><circle cx='384' cy='144' r='3.2'/></g><g fill='none' stroke='rgba(140,158,132,0.5)' stroke-width='1.3'><path d='M66 120 l16 -10'/><path d='M104 82 l17 -8'/><path d='M168 38 l18 -5'/><path d='M248 34 l17 6'/><path d='M310 56 l16 10'/><path d='M362 116 l14 12'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
+  pointer-events: none;
+}
+
+.filet {
+  width: 64px;
+  height: 1px;
+  background: var(--accent-soft);
+}
+.filet::after { display: none; }
+
+.noms {
+  font-weight: 300;
+  font-size: clamp(38px, 13.5vw, 56px);
+  letter-spacing: .01em;
+}
+.noms__lien { font-weight: 300; font-style: italic; }
+
+.bsd { letter-spacing: .14em; font-size: 13px; }
+.accueil__date { font-size: 11.5px; letter-spacing: .26em; font-weight: 400; }
+.verset { line-height: 2.1; }
+
+.event {
+  border: none;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 24px 2px 20px;
+}
+.evenements { gap: 0; padding-inline: 24px; }
+.event__titre { font-weight: 300; font-size: 25px; letter-spacing: .03em; }
+.event__filet { display: none; }
+.event__quand { margin-top: 10px; }
+
+.btn { letter-spacing: .2em; font-size: 11.5px; font-weight: 400; }
+.btn--principal { border-radius: 0; padding-inline: 38px; }
+.btn--carte { border-radius: 0; }
+.compte__l { letter-spacing: .16em; }
