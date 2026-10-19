@@ -575,6 +575,93 @@ img { max-width: 100%; height: auto; display: block; }
 
 .event__actions { display: flex; gap: 8px; }
 
+/* ------------------------------------------------------------------ *
+ * Confirmation de presence (RSVP) -- fictif, rien n'est envoye.
+ * ------------------------------------------------------------------ */
+
+.rsvp {
+  margin: 34px 18px 0;
+  padding: 28px 20px 26px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+}
+.rsvp__titre {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-titre);
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--accent-ink);
+}
+.rsvp > .filet { margin: 16px auto 18px; }
+
+.rsvp__form { display: flex; flex-direction: column; gap: 16px; }
+
+.rsvp__champ { display: flex; flex-direction: column; gap: 6px; }
+.rsvp__champ label {
+  font-size: 12.5px;
+  letter-spacing: .03em;
+  font-weight: 600;
+  color: var(--ink);
+}
+.rsvp__requis { color: var(--accent-ink); }
+
+.rsvp__champ input[type="text"],
+.rsvp__champ input[type="number"],
+.rsvp__champ textarea {
+  font: inherit;
+  font-size: 15px;
+  min-height: 44px;
+  padding: 11px 13px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+}
+.rsvp__champ textarea { min-height: 86px; resize: vertical; }
+.rsvp__champ input:focus-visible,
+.rsvp__champ textarea:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 1px; }
+
+.rsvp__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: none;
+}
+.rsvp__section legend {
+  width: 100%;
+  padding: 0 0 2px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+
+.rsvp__case {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.rsvp__case input { flex: none; width: 20px; height: 20px; accent-color: var(--accent); }
+
+.rsvp__champ--nombre { padding-left: 2px; }
+
+.rsvp__envoyer { align-self: center; min-width: 160px; margin-top: 4px; }
+
+.rsvp__merci {
+  margin: 4px 0 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--accent-ink);
+}
+
 .mazal {
   margin: 34px 0 0;
   text-align: center;

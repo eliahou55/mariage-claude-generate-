@@ -223,7 +223,11 @@
       .forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
     inner.appendChild(liste);
 
-    /* 4. Pied de page */
+    /* 4. Confirmation de presence (fictive : rien n'est envoye nulle part) */
+    var rsvp = construireRSVP();
+    if (rsvp) inner.appendChild(rsvp);
+
+    /* 5. Pied de page */
     inner.appendChild(el('span', 'filet filet--invitation'));
     inner.appendChild(he('p', 'mazal', 'מזל טוב'));   // מזל טוב
 
@@ -397,6 +401,130 @@
     if (ev.itineraire) actions.appendChild(lienBouton(ev.itineraire, 'Itinéraire', 'btn btn--carte'));
     if (ev.waze) actions.appendChild(lienBouton(ev.waze, 'Waze', 'btn btn--carte btn--waze'));
     art.appendChild(actions);
+  }
+
+  /* ---------------------------------------------------------------- *
+   * Confirmation de presence (RSVP)
+   * Fictif pour l'instant : "Envoyer" ne transmet nulle part, affiche
+   * juste un message de remerciement cote client.
+   * ---------------------------------------------------------------- */
+
+  function champTexte(id, libelle, type, opts) {
+    opts = opts || {};
+    var champ = el('div', 'rsvp__champ');
+    var label = el('label', null);
+    label.setAttribute('for', id);
+    label.appendChild(document.createTextNode(libelle));
+    if (opts.requis) label.appendChild(el('span', 'rsvp__requis', ' *'));
+    champ.appendChild(label);
+
+    var input = el(type === 'textarea' ? 'textarea' : 'input', null);
+    input.id = id;
+    input.name = id;
+    if (type !== 'textarea') input.type = type;
+    if (opts.requis) input.required = true;
+    if (opts.placeholder) input.placeholder = opts.placeholder;
+    if (opts.min != null) input.min = opts.min;
+    if (opts.autocomplete) input.autocomplete = opts.autocomplete;
+    if (type === 'number') input.inputMode = 'numeric';
+    if (type === 'textarea') input.rows = 3;
+    champ.appendChild(input);
+
+    return { champ: champ, input: input };
+  }
+
+  /** Case a cocher (ou radio) avec son libelle, pour les sections presence. */
+  function caseRsvp(type, name, id, libelle) {
+    var label = el('label', 'rsvp__case');
+    var input = el('input', null);
+    input.type = type;
+    input.name = name;
+    input.id = id;
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(libelle));
+    return { label: label, input: input };
+  }
+
+  /** Affiche/masque le champ "nombre de personnes" selon la case cochee,
+   *  et bascule son caractere requis en consequence (champ cache = non
+   *  requis, pour ne jamais bloquer l'envoi sur un champ invisible). */
+  function brancherNombre(declencheurs, oui, champ, input) {
+    function maj() {
+      var visible = oui.checked;
+      champ.hidden = !visible;
+      input.required = visible;
+      if (!visible) input.value = '';
+    }
+    declencheurs.forEach(function (d) { d.addEventListener('change', maj); });
+    maj();
+  }
+
+  function construireRSVP() {
+    var mairie = D.evenements.filter(function (e) { return e.cle === 'mairie'; })[0];
+    var houppa = D.evenements.filter(function (e) { return e.cle === 'houppa'; })[0];
+    if (!houppa) return null;   // la houppa est obligatoire dans l'Excel
+
+    var section = el('section', 'rsvp');
+    section.setAttribute('aria-labelledby', 'rsvp-titre');
+
+    section.appendChild(el('h2', 'rsvp__titre', 'Confirmation de présence'));
+    section.appendChild(el('span', 'filet'));
+
+    var form = el('form', 'rsvp__form');
+    form.setAttribute('novalidate', '');
+    section.appendChild(form);
+
+    var prenom = champTexte('rsvp-prenom', 'Prénom', 'text', { requis: true, autocomplete: 'given-name' });
+    form.appendChild(prenom.champ);
+    var nom = champTexte('rsvp-nom', 'Nom de famille', 'text', { requis: true, autocomplete: 'family-name' });
+    form.appendChild(nom.champ);
+
+    /* --- Mairie : une seule case, replie/deplie son champ nombre --- */
+    if (mairie) {
+      var fsMairie = el('fieldset', 'rsvp__section');
+      fsMairie.appendChild(el('legend', null, 'À la mairie - ' + mairie.dateFr));
+      var caseMairie = caseRsvp('checkbox', 'rsvp-mairie-presence', 'rsvp-mairie-oui', 'Assisteront à la mairie');
+      fsMairie.appendChild(caseMairie.label);
+      var nbMairie = champTexte('rsvp-mairie-nombre', 'Nombre de personnes à la mairie', 'number', { requis: true, min: 1 });
+      nbMairie.champ.classList.add('rsvp__champ--nombre');
+      fsMairie.appendChild(nbMairie.champ);
+      brancherNombre([caseMairie.input], caseMairie.input, nbMairie.champ, nbMairie.input);
+      form.appendChild(fsMairie);
+    }
+
+    /* --- Houppa & reception : choix oui/non, replie/deplie son champ nombre --- */
+    var fsHouppa = el('fieldset', 'rsvp__section');
+    fsHouppa.appendChild(el('legend', null, 'À la houppa & réception - ' + houppa.dateFr));
+    var ouiHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-oui', 'Assisteront à la houppa & réception');
+    var nonHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-non', "N'assisteront pas à la réception");
+    fsHouppa.appendChild(ouiHouppa.label);
+    fsHouppa.appendChild(nonHouppa.label);
+    var nbHouppa = champTexte('rsvp-houppa-nombre', 'Nombre de personnes à la houppa & réception', 'number', { requis: true, min: 1 });
+    nbHouppa.champ.classList.add('rsvp__champ--nombre');
+    fsHouppa.appendChild(nbHouppa.champ);
+    brancherNombre([ouiHouppa.input, nonHouppa.input], ouiHouppa.input, nbHouppa.champ, nbHouppa.input);
+    form.appendChild(fsHouppa);
+
+    var mot = champTexte('rsvp-mot', 'Un mot pour les mariés', 'textarea', { placeholder: 'Mazal tov !' });
+    form.appendChild(mot.champ);
+
+    var envoyer = el('button', 'btn btn--principal rsvp__envoyer', 'Envoyer');
+    envoyer.type = 'submit';
+    form.appendChild(envoyer);
+
+    var merci = el('p', 'rsvp__merci', 'Merci ! Votre réponse a bien été enregistrée.');
+    merci.hidden = true;
+    section.appendChild(merci);
+
+    // Fictif : aucune donnee n'est transmise nulle part, juste un retour visuel.
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      form.hidden = true;
+      merci.hidden = false;
+    });
+
+    return section;
   }
 
   /* ---------------------------------------------------------------- *
