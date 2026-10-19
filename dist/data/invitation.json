@@ -1,6 +1,6 @@
 {
   "id": "M001",
-  "genere": "2026-10-19T19:00:37.478Z",
+  "genere": "2026-10-19T19:32:07.516Z",
   "couple": {
     "marie": {
       "prenom": "Ilan",
@@ -17,7 +17,8 @@
     "parentsMarie": "M. et Mme Élie Benhamou (née Ohayon)",
     "parentsMariee": "M. et Mme Simon Assouline (née Bensoussan)",
     "grandsParentsMarie": "M. et Mme Raphaël Benhamou ; M. et Mme Charles Ohayon",
-    "grandsParentsMariee": "M. et Mme Maurice Assouline ; Mme Albert Bensoussan"
+    "grandsParentsMariee": "M. et Mme Maurice Assouline ; Mme Albert Bensoussan",
+    "memoire": ""
   },
   "site": {
     "lien": "https://ilan-yael.mariage.example/",

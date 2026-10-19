@@ -441,6 +441,117 @@ img { max-width: 100%; height: auto; display: block; }
 .event__lieu { margin: 0; font-size: 14.5px; font-weight: 500; line-height: 1.45; }
 .event__adresse { margin: 3px 0 0; font-size: 13px; color: var(--muted); line-height: 1.5; }
 
+/* Cartes "recit" (Mairie, Houppa) : texte centre, pas d'icone,
+   phrases d'annonce + informations espacees pour donner du volume. */
+.event--recit { text-align: center; }
+.recit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.recit__kicker {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-size: 14px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.recit__noms {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-size: clamp(26px, 8.5vw, 34px);
+  line-height: 1.2;
+  color: var(--ink);
+}
+.recit__esperluette { margin: 0 10px; color: var(--accent-ink); font-style: italic; }
+.recit__se-diront {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--muted);
+}
+.recit__oui {
+  margin: 2px 0;
+  font-family: var(--font-titre);
+  font-size: clamp(42px, 16vw, 60px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent-ink);
+}
+
+.recit__intro {
+  margin: 4px 0 0;
+  max-width: 28em;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.recit__couple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 2px 0;
+}
+.recit__personne { display: flex; flex-direction: column; gap: 3px; }
+.recit__personne-nom {
+  margin: 0;
+  font-family: var(--font-titre);
+  font-size: 19px;
+  color: var(--accent-ink);
+}
+.recit__personne-he { margin: 0; font-family: var(--font-he); font-size: 14px; color: var(--muted); }
+.recit__esperluette--couple { font-size: 20px; margin: 0; }
+
+.recit__details {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 2px;
+}
+.recit__details p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.recit__memoire {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--rule);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.recit__memoire-intro {
+  margin: 0 0 4px;
+  max-width: 26em;
+  align-self: center;
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.65;
+  color: var(--muted);
+}
+.recit__memoire-nom {
+  margin: 0;
+  font-family: var(--font-he);
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+/* Le bloc familles reutilise dans la carte houppa perd son
+   espacement de pleine page (deja a l'interieur d'une carte). */
+.recit__familles { padding: 0; margin: 0 0 4px; width: 100%; }
+.recit__familles::before { top: 0; bottom: 0; }
+
 .event__actions { display: flex; gap: 8px; }
 
 .mazal {

@@ -402,6 +402,10 @@ async function lireClasseur() {
         parentsMariee: info.txt('Parents de la mariée'),
         grandsParentsMarie: info.txt('Grands-parents du marié'),
         grandsParentsMariee: info.txt('Grands-parents de la mariée'),
+        // Colonne optionnelle (absente par defaut) : une ligne par grand-parent
+        // decede, ex. "Eliahou Pinhas ז\"ל". Si la colonne n'existe pas ou est
+        // vide, le paragraphe de memoire n'apparait pas sous la houppa.
+        memoire: info.txt('Mémoire des grands-parents'),
       },
       site: {
         lien: site.url('Lien du site') || site.txt('Lien du site'),

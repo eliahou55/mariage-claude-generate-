@@ -152,16 +152,8 @@
 
     /* 1. Parents (hatan a gauche, kala a droite, face a face),
      *    puis grands-parents (plus petit) dans la meme colonne */
-    var fam = el('div', 'familles');
-    var colHatan = el('div', 'familles__col familles__col--hatan');
-    ajouteSi(colHatan, D.familles.parentsMarie, 'p', 'familles__parents');
-    ajouteSi(colHatan, D.familles.grandsParentsMarie, 'p', 'familles__gp');
-    var colKala = el('div', 'familles__col familles__col--kala');
-    ajouteSi(colKala, D.familles.parentsMariee, 'p', 'familles__parents');
-    ajouteSi(colKala, D.familles.grandsParentsMariee, 'p', 'familles__gp');
-    if (colHatan.childNodes.length) fam.appendChild(colHatan);
-    if (colKala.childNodes.length) fam.appendChild(colKala);
-    if (fam.childNodes.length) inner.appendChild(fam);
+    var fam = construireFamilles();
+    if (fam) inner.appendChild(fam);
 
     /* 2. Phrase d'invitation + prenoms */
     inner.appendChild(el('p', 'phrase', 'ont la joie de vous convier au mariage de leurs enfants'));
@@ -184,7 +176,35 @@
     return sec;
   }
 
+  /** Colonnes hatan/kala (parents + grands-parents), reutilisees en haut
+   *  de l'invitation et dans la carte houppa. Retourne null si tout est vide. */
+  function construireFamilles() {
+    var fam = el('div', 'familles');
+    var colHatan = el('div', 'familles__col familles__col--hatan');
+    ajouteSi(colHatan, D.familles.parentsMarie, 'p', 'familles__parents');
+    ajouteSi(colHatan, D.familles.grandsParentsMarie, 'p', 'familles__gp');
+    var colKala = el('div', 'familles__col familles__col--kala');
+    ajouteSi(colKala, D.familles.parentsMariee, 'p', 'familles__parents');
+    ajouteSi(colKala, D.familles.grandsParentsMariee, 'p', 'familles__gp');
+    if (colHatan.childNodes.length) fam.appendChild(colHatan);
+    if (colKala.childNodes.length) fam.appendChild(colKala);
+    return fam.childNodes.length ? fam : null;
+  }
+
+  /** N'ajoute la ligne que si le texte deja construit n'est pas vide. */
+  function ligneSi(parent, txt, cls, rtl) {
+    if (!txt) return;
+    parent.appendChild(rtl ? he('p', cls, txt) : el('p', cls, txt));
+  }
+
   function carteEvenement(ev) {
+    if (ev.cle === 'mairie') return carteMairie(ev);
+    if (ev.cle === 'houppa') return carteHouppa(ev);
+    return carteSimple(ev);
+  }
+
+  /** Henne, Chabbat 'Hatan, Reception : carte sobre, icone + infos pratiques. */
+  function carteSimple(ev) {
     var art = el('article', 'event event--' + ev.cle);
 
     var head = el('header', 'event__head');
@@ -211,14 +231,91 @@
     ajouteSi(ou, ev.adresse, 'p', 'event__adresse');
     art.appendChild(ou);
 
-    if (ev.itineraire || ev.waze) {
-      var actions = el('div', 'event__actions');
-      if (ev.itineraire) actions.appendChild(lienBouton(ev.itineraire, 'Itinéraire', 'btn btn--carte'));
-      if (ev.waze) actions.appendChild(lienBouton(ev.waze, 'Waze', 'btn btn--carte btn--waze'));
-      art.appendChild(actions);
+    ajouteActions(art, ev);
+    return art;
+  }
+
+  /** Mairie : recit centre "La Mairie / prenoms / se diront / Oui / ...". */
+  function carteMairie(ev) {
+    var art = el('article', 'event event--mairie event--recit');
+    var recit = el('div', 'recit');
+
+    recit.appendChild(el('p', 'recit__kicker', 'La Mairie'));
+
+    var noms = el('p', 'recit__noms');
+    noms.appendChild(el('span', null, D.couple.marie.prenom));
+    noms.appendChild(el('span', 'recit__esperluette', '&'));
+    noms.appendChild(el('span', null, D.couple.mariee.prenom));
+    recit.appendChild(noms);
+
+    recit.appendChild(el('p', 'recit__se-diront', 'se diront'));
+    recit.appendChild(el('p', 'recit__oui', 'Oui'));
+
+    var det = el('div', 'recit__details');
+    if (ev.lieu) ligneSi(det, 'à la ' + ev.lieu);
+    ligneSi(det, ev.adresse);
+    if (ev.dateFr) ligneSi(det, 'le ' + ev.dateFr);
+    if (ev.heure) ligneSi(det, 'à ' + ev.heure);
+    recit.appendChild(det);
+
+    art.appendChild(recit);
+    ajouteActions(art, ev);
+    return art;
+  }
+
+  /** Houppa : rappel des familles, phrase d'annonce, prenoms+hebreu,
+   *  puis ceremonie religieuse (date/date hebraique/heure/lieu/adresse),
+   *  et enfin la memoire des grands-parents si l'Excel la renseigne. */
+  function carteHouppa(ev) {
+    var art = el('article', 'event event--houppa event--recit');
+    var recit = el('div', 'recit');
+
+    var fam = construireFamilles();
+    if (fam) { fam.classList.add('recit__familles'); recit.appendChild(fam); }
+
+    recit.appendChild(el('p', 'recit__intro', "Ont l'immense joie de vous faire part du mariage de leurs petits-enfants et enfants :"));
+
+    var couple = el('div', 'recit__couple');
+    var pMarie = el('div', 'recit__personne');
+    pMarie.appendChild(el('p', 'recit__personne-nom', D.couple.marie.prenom + ' ' + D.couple.marie.nom));
+    if (D.couple.marie.hebreu) pMarie.appendChild(he('p', 'recit__personne-he', D.couple.marie.hebreu));
+    couple.appendChild(pMarie);
+    couple.appendChild(el('span', 'recit__esperluette recit__esperluette--couple', '&'));
+    var pMariee = el('div', 'recit__personne');
+    pMariee.appendChild(el('p', 'recit__personne-nom', D.couple.mariee.prenom + ' ' + D.couple.mariee.nom));
+    if (D.couple.mariee.hebreu) pMariee.appendChild(he('p', 'recit__personne-he', D.couple.mariee.hebreu));
+    couple.appendChild(pMariee);
+    recit.appendChild(couple);
+
+    recit.appendChild(el('p', 'recit__intro', 'Et seraient honorés de votre présence à la cérémonie religieuse qui sera célébrée le'));
+
+    var det = el('div', 'recit__details');
+    ligneSi(det, ev.dateFr);
+    ligneSi(det, ev.dateHe, null, true);
+    if (ev.heure) ligneSi(det, 'À ' + ev.heure);
+    if (ev.lieu) ligneSi(det, 'au ' + ev.lieu + ',');
+    ligneSi(det, ev.adresse);
+    recit.appendChild(det);
+
+    if (D.familles.memoire) {
+      var mem = el('div', 'recit__memoire');
+      mem.appendChild(el('p', 'recit__memoire-intro', 'En ce jour solennel, nous avons une pensée émue pour la mémoire bénie de nos grands-parents.'));
+      D.familles.memoire.split(/\r?\n|;/).map(function (s) { return s.trim(); }).filter(Boolean)
+        .forEach(function (nom) { mem.appendChild(el('p', 'recit__memoire-nom', nom)); });
+      recit.appendChild(mem);
     }
 
+    art.appendChild(recit);
+    ajouteActions(art, ev);
     return art;
+  }
+
+  function ajouteActions(art, ev) {
+    if (!ev.itineraire && !ev.waze) return;
+    var actions = el('div', 'event__actions');
+    if (ev.itineraire) actions.appendChild(lienBouton(ev.itineraire, 'Itinéraire', 'btn btn--carte'));
+    if (ev.waze) actions.appendChild(lienBouton(ev.waze, 'Waze', 'btn btn--carte btn--waze'));
+    art.appendChild(actions);
   }
 
   /* ---------------------------------------------------------------- *
