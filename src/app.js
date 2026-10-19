@@ -51,6 +51,20 @@
 
   var prenoms = D.couple.marie.prenom + ' • ' + D.couple.mariee.prenom;
 
+  /** Petites icones au trait (24x24, currentColor) : une par type d'evenement. */
+  var ICONES = {
+    henne:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><circle cx="12" cy="7.3" r="2.5"/><circle cx="16.6" cy="10.2" r="2.5"/><circle cx="14.8" cy="15.4" r="2.5"/><circle cx="9.2" cy="15.4" r="2.5"/><circle cx="7.4" cy="10.2" r="2.5"/><circle cx="12" cy="11.3" r="1.6" fill="currentColor" stroke="none"/></svg>',
+    mairie:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 12 4l8 6"/><path d="M5 10v9M9.4 10v9M12 10v9M14.6 10v9M19 10v9"/><path d="M3 19h18"/></svg>',
+    chabbat:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20v-8M15 20v-8"/><path d="M9 20H6M18 20h-3"/><ellipse cx="9" cy="9.1" rx="1.3" ry="1.9" fill="currentColor" stroke="none"/><ellipse cx="15" cy="9.1" rx="1.3" ry="1.9" fill="currentColor" stroke="none"/></svg>',
+    houppa:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V9M19 20V9"/><path d="M3 9c2.2-2.7 15.8-2.7 18 0"/><path d="M3 9c2.2 1.6 15.8 1.6 18 0"/></svg>',
+    reception:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10l-1.3 7.1a3.7 3.7 0 0 1-3.7 3.1V17"/><path d="M12 17v3M9 20h6"/></svg>',
+  };
+
   /* ---------------------------------------------------------------- *
    * Page d'accueil
    * ---------------------------------------------------------------- */
@@ -136,39 +150,35 @@
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
 
-    /* 1. Image de couverture */
-    if (D.site.image) {
-      var fig = el('figure', 'couverture');
-      var img = el('img');
-      img.src = BASE + D.site.image;
-      img.alt = '';
-      img.setAttribute('decoding', 'async');
-      fig.appendChild(img);
-      inner.appendChild(fig);
-    }
-
-    /* 2. Parents, puis grands-parents (plus petit) */
+    /* 1. Parents (hatan a gauche, kala a droite, face a face),
+     *    puis grands-parents (plus petit) dans la meme colonne */
     var fam = el('div', 'familles');
-    ajouteSi(fam, D.familles.parentsMarie, 'p', 'familles__parents');
-    ajouteSi(fam, D.familles.parentsMariee, 'p', 'familles__parents');
-    ajouteSi(fam, D.familles.grandsParentsMarie, 'p', 'familles__gp');
-    ajouteSi(fam, D.familles.grandsParentsMariee, 'p', 'familles__gp');
+    var colHatan = el('div', 'familles__col familles__col--hatan');
+    ajouteSi(colHatan, D.familles.parentsMarie, 'p', 'familles__parents');
+    ajouteSi(colHatan, D.familles.grandsParentsMarie, 'p', 'familles__gp');
+    var colKala = el('div', 'familles__col familles__col--kala');
+    ajouteSi(colKala, D.familles.parentsMariee, 'p', 'familles__parents');
+    ajouteSi(colKala, D.familles.grandsParentsMariee, 'p', 'familles__gp');
+    if (colHatan.childNodes.length) fam.appendChild(colHatan);
+    if (colKala.childNodes.length) fam.appendChild(colKala);
     if (fam.childNodes.length) inner.appendChild(fam);
 
-    /* 3. Phrase d'invitation + prenoms */
+    /* 2. Phrase d'invitation + prenoms */
     inner.appendChild(el('p', 'phrase', 'ont la joie de vous convier au mariage de leurs enfants'));
     var h2 = el('p', 'invitation__noms');
     h2.appendChild(el('span', 'noms__prenom', D.couple.marie.prenom));
     h2.appendChild(el('span', 'noms__lien', '&'));
     h2.appendChild(el('span', 'noms__prenom', D.couple.mariee.prenom));
     inner.appendChild(h2);
+    inner.appendChild(el('span', 'filet filet--invitation'));
 
-    /* 4. Une carte par evenement, deja triee chronologiquement par le build */
+    /* 3. Une carte par evenement, deja triee chronologiquement par le build */
     var liste = el('div', 'evenements');
     D.evenements.forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
     inner.appendChild(liste);
 
-    /* 5. Pied de page */
+    /* 4. Pied de page */
+    inner.appendChild(el('span', 'filet filet--invitation'));
     inner.appendChild(he('p', 'mazal', 'מזל טוב'));   // מזל טוב
 
     return sec;
@@ -178,8 +188,14 @@
     var art = el('article', 'event event--' + ev.cle);
 
     var head = el('header', 'event__head');
-    head.appendChild(el('h2', 'event__titre', ev.titre));
-    if (ev.titreHe) head.appendChild(he('p', 'event__titre-he', ev.titreHe));
+    var icone = el('span', 'event__icon');
+    icone.setAttribute('aria-hidden', 'true');
+    icone.innerHTML = ICONES[ev.cle] || '';
+    head.appendChild(icone);
+    var titres = el('div', 'event__titres');
+    titres.appendChild(el('h2', 'event__titre', ev.titre));
+    if (ev.titreHe) titres.appendChild(he('p', 'event__titre-he', ev.titreHe));
+    head.appendChild(titres);
     art.appendChild(head);
 
     art.appendChild(el('span', 'event__filet'));

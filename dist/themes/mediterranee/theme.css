@@ -77,8 +77,22 @@
   border-left: 3px solid var(--accent);
   border-radius: 0 10px 10px 0;
   background: rgba(255, 255, 255, .45);
+  position: relative;
+  overflow: hidden;
+}
+.event::after {
+  content: "";
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 44px; height: 44px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'><ellipse cx='30' cy='30' rx='11' ry='8' transform='rotate(-20 30 30)' fill='rgb(238,201,84)'/><g fill='none' stroke='rgba(92,106,52,0.5)' stroke-width='1.4'><path d='M30 20 C 24 10, 12 6, 2 8'/></g><g fill='rgba(107,122,58,0.4)'><ellipse cx='14' cy='12' rx='7' ry='3' transform='rotate(20 14 12)'/><ellipse cx='24' cy='16' rx='6.5' ry='3' transform='rotate(30 24 16)'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: .9;
 }
 .event__titre { font-weight: 600; }
+.event__icon { background: rgba(255, 255, 255, .6); }
 .compte__cell { border-bottom: 2px solid var(--accent-soft); border-radius: 8px 8px 0 0; }
 .btn--principal { border-radius: 8px; }
 .btn--carte { border-radius: 8px; }

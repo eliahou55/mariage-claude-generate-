@@ -80,12 +80,13 @@
 .event::before {
   content: "";
   position: absolute;
-  top: 0; left: 0;
+  top: 0; right: 0;
   width: 70px; height: 70px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'><g fill='rgba(126,148,112,0.3)'><ellipse cx='16' cy='14' rx='11' ry='6' transform='rotate(40 16 14)'/><ellipse cx='34' cy='32' rx='10' ry='5.5' transform='rotate(44 34 32)'/></g><path d='M4 2 C 26 16, 42 34, 52 58' fill='none' stroke='rgba(104,124,92,0.34)' stroke-width='1.2'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'><g fill='rgba(126,148,112,0.3)'><ellipse cx='54' cy='14' rx='11' ry='6' transform='rotate(-40 54 14)'/><ellipse cx='36' cy='32' rx='10' ry='5.5' transform='rotate(-44 36 32)'/></g><path d='M66 2 C 44 16, 28 34, 18 58' fill='none' stroke='rgba(104,124,92,0.34)' stroke-width='1.2'/></svg>");
   background-size: contain;
   pointer-events: none;
 }
 .event__titre { font-size: 21px; }
+.event__icon { background: rgba(255, 255, 255, .6); border-color: rgba(107, 122, 58, .35); }
 .btn--principal { border-radius: 999px; }
 .compte__cell { background: rgba(255, 255, 255, .55); border-radius: 12px; }

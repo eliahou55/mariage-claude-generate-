@@ -386,7 +386,7 @@ async function lireClasseur() {
     await fs.writeFile(path.join(medias, img.nom), img.buffer);
     image = `medias/${img.nom}`;
   } else {
-    avertissements.push("Aucune image de couverture (ni dans le xlsx, ni dans medias/) — la photo sera masquée.");
+    avertissements.push("Aucune image (ni dans le xlsx, ni dans medias/) — pas d'aperçu image pour les liens partagés.");
   }
 
   return {
@@ -447,6 +447,11 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 
   const { marie, mariee } = donnees.couple;
   const description = `Invitation au mariage de ${marie.prenom} ${marie.nom} et ${mariee.prenom} ${mariee.nom}`;
+  // L'image n'est plus affichee en tete de page : elle sert uniquement
+  // d'aperçu (og:image) quand le lien de l'invitation est partage.
+  const ogImage = donnees.site.image
+    ? `\n<meta property="og:image" content="${echappe(base + donnees.site.image)}">`
+    : '';
 
   return `<!doctype html>
 <html lang="fr">
@@ -455,6 +460,9 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="${echappe(description)}">
 <meta name="theme-color" content="${theme.surface}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${echappe(titre)}">
+<meta property="og:description" content="${echappe(description)}">${ogImage}
 <title>${echappe(titre)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

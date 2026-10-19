@@ -88,9 +88,22 @@
   border-radius: 26px;
   background: linear-gradient(170deg, rgba(255, 255, 255, .95), rgba(252, 238, 235, .9));
   box-shadow: 0 10px 26px rgba(167, 122, 122, .15);
+  position: relative;
+  overflow: hidden;
+}
+.event::after {
+  content: "";
+  position: absolute;
+  bottom: -6px; right: -6px;
+  width: 58px; height: 58px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 58'><g fill='rgba(226,170,170,0.45)'><ellipse cx='40' cy='40' rx='13' ry='8' transform='rotate(20 40 40)'/><ellipse cx='24' cy='46' rx='11' ry='7' transform='rotate(-10 24 46)'/><ellipse cx='46' cy='22' rx='10' ry='6.5' transform='rotate(55 46 22)'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 .event__titre { font-family: var(--font-titre); letter-spacing: .08em; font-size: 23px; }
 .event__filet { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+.event__icon { background: rgba(255, 255, 255, .7); }
 
 .compte__cell { background: rgba(255, 255, 255, .72); border-radius: 18px; }
 .btn--principal { border-radius: 999px; font-weight: 400; letter-spacing: .16em; }

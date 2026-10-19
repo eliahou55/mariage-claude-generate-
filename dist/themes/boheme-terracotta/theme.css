@@ -102,6 +102,13 @@
 .event__date-he { text-align: center; }
 .event__filet { width: 44px; margin-inline: auto; background: var(--accent-soft); }
 .event__actions { justify-content: center; }
+.event__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50% 50% 12px 12px;
+  border: 1.6px solid var(--accent);
+  background: rgba(255, 255, 255, .55);
+}
 
 .btn--principal { border-radius: 999px; letter-spacing: .14em; }
 .btn--carte { border-radius: 999px; border-width: 1.6px; }

@@ -103,6 +103,11 @@
   border-radius: 3px;
 }
 .event__titre { font-weight: 600; letter-spacing: .05em; }
+.event__icon {
+  background: rgba(255, 186, 94, .12);
+  border-color: rgba(244, 232, 218, .22);
+  box-shadow: 0 0 16px rgba(255, 186, 94, .3);
+}
 .btn--principal { border-radius: 2px; letter-spacing: .22em; box-shadow: 0 0 26px rgba(255, 186, 94, .28); }
 .btn--carte { border-radius: 2px; }
 .son { background: #3A1420; }

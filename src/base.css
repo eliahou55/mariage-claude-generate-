@@ -287,27 +287,41 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0 0 calc(44px + env(safe-area-inset-bottom));
 }
 
-.couverture { margin: 0 0 26px; }
-.couverture img { width: 100%; }
-
+/* Familles : hatan (marie) a gauche, kala (mariee) collee a droite,
+   face a face de part et d'autre d'un filet vertical. */
 .familles {
-  margin: 0;
-  padding: 0 24px;
-  text-align: center;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 30px 0 0;
+  padding: 0 22px;
 }
+.familles::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 50%;
+  width: 1px;
+  background: var(--rule);
+}
+.familles__col { flex: 1 1 0; min-width: 0; }
+.familles__col--hatan { text-align: left; padding-right: 6px; }
+.familles__col--kala { text-align: right; padding-left: 6px; }
 .familles__parents {
-  margin: 0 0 6px;
-  font-size: 14.5px;
-  line-height: 1.6;
+  margin: 0 0 7px;
+  font-size: 13px;
+  line-height: 1.55;
   color: var(--ink);
 }
 .familles__gp {
-  margin: 2px 0 0;
-  font-size: 12px;
-  line-height: 1.6;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
   color: var(--muted);
 }
-.familles__gp:first-of-type { margin-top: 12px; }
 
 .phrase {
   margin: 22px 0 10px;
@@ -332,6 +346,10 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .invitation__noms .noms__lien { font-size: .5em; color: var(--accent-ink); margin: 2px 0; }
 
+/* Reutilise l'ornement .filet de chaque theme (deja dessine pour l'accueil)
+   pour encadrer la liste d'evenements et le pied de page. */
+.filet.filet--invitation { margin: 26px auto 22px; }
+
 /* Cartes evenement -------------------------------------------------- */
 
 .evenements {
@@ -339,20 +357,39 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: column;
   gap: 14px;
   padding: 26px 18px 0;
+  background: radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 72%);
 }
 
 .event {
   padding: 18px 18px 16px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: transparent;
+  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
 }
 
 .event__head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  gap: 13px;
+}
+.event__icon {
+  flex: none;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-ink);
+}
+.event__icon svg { width: 21px; height: 21px; display: block; }
+.event__titres {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 .event__titre {
   margin: 0;
@@ -369,7 +406,6 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.4;
   color: var(--muted);
   text-align: right;        /* hebreu aligne a droite */
-  flex: none;
 }
 
 .event__filet {
@@ -485,7 +521,7 @@ img { max-width: 100%; height: auto; display: block; }
 .apercu-bar__back { color: #cfd4de; text-decoration: none; padding: 6px 4px; }
 .apercu-bar__name { font-weight: 500; letter-spacing: .04em; }
 .apercu-bar__dot { width: 10px; height: 10px; border-radius: 50%; margin-left: auto; }
-body:has(.apercu-bar) .app { margin-top: 30px; }
+body:has(.apercu-bar) .app { margin-top: 44px; }
 body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
 
 /* ------------------------------------------------------------------ *

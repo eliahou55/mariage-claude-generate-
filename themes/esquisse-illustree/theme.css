@@ -96,6 +96,14 @@
   background-size: 100% 100%;
 }
 
+.event__icon {
+  border-radius: 62% 38% 55% 45% / 45% 55% 42% 58%;
+  border: 1.4px solid var(--accent-soft);
+  background: rgba(31, 79, 163, .07);
+  transform: rotate(-4deg);
+}
+.event__icon svg { transform: rotate(4deg); }
+
 .btn { font-family: var(--font-corps); letter-spacing: .1em; }
 .btn--principal { border-radius: 40px 8px 44px 10px / 8px 40px 10px 42px; }
 .btn--carte { border-radius: 30px 6px 34px 8px / 6px 30px 8px 32px; border-width: 1.4px; }

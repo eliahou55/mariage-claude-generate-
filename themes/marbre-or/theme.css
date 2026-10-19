@@ -90,6 +90,13 @@
 }
 .event__titre { letter-spacing: .04em; }
 .event__filet { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+.event__icon {
+  border-radius: 0;
+  transform: rotate(45deg);
+  background: transparent;
+  border: 1px solid var(--accent);
+}
+.event__icon svg { transform: rotate(-45deg); width: 18px; height: 18px; }
 
 .btn--principal { border-radius: 0; letter-spacing: .2em; font-size: 12.5px; }
 .btn--carte { border-radius: 0; }

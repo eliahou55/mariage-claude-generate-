@@ -118,6 +118,16 @@
 .event__date { font-weight: 300; }
 .event__heure { font-weight: 300; letter-spacing: .16em; }
 .event__actions { margin-top: 18px; }
+.event__head { align-items: flex-start; }
+.event__icon {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+}
+.event__icon svg { width: 20px; height: 20px; }
 
 .mazal { margin-top: 58px; font-size: 22px; letter-spacing: .14em; }
 .son { border-radius: 0; }

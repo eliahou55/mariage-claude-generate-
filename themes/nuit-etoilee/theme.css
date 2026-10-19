@@ -101,6 +101,11 @@
   border-radius: 4px;
 }
 .event__titre { letter-spacing: .1em; text-transform: uppercase; font-size: 16px; }
+.event__icon {
+  background: rgba(201, 164, 76, .1);
+  border-color: rgba(222, 212, 185, .3);
+  box-shadow: 0 0 14px rgba(201, 164, 76, .18);
+}
 .btn--principal { letter-spacing: .2em; border-radius: 2px; }
 .btn--carte { border-radius: 2px; }
 .son { background: #16233F; }

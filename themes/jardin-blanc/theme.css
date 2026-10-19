@@ -71,11 +71,24 @@
   border-top: 1px solid var(--rule);
   border-radius: 0;
   padding: 24px 2px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.event::after {
+  content: "";
+  position: absolute;
+  top: 18px; right: 2px;
+  width: 46px; height: 46px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 46'><g fill='rgb(255,255,255)' stroke='rgba(140,158,132,0.5)' stroke-width='1'><circle cx='30' cy='30' r='8'/><circle cx='14' cy='24' r='6.5'/><circle cx='34' cy='14' r="6"/></g><g fill='rgba(146,166,136,0.6)'><circle cx='30' cy='30' r='2.2'/><circle cx='14' cy='24' r='1.8'/><circle cx='34' cy='14' r='1.8'/></g></svg>");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 .evenements { gap: 0; padding-inline: 24px; }
 .event__titre { font-weight: 300; font-size: 25px; letter-spacing: .03em; }
 .event__filet { display: none; }
 .event__quand { margin-top: 10px; }
+.event__icon { background: transparent; border-color: var(--rule); }
 
 .btn { letter-spacing: .2em; font-size: 11.5px; font-weight: 400; }
 .btn--principal { border-radius: 0; padding-inline: 38px; }
