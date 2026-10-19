@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créer votre invitation — Invitations de mariage juif</title>
+<meta name="description" content="Configurez le déroulé de votre mariage et créez votre invitation en ligne, dans 10 thèmes élégants.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+</head>
+<body>
+<div class="page">
+  <header class="entete">
+    <span class="entete__marque">בס״ד · Invitations</span>
+  </header>
+
+  <main>
+    <section class="accueil__bloc accueil__hero">
+      <h1 class="titre">Créez l'invitation de votre mariage juif</h1>
+      <p class="chapo">
+        Henné, mairie, Chabbat 'Hatan, houppa, réception : composez le déroulé exact de votre
+        mariage, remplissez vos informations, et découvrez votre faire-part en ligne dans
+        10 thèmes élégants — prêt à partager à vos invités en quelques minutes.
+      </p>
+    </section>
+
+    <section class="etapes" aria-label="Les 3 étapes">
+      <div class="etape-carte">
+        <span class="etape-carte__num">1</span>
+        <div>
+          <p class="etape-carte__titre">Vos événements</p>
+          <p class="etape-carte__texte">
+            Ajoutez, retirez et glissez dans l'ordre les événements de votre mariage — tout le
+            monde ne fait pas un henné ou un Chabbat 'Hatan, et la houppa n'est pas toujours
+            suivie de la réception au même endroit.
+          </p>
+        </div>
+      </div>
+      <div class="etape-carte">
+        <span class="etape-carte__num">2</span>
+        <div>
+          <p class="etape-carte__titre">Vos informations</p>
+          <p class="etape-carte__texte">
+            Prénoms, noms hébreux, parents, grands-parents, dates, lieux et adresses de chaque
+            événement choisi à l'étape précédente, votre thème et votre couleur.
+          </p>
+        </div>
+      </div>
+      <div class="etape-carte">
+        <span class="etape-carte__num">3</span>
+        <div>
+          <p class="etape-carte__titre">Votre invitation</p>
+          <p class="etape-carte__texte">
+            Elle apparaît aussitôt avec vos vraies informations, dans les 10 thèmes — comparez,
+            choisissez, et partagez le lien.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="accueil__cta">
+      <a class="btn btn--principal" href="configurateur.html" id="lien-commencer">Commencer</a>
+    </div>
+
+    <p class="rassurance">
+      🔒 Pour cette première version, vos informations restent uniquement dans ce navigateur
+      (aucun serveur, aucun compte) : si vous changez d'appareil ou videz vos données de
+      navigation, il faudra les ressaisir.
+    </p>
+  </main>
+</div>
+
+<script src="../stockage.js"></script>
+<script src="client.js"></script>
+<script>
+  // Si un brouillon existe deja, "Commencer" reprend la saisie en cours
+  // plutot que de forcer un redemarrage a zero.
+  (function () {
+    try {
+      if (window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) {
+        document.getElementById('lien-commencer').textContent = 'Reprendre ma saisie';
+      }
+    } catch (e) { /* ignore */ }
+  })();
+</script>
+</body>
+</html>

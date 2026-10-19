@@ -1,6 +1,6 @@
 {
   "id": "M001",
-  "genere": "2026-10-19T20:34:02.147Z",
+  "genere": "2026-10-19T20:57:48.060Z",
   "couple": {
     "marie": {
       "prenom": "Ilan",
@@ -28,7 +28,8 @@
     "couleurHex": "#C9A44C",
     "verset": "קול ששון וקול שמחה קול חתן וקול כלה",
     "musique": null,
-    "image": "medias/M001_couverture.png"
+    "image": "medias/M001_couverture.png",
+    "fusionnerHouppaReception": true
   },
   "compteARebours": {
     "iso": "2027-06-20T17:00:00.000Z",

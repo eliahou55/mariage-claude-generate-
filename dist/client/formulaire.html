@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vos informations — Invitations de mariage juif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+</head>
+<body>
+<div class="page">
+  <header class="entete">
+    <a class="entete__marque" href="index.html">בס״ד · Invitations</a>
+    <span class="entete__etape">Étape 2 sur 2</span>
+  </header>
+  <div class="progression" aria-hidden="true">
+    <span class="progression__segment progression__segment--fait"></span>
+    <span class="progression__segment progression__segment--fait"></span>
+  </div>
+
+  <main>
+    <h1 class="titre">Vos informations</h1>
+    <p class="chapo">
+      Ces informations remplissent votre invitation, dans l'ordre d'événements choisi à l'étape
+      précédente. Les champs marqués <span class="req">*</span> sont nécessaires.
+    </p>
+
+    <p id="message-erreur" class="message-erreur" hidden></p>
+
+    <form id="form-invitation" novalidate>
+
+      <section class="form-section">
+        <h2 class="soustitre">Les mariés</h2>
+        <div class="grille-champs grille-champs--2">
+          <div class="champ">
+            <label for="f-marie-prenom">Prénom du marié <span class="req">*</span></label>
+            <input type="text" id="f-marie-prenom" required autocomplete="given-name">
+          </div>
+          <div class="champ">
+            <label for="f-mariee-prenom">Prénom de la mariée <span class="req">*</span></label>
+            <input type="text" id="f-mariee-prenom" required autocomplete="given-name">
+          </div>
+          <div class="champ">
+            <label for="f-marie-nom">Nom du marié <span class="req">*</span></label>
+            <input type="text" id="f-marie-nom" required autocomplete="family-name">
+          </div>
+          <div class="champ">
+            <label for="f-mariee-nom">Nom de la mariée <span class="req">*</span></label>
+            <input type="text" id="f-mariee-nom" required autocomplete="family-name">
+          </div>
+          <div class="champ">
+            <label for="f-marie-hebreu">Nom hébreu du marié</label>
+            <input type="text" id="f-marie-hebreu" dir="rtl">
+            <span class="aide">Ex. אילן בן אליהו</span>
+          </div>
+          <div class="champ">
+            <label for="f-mariee-hebreu">Nom hébreu de la mariée</label>
+            <input type="text" id="f-mariee-hebreu" dir="rtl">
+            <span class="aide">Ex. יעל בת שמעון</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2 class="soustitre">Les familles</h2>
+        <div class="grille-champs grille-champs--2">
+          <div class="champ">
+            <label for="f-parents-marie">Parents du marié</label>
+            <input type="text" id="f-parents-marie">
+            <span class="aide">Ex. M. et Mme Élie Benhamou</span>
+          </div>
+          <div class="champ">
+            <label for="f-parents-mariee">Parents de la mariée</label>
+            <input type="text" id="f-parents-mariee">
+          </div>
+          <div class="champ">
+            <label for="f-gparents-marie">Grands-parents du marié</label>
+            <input type="text" id="f-gparents-marie">
+          </div>
+          <div class="champ">
+            <label for="f-gparents-mariee">Grands-parents de la mariée</label>
+            <input type="text" id="f-gparents-mariee">
+          </div>
+        </div>
+        <div class="champ" style="margin-top:16px">
+          <label for="f-memoire">Mémoire des grands-parents disparus (facultatif)</label>
+          <textarea id="f-memoire" placeholder="Un nom par ligne, ex. Eliahou Pinhas ז״ל"></textarea>
+          <span class="aide">Apparaît sous la houppa avec « En ce jour solennel... ». Laissez vide pour ne rien afficher.</span>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2 class="soustitre">Votre site</h2>
+
+        <div class="champ">
+          <label>Thème</label>
+          <div class="theme-grille" id="zone-themes"></div>
+        </div>
+
+        <div class="champ" style="margin-top:20px">
+          <label>Couleur principale</label>
+          <div class="couleur-grille" id="zone-couleurs"></div>
+        </div>
+
+        <div class="champ" style="margin-top:20px">
+          <label for="f-verset">Verset affiché</label>
+          <select id="f-verset"></select>
+          <input type="text" id="f-verset-autre" dir="rtl" placeholder="Votre verset" hidden>
+          <div class="verset-apercu" id="apercu-verset"></div>
+        </div>
+
+        <div class="champ" style="margin-top:20px">
+          <label for="f-lien">Lien du site (facultatif)</label>
+          <input type="url" id="f-lien" placeholder="https://...">
+        </div>
+      </section>
+
+      <section class="form-section" id="zone-evenements">
+        <h2 class="soustitre">Vos événements</h2>
+        <!-- Rempli dynamiquement par formulaire.js selon l'ordre choisi a l'etape 1 -->
+      </section>
+
+      <div class="barre-actions">
+        <a class="btn btn--texte" href="configurateur.html">← Retour</a>
+        <button type="submit" class="btn btn--principal">Voir mon invitation</button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="../stockage.js"></script>
+<script src="client.js"></script>
+<script src="formulaire.js"></script>
+</body>
+</html>

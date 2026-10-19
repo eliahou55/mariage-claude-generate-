@@ -420,6 +420,9 @@ async function lireClasseur() {
         verset: site.txt('Verset'),
         musique,
         image,
+        // L'Excel ne propose pas (encore) ce reglage : comportement historique
+        // conserve. L'espace client (src/client/*) peut le mettre a false.
+        fusionnerHouppaReception: true,
       },
       compteARebours: {
         iso: new Date(cibleTs).toISOString(),
@@ -484,6 +487,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 ${bandeau}
 <main id="app" class="app" data-base="${base}"></main>
 <script type="application/json" id="invitation-data">${jsonSur(payload)}</script>
+<script src="${base}stockage.js"></script>
 <script src="${base}versets.js"></script>
 <script src="${base}app.js"></script>
 </body>
@@ -492,7 +496,9 @@ ${bandeau}
 }
 
 function bandeauApercu(theme, donnees) {
-  return `<div class="apercu-bar"><a class="apercu-bar__back" href="../index.html">&#8592; Thèmes</a><span class="apercu-bar__name">${echappe(theme.nom)}</span><span class="apercu-bar__dot" style="background:${donnees.site.couleurHex}"></span></div>`;
+  // id sur la pastille : app.js la recolore si une invitation client
+  // (localStorage) est presente, pour refleter sa propre couleur.
+  return `<div class="apercu-bar"><a class="apercu-bar__back" href="../index.html">&#8592; Thèmes</a><span class="apercu-bar__name">${echappe(theme.nom)}</span><span class="apercu-bar__dot" id="apercu-bar-dot" style="background:${donnees.site.couleurHex}"></span></div>`;
 }
 
 function pageIndexApercus(donnees) {
@@ -544,8 +550,48 @@ code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
 <div class="grille">
 ${cartes}
 </div>
-<footer>Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</footer>
+<footer id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</footer>
 </div>
+<script src="../stockage.js"></script>
+<script>
+/* Si une invitation a ete configuree dans ce navigateur (espace client),
+ * cette page (par ailleurs figee, generee depuis l'Excel) s'adapte : noms
+ * du couple, couleur annoncee et theme marque comme "actif" deviennent
+ * les siens. Sans donnees client, rien ne change (demo Excel intacte). */
+(function () {
+  try {
+    var brut = window.localStorage && window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
+    if (!brut) return;
+    var D = JSON.parse(brut);
+
+    document.querySelectorAll('.carte--actif').forEach(function (c) {
+      c.classList.remove('carte--actif');
+      var b = c.querySelector('.carte__badge');
+      if (b) b.remove();
+    });
+    document.querySelectorAll('.carte').forEach(function (c) {
+      var slug = (c.getAttribute('href') || '').split('/')[0];
+      if (slug !== D.site.themeSlug) return;
+      c.classList.add('carte--actif');
+      var badge = document.createElement('span');
+      badge.className = 'carte__badge';
+      badge.textContent = 'Votre thème choisi';
+      c.appendChild(badge);
+    });
+
+    var h1 = document.querySelector('h1');
+    if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
+    var sous = document.querySelector('p.sous');
+    if (sous) sous.textContent = 'Les 10 thèmes, avec vos informations et la couleur « ' + D.site.couleurNom + ' ».';
+    var pied = document.getElementById('pied-apercus');
+    if (pied) {
+      pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '
+        + '<a href="../client/formulaire.html" style="color:#c9a44c">le formulaire</a>, ou '
+        + '<a href="../client/configurateur.html" style="color:#c9a44c">l’ordre de vos événements</a>.';
+    }
+  } catch (e) { /* ignore */ }
+})();
+</script>
 </body>
 </html>
 `;
@@ -604,6 +650,8 @@ async function main() {
   await fs.copyFile(path.join(PROJECT, 'src', 'base.css'), path.join(DIST, 'base.css'));
   await fs.copyFile(path.join(PROJECT, 'src', 'app.js'), path.join(DIST, 'app.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'versets.js'), path.join(DIST, 'versets.js'));
+  await fs.copyFile(path.join(PROJECT, 'src', 'stockage.js'), path.join(DIST, 'stockage.js'));
+  await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
 
   // data/invitation.json
   await fs.mkdir(path.join(DIST, 'data'), { recursive: true });

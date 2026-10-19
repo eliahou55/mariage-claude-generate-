@@ -1,7 +1,10 @@
 /**
  * Logique commune a tous les themes.
- * Les donnees viennent du JSON inline genere par scripts/build.mjs
- * (inline plutot que fetch, pour que le site marche aussi en file://).
+ * Les donnees viennent soit :
+ *  - du localStorage (espace client, src/client/*) si l'utilisateur a
+ *    configure sa propre invitation dans son navigateur -- prioritaire ;
+ *  - sinon du JSON inline genere par scripts/build.mjs depuis l'Excel
+ *    (inline plutot que fetch, pour que le site marche aussi en file://).
  */
 (function () {
   'use strict';
@@ -10,9 +13,82 @@
   var app = document.getElementById('app');
   if (!noeudData || !app) return;
 
-  var D = JSON.parse(noeudData.textContent);
+  var origineLocale = false;
+  function lireDonnees() {
+    try {
+      var brut = window.localStorage && window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
+      if (brut) { origineLocale = true; return JSON.parse(brut); }
+    } catch (e) { /* localStorage indisponible (navigation privee, etc.) -> repli Excel */ }
+    return JSON.parse(noeudData.textContent);
+  }
+
+  var D = lireDonnees();
   var BASE = app.getAttribute('data-base') || '';
   var motionReduite = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------------------------------------------------------- *
+   * Couleur d'accent dynamique (espace client uniquement)
+   * Pour l'Excel, --accent/--accent-ink/... sont deja injectes par le
+   * build. Pour une invitation configuree dans le navigateur, on les
+   * calcule ici contre le --surface deja defini par le theme charge.
+   * ---------------------------------------------------------------- */
+
+  function versRgb(hex) {
+    var h = hex.replace('#', '');
+    return [0, 2, 4].map(function (i) { return parseInt(h.slice(i, i + 2), 16); });
+  }
+  function versHex(rgb) {
+    return '#' + rgb.map(function (v) {
+      return Math.round(Math.min(255, Math.max(0, v))).toString(16).padStart(2, '0');
+    }).join('').toUpperCase();
+  }
+  function luminance(hex) {
+    var c = versRgb(hex).map(function (v) {
+      var x = v / 255;
+      return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contraste(a, b) {
+    var l1 = luminance(a), l2 = luminance(b);
+    var hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  function melange(hex, vers, t) {
+    var a = versRgb(hex), b = versRgb(vers);
+    return versHex(a.map(function (v, i) { return v + (b[i] - v) * t; }));
+  }
+  function accentLisible(accent, fond, min) {
+    if (contraste(accent, fond) >= min) return accent;
+    var cible = luminance(fond) > 0.4 ? '#000000' : '#FFFFFF';
+    for (var t = 0.04; t <= 1.0001; t += 0.04) {
+      var c = melange(accent, cible, t);
+      if (contraste(c, fond) >= min) return c;
+    }
+    return cible;
+  }
+  function encreSurAccent(accent) {
+    return contraste(accent, '#1A1A1A') >= contraste(accent, '#FFFFFF') ? '#1A1A1A' : '#FFFFFF';
+  }
+
+  if (origineLocale && D.site && D.site.couleurHex) {
+    var styleRacine = getComputedStyle(document.documentElement);
+    var surface = (styleRacine.getPropertyValue('--surface') || '#ffffff').trim() || '#ffffff';
+    var accent = D.site.couleurHex;
+    var encre = accentLisible(accent, surface, 4.5);
+    var encreDouce = accentLisible(accent, surface, 3.0);
+    var surAccent = encreSurAccent(accent);
+    var racine = document.documentElement.style;
+    racine.setProperty('--accent', accent);
+    racine.setProperty('--accent-ink', encre);
+    racine.setProperty('--accent-soft', encreDouce);
+    racine.setProperty('--accent-on', surAccent);
+
+    // Sur une page d'apercu, la pastille du bandeau annonce la couleur
+    // de l'Excel par defaut : on la recolore avec celle du client.
+    var pastille = document.getElementById('apercu-bar-dot');
+    if (pastille) pastille.style.background = accent;
+  }
 
   /* ---------------------------------------------------------------- *
    * Petits utilitaires DOM
@@ -214,12 +290,14 @@
     inner.appendChild(h2);
     inner.appendChild(el('span', 'filet filet--invitation'));
 
-    /* 3. Une carte par evenement (Chabbat 'Hatan toujours en dernier, deja
-     *    reordonne par le build). La reception est fusionnee dans la carte
-     *    houppa (pas de carte separee) : on la retire de la boucle ici. */
+    /* 3. Une carte par evenement, dans l'ordre fourni par les donnees.
+     *    Si fusionnerHouppaReception (vrai par defaut, cf. build.mjs),
+     *    la reception n'a pas de carte separee : elle est annoncee a la
+     *    fin de la carte houppa -> on la retire de la boucle ici. */
+    var fusion = D.site.fusionnerHouppaReception !== false;
     var liste = el('div', 'evenements');
     D.evenements
-      .filter(function (ev) { return ev.cle !== 'reception'; })
+      .filter(function (ev) { return !(fusion && ev.cle === 'reception'); })
       .forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
     inner.appendChild(liste);
 
@@ -366,10 +444,13 @@
       recit.appendChild(mem);
     }
 
-    /* La reception n'a pas sa propre carte : elle est annoncee ici, a la
-     * suite de la houppa (meme lieu la plupart du temps -> pas besoin de
-     * repeter l'adresse ni les boutons Itineraire/Waze). */
-    var reception = D.evenements.filter(function (e) { return e.cle === 'reception'; })[0];
+    /* Si fusionnerHouppaReception, la reception n'a pas sa propre carte :
+     * elle est annoncee ici, a la suite de la houppa (meme lieu la plupart
+     * du temps -> pas besoin de repeter l'adresse ni les boutons). Sinon
+     * elle garde sa propre carte plus loin dans la liste. */
+    var reception = (D.site.fusionnerHouppaReception !== false)
+      ? D.evenements.filter(function (e) { return e.cle === 'reception'; })[0]
+      : null;
     if (reception) {
       var memeLieu = reception.lieu && reception.lieu === ev.lieu;
       var phrase = "La cérémonie sera suivie d'une réception";
