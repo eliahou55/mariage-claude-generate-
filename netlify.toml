@@ -6,11 +6,14 @@
   publish = "dist"
   command = "echo 'dist/ est deja genere, aucune etape de build necessaire.'"
 
-# La racine du site ouvre directement la page de choix des 10 themes.
+# La racine du site ouvre desormais l'espace client (accueil du produit :
+# configurateur + formulaire), qui est la vraie porte d'entree pour les
+# futurs clients. L'invitation Ilan & Yael (generee depuis l'Excel) reste
+# consultable directement sur /index.html et /apercu/.
 # Redirection reelle (302, pas une reecriture) pour que l'URL devienne
-# /apercu/ et que les liens relatifs de cette page continuent de marcher.
+# /client/ et que les liens relatifs de cette page continuent de marcher.
 [[redirects]]
   from = "/"
-  to = "/apercu/"
+  to = "/client/"
   status = 302
   force = true
