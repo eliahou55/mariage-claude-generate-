@@ -5,3 +5,12 @@
 [build]
   publish = "dist"
   command = "echo 'dist/ est deja genere, aucune etape de build necessaire.'"
+
+# La racine du site ouvre directement la page de choix des 10 themes.
+# Redirection reelle (302, pas une reecriture) pour que l'URL devienne
+# /apercu/ et que les liens relatifs de cette page continuent de marcher.
+[[redirects]]
+  from = "/"
+  to = "/apercu/"
+  status = 302
+  force = true
