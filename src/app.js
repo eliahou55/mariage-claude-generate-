@@ -51,6 +51,52 @@
 
   var prenoms = D.couple.marie.prenom + ' • ' + D.couple.mariee.prenom;
 
+  /** Compteur pour garantir des id de <path> SVG uniques sur la page. */
+  var compteurArc = 0;
+
+  /**
+   * Phrase hebraique affichee en texte courbe (SVG text-on-path), comme sur
+   * les faire-part traditionnels. L'alternative textuelle (sr-only) garde le
+   * verset accessible aux lecteurs d'ecran.
+   */
+  function texteCourbe(texte) {
+    if (!texte) return null;
+    var NS = 'http://www.w3.org/2000/svg';
+    compteurArc += 1;
+    var idArc = 'verset-arc-' + compteurArc;
+
+    var wrap = el('div', 'verset-arc-wrap');
+
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 400 92');
+    svg.setAttribute('class', 'verset-arc');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+
+    var path = document.createElementNS(NS, 'path');
+    path.setAttribute('id', idArc);
+    path.setAttribute('d', 'M14,78 Q200,6 386,78');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+
+    var txt = document.createElementNS(NS, 'text');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('direction', 'rtl');
+    txt.setAttribute('class', 'verset-arc__texte');
+
+    var textPath = document.createElementNS(NS, 'textPath');
+    textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + idArc);
+    textPath.setAttribute('href', '#' + idArc);
+    textPath.setAttribute('startOffset', '50%');
+    textPath.textContent = texte;
+    txt.appendChild(textPath);
+    svg.appendChild(txt);
+
+    wrap.appendChild(svg);
+    wrap.appendChild(he('p', 'sr-only', texte));   // alternative accessible
+    return wrap;
+  }
+
   /** Petites icones au trait (24x24, currentColor) : une par type d'evenement. */
   var ICONES = {
     henne:
@@ -150,6 +196,10 @@
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
 
+    /* 0. Verset d'ouverture, en texte courbe */
+    var arcHaut = texteCourbe(VERSETS.aniLedodi);
+    if (arcHaut) inner.appendChild(arcHaut);
+
     /* 1. Parents (hatan a gauche, kala a droite, face a face),
      *    puis grands-parents (plus petit) dans la meme colonne */
     var fam = construireFamilles();
@@ -164,9 +214,13 @@
     inner.appendChild(h2);
     inner.appendChild(el('span', 'filet filet--invitation'));
 
-    /* 3. Une carte par evenement, deja triee chronologiquement par le build */
+    /* 3. Une carte par evenement (Chabbat 'Hatan toujours en dernier, deja
+     *    reordonne par le build). La reception est fusionnee dans la carte
+     *    houppa (pas de carte separee) : on la retire de la boucle ici. */
     var liste = el('div', 'evenements');
-    D.evenements.forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
+    D.evenements
+      .filter(function (ev) { return ev.cle !== 'reception'; })
+      .forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
     inner.appendChild(liste);
 
     /* 4. Pied de page */
@@ -270,6 +324,9 @@
     var art = el('article', 'event event--houppa event--recit');
     var recit = el('div', 'recit');
 
+    var arcHoup = texteCourbe(VERSETS.oumssossHatan);
+    if (arcHoup) recit.appendChild(arcHoup);
+
     var fam = construireFamilles();
     if (fam) { fam.classList.add('recit__familles'); recit.appendChild(fam); }
 
@@ -305,8 +362,32 @@
       recit.appendChild(mem);
     }
 
+    /* La reception n'a pas sa propre carte : elle est annoncee ici, a la
+     * suite de la houppa (meme lieu la plupart du temps -> pas besoin de
+     * repeter l'adresse ni les boutons Itineraire/Waze). */
+    var reception = D.evenements.filter(function (e) { return e.cle === 'reception'; })[0];
+    if (reception) {
+      var memeLieu = reception.lieu && reception.lieu === ev.lieu;
+      var phrase = "La cérémonie sera suivie d'une réception";
+      if (reception.heure) phrase += ' à ' + reception.heure;
+      if (reception.lieu && !memeLieu) phrase += ', au ' + reception.lieu;
+      phrase += '.';
+      ligneSi(recit, phrase, 'recit__suite');
+      if (reception.adresse && reception.adresse !== ev.adresse) {
+        ligneSi(recit, reception.adresse, 'recit__suite-adresse');
+      }
+    }
+
     art.appendChild(recit);
     ajouteActions(art, ev);
+
+    if (reception && reception.lieu && reception.lieu !== ev.lieu && (reception.itineraire || reception.waze)) {
+      var actionsReception = el('div', 'event__actions event__actions--reception');
+      if (reception.itineraire) actionsReception.appendChild(lienBouton(reception.itineraire, 'Itinéraire réception', 'btn btn--carte'));
+      if (reception.waze) actionsReception.appendChild(lienBouton(reception.waze, 'Waze réception', 'btn btn--carte btn--waze'));
+      art.appendChild(actionsReception);
+    }
+
     return art;
   }
 

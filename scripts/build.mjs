@@ -335,6 +335,10 @@ async function lireClasseur() {
     });
   }
   evenements.sort((a, b) => a._tri - b._tri);
+  // Le Chabbat 'Hatan s'affiche toujours en dernier, meme s'il tombe
+  // chronologiquement avant la houppa (demande explicite, pas un bug de tri).
+  const iChabbat = evenements.findIndex((e) => e.cle === 'chabbat');
+  if (iChabbat !== -1) evenements.push(evenements.splice(iChabbat, 1)[0]);
 
   /* ---- Houppa : cible du compte a rebours (heure de Paris) ---- */
   const dHoup = dates.date('Date mariage (houppa)');
@@ -480,6 +484,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 ${bandeau}
 <main id="app" class="app" data-base="${base}"></main>
 <script type="application/json" id="invitation-data">${jsonSur(payload)}</script>
+<script src="${base}versets.js"></script>
 <script src="${base}app.js"></script>
 </body>
 </html>
@@ -598,6 +603,7 @@ async function main() {
   await copierDossier(path.join(PROJECT, 'themes'), path.join(DIST, 'themes'));
   await fs.copyFile(path.join(PROJECT, 'src', 'base.css'), path.join(DIST, 'base.css'));
   await fs.copyFile(path.join(PROJECT, 'src', 'app.js'), path.join(DIST, 'app.js'));
+  await fs.copyFile(path.join(PROJECT, 'src', 'versets.js'), path.join(DIST, 'versets.js'));
 
   // data/invitation.json
   await fs.mkdir(path.join(DIST, 'data'), { recursive: true });

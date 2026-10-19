@@ -284,7 +284,7 @@ img { max-width: 100%; height: auto; display: block; }
  * ------------------------------------------------------------------ */
 
 .invitation__inner {
-  padding: 0 0 calc(44px + env(safe-area-inset-bottom));
+  padding: 30px 0 calc(44px + env(safe-area-inset-bottom));
 }
 
 /* Familles : hatan (marie) a gauche, kala (mariee) collee a droite,
@@ -551,6 +551,27 @@ img { max-width: 100%; height: auto; display: block; }
    espacement de pleine page (deja a l'interieur d'une carte). */
 .recit__familles { padding: 0; margin: 0 0 4px; width: 100%; }
 .recit__familles::before { top: 0; bottom: 0; }
+
+/* Reception fusionnee a la suite de la houppa (pas de carte separee). */
+.recit__suite {
+  margin: 6px 0 0;
+  max-width: 26em;
+  font-size: 14.5px;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.recit__suite-adresse { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+
+/* Verset en texte courbe (SVG text-on-path), avant les familles
+   et au debut de la carte houppa. */
+.verset-arc-wrap { width: 100%; max-width: 320px; margin: 0 auto 4px; }
+.verset-arc { display: block; width: 100%; height: auto; overflow: visible; }
+.verset-arc__texte {
+  font-family: var(--font-he);
+  font-size: 27px;
+  fill: var(--accent-ink);
+}
 
 .event__actions { display: flex; gap: 8px; }
 
