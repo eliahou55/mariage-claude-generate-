@@ -1,0 +1,7 @@
+# Le site est pre-genere (dist/ est commite dans le depot) : invitation_mariage.xlsx
+# n'est pas dans le depot (donnees familiales privees), donc "npm run build" ne
+# peut pas s'executer ici. On publie directement dist/ sans etape de build.
+
+[build]
+  publish = "dist"
+  command = "echo 'dist/ est deja genere, aucune etape de build necessaire.'"
