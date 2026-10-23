@@ -176,6 +176,8 @@
   var SEUIL_PX = 5;        // tolerance avant de considerer que c'est un glissement
   var PAIRE_FUSION = { houppa: 'reception', reception: 'houppa' };
   var etat = null;
+  var DELAI_APPUI = 180;         // ms d'immobilite avant de "prendre" la carte au toucher
+  var SEUIL_AVANT_APPUI = 9;     // px : au-dela pendant l'attente, c'est un defilement, pas une prise
 
   function estInteractif(el) {
     return !!(el && el.closest && el.closest('button, a, input, select, textarea'));
@@ -217,6 +219,8 @@
     document.body.style.userSelect = 'none';
 
     var rect = li.getBoundingClientRect();
+    etat.origLeft = rect.left;
+    etat.origTop = rect.top;
     etat.largeur = rect.width;
     etat.hauteur = rect.height;
 
@@ -226,6 +230,7 @@
     listeEl.insertBefore(espace, li);
     etat.espace = espace;
 
+    li.classList.remove('conf-item--pret');
     li.classList.add('conf-item--drag');
     li.style.position = 'fixed';
     li.style.left = rect.left + 'px';
@@ -236,18 +241,33 @@
     try { li.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   }
 
+  /** Souris : glissement immediat. Tactile : il faut un court appui immobile
+   *  (comme sur iOS/Trello) pour "prendre" la carte -- sinon, un simple
+   *  balayage reste un defilement normal de la page. */
   function pointerdown(e) {
     if (e.button !== undefined && e.button !== 0) return;   // clic gauche / tactile uniquement
     if (estInteractif(e.target)) return;                     // laisse boutons/fleches fonctionner
     var li = e.target.closest ? e.target.closest('li.conf-item') : null;
     if (!li || li.classList.contains('conf-item--espace')) return;
 
+    var estTactile = e.pointerType === 'touch' || e.pointerType === 'pen';
+
     etat = {
       li: li, cle: li.dataset.cle, pointerId: e.pointerId,
       startX: e.clientX, startY: e.clientY,
-      origLeft: li.getBoundingClientRect().left, origTop: li.getBoundingClientRect().top,
-      demarre: false, cibleFusion: null, largeur: 0, hauteur: 0,
+      origLeft: 0, origTop: 0, largeur: 0, hauteur: 0,
+      demarre: false, enAttente: estTactile, minuteur: null, cibleFusion: null,
     };
+
+    if (estTactile) {
+      etat.minuteur = window.setTimeout(function () {
+        if (!etat || etat.pointerId !== e.pointerId) return;
+        etat.enAttente = false;
+        li.classList.add('conf-item--pret');
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+      }, DELAI_APPUI);
+    }
+
     document.addEventListener('pointermove', pointermove);
     document.addEventListener('pointerup', pointerup);
     document.addEventListener('pointercancel', pointerup);
@@ -258,10 +278,20 @@
     var dx = e.clientX - etat.startX;
     var dy = e.clientY - etat.startY;
 
-    if (!etat.demarre) {
-      if (Math.abs(dx) < SEUIL_PX && Math.abs(dy) < SEUIL_PX) return;
-      demarrerDrag(e);
+    if (etat.enAttente) {
+      // Bouge trop avant la fin de l'appui -> c'est un defilement, on abandonne
+      // et on laisse le navigateur faire defiler la page normalement.
+      if (Math.abs(dx) > SEUIL_AVANT_APPUI || Math.abs(dy) > SEUIL_AVANT_APPUI) {
+        if (etat.minuteur) window.clearTimeout(etat.minuteur);
+        document.removeEventListener('pointermove', pointermove);
+        document.removeEventListener('pointerup', pointerup);
+        document.removeEventListener('pointercancel', pointerup);
+        etat = null;
+      }
+      return;
     }
+
+    if (!etat.demarre) demarrerDrag(e);
     e.preventDefault();
 
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
@@ -294,12 +324,19 @@
 
   function pointerup() {
     if (!etat) return;
+    if (etat.minuteur) window.clearTimeout(etat.minuteur);
     document.removeEventListener('pointermove', pointermove);
     document.removeEventListener('pointerup', pointerup);
     document.removeEventListener('pointercancel', pointerup);
     document.body.style.userSelect = '';
 
-    if (!etat.demarre) { etat = null; return; }   // simple clic, pas un glissement
+    if (!etat.demarre) {
+      // Relache pendant l'attente (tactile) ou sans avoir bouge (souris) :
+      // simple clic/tapotement, pas un glissement.
+      if (etat.li) etat.li.classList.remove('conf-item--pret');
+      etat = null;
+      return;
+    }
 
     var li = etat.li;
     li.classList.remove('conf-item--drag');

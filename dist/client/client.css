@@ -228,6 +228,14 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   border-color: var(--accent);
   transition: none;             /* le JS pilote le transform image par image : pas de latence */
 }
+/* Retour visuel au tactile : la carte est "prise" (appui maintenu confirme),
+   avant meme le premier mouvement -- confirme que le defilement a cede la
+   place au glissement. */
+.conf-item--pret {
+  transform: scale(1.025);
+  box-shadow: 0 10px 20px rgba(42, 39, 34, .2);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
 .conf-item--espace {
   background: var(--accent-bg);
   border: 1.5px dashed var(--accent);
