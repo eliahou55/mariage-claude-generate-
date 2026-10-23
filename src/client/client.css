@@ -217,22 +217,44 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
-  touch-action: none;
+  cursor: grab;
+  touch-action: pan-y;         /* defilement vertical normal tant que le JS n'a pas confirme un glissement */
+  -webkit-user-select: none;
+  user-select: none;
 }
-.conf-item--drag { box-shadow: 0 10px 24px rgba(42, 39, 34, .18); border-color: var(--accent); z-index: 2; position: relative; }
+.conf-item--drag {
+  cursor: grabbing;
+  box-shadow: 0 18px 36px rgba(42, 39, 34, .28);
+  border-color: var(--accent);
+  transition: none;             /* le JS pilote le transform image par image : pas de latence */
+}
+.conf-item--espace {
+  background: var(--accent-bg);
+  border: 1.5px dashed var(--accent);
+}
+.conf-item--espace .conf-item__corps,
+.conf-item--espace .conf-item__poignee,
+.conf-item--espace .conf-item__fleches { visibility: hidden; }
+.conf-item--cible-fusion {
+  border-color: var(--accent);
+  border-width: 2px;
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.conf-item--fusion { border-style: dashed; }
+
 .conf-item__poignee {
   flex: none;
-  width: 32px; height: 32px;
+  width: 24px; height: 32px;
   display: grid; place-items: center;
   color: var(--muted);
-  cursor: grab;
   font-size: 18px;
-  touch-action: none;
+  pointer-events: none;   /* la carte entiere est saisissable : la poignee n'est qu'un indice visuel */
 }
 .conf-item__corps { flex: 1 1 auto; min-width: 0; }
 .conf-item__titre { font-weight: 600; font-size: 14.5px; }
 .conf-item__titre-he { margin: 0; font-family: var(--font-he); font-size: 12px; color: var(--muted); }
-.conf-item__obligatoire { font-size: 11px; color: var(--muted); font-style: italic; }
+.conf-item__note { margin: 3px 0 0; font-size: 11px; color: var(--accent-ink); font-style: italic; }
 .conf-item__suppr {
   flex: none;
   width: 36px; height: 36px;
