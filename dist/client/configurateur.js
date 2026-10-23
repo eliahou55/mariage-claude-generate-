@@ -194,6 +194,17 @@
     // du flux normal.
     etat.centreListeDepart = li.offsetTop + li.offsetHeight / 2;
 
+    // Reserve la place d'origine avec un repere STATIQUE (pas anime). Sans
+    // lui, passer la carte en position:fixed la retire du flux et les
+    // voisines remontent aussitot combler le trou -- la carte suivante se
+    // retrouve alors exactement sous le doigt des le debut du geste, ce qui
+    // declenchait une fusion immediate et non voulue.
+    var espace = document.createElement('li');
+    espace.className = 'conf-item conf-item--espace';
+    espace.style.height = rect.height + 'px';
+    listeEl.insertBefore(espace, li);
+    etat.espace = espace;
+
     li.classList.remove('conf-item--pret');
     li.classList.add('conf-item--drag');
     li.style.position = 'fixed';
@@ -218,7 +229,7 @@
     etat = {
       li: li, indexDepart: parseInt(li.dataset.index, 10), pointerId: e.pointerId,
       startX: e.clientX, startY: e.clientY,
-      largeur: 0, hauteur: 0, centreListeDepart: 0,
+      largeur: 0, hauteur: 0, centreListeDepart: 0, espace: null,
       demarre: false, enAttente: estTactile, minuteur: null,
       cibleLi: null, indexCible: null,
     };
@@ -259,13 +270,25 @@
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
     etat.li.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + inclinaison + 'deg) scale(1.03)';
 
-    // --- Fusion : la carte est-elle visuellement posee sur UNE AUTRE ? ---
-    var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li; });
-    var cibleLi = null;
-    for (var k = 0; k < autres.length; k++) {
-      var r = autres[k].getBoundingClientRect();
-      if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) { cibleLi = autres[k]; break; }
-    }
+    // --- Fusion : la carte RECOUVRE-t-elle vraiment une autre (pas juste le
+    //     doigt/curseur qui passe dessus) ? Les cartes etant tres proches
+    //     (10px d'ecart), un point seul se faisait piéger par un minuscule
+    //     mouvement -- on exige desormais un chevauchement substantiel entre
+    //     les deux rectangles reels. ---
+    var SEUIL_FUSION = 0.55;   // part de la hauteur de la carte glissee qui doit chevaucher
+    var rectLi = etat.li.getBoundingClientRect();
+    var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li && c !== etat.espace; });
+    var cibleLi = null, meilleur = 0;
+    autres.forEach(function (c) {
+      var r = c.getBoundingClientRect();
+      var chevaucheH = Math.max(0, Math.min(rectLi.right, r.right) - Math.max(rectLi.left, r.left));
+      if (chevaucheH / rectLi.width < 0.5) return;   // trop decale horizontalement
+      var chevaucheV = Math.max(0, Math.min(rectLi.bottom, r.bottom) - Math.max(rectLi.top, r.top));
+      var frac = chevaucheV / rectLi.height;
+      if (frac > meilleur) { meilleur = frac; cibleLi = c; }
+    });
+    if (meilleur < SEUIL_FUSION) cibleLi = null;
+
     nettoyerIndicateurs();
     etat.cibleLi = cibleLi;
 

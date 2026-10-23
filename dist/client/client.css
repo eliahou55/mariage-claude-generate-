@@ -244,6 +244,14 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   box-shadow: 0 10px 20px rgba(42, 39, 34, .2);
   transition: transform .12s ease, box-shadow .12s ease;
 }
+/* Repere statique (jamais anime) qui garde la place de la carte glissee :
+   empeche les voisines de remonter combler le trou pendant le geste. */
+.conf-item--espace {
+  border: 1.5px dashed var(--rule);
+  background: transparent;
+  box-shadow: none;
+}
+.conf-item--espace > * { visibility: hidden; }
 .conf-item--cible-fusion {
   border-color: var(--accent);
   border-width: 2px;
