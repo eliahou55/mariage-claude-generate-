@@ -420,9 +420,6 @@ async function lireClasseur() {
         verset: site.txt('Verset'),
         musique,
         image,
-        // L'Excel ne propose pas (encore) ce reglage : comportement historique
-        // conserve. L'espace client (src/client/*) peut le mettre a false.
-        fusionnerHouppaReception: true,
       },
       compteARebours: {
         iso: new Date(cibleTs).toISOString(),
@@ -432,10 +429,38 @@ async function lireClasseur() {
         dateHe: dates.txt('Date hébraïque mariage (houppa)'),
         heure: tHoup ? heureFr(tHoup) : '',
       },
+      // Une carte par groupe : l'Excel ne propose pas (encore) de fusion
+      // personnalisee, donc houppa+reception restent groupees par defaut
+      // (comportement historique) et chaque autre evenement est seul dans
+      // son groupe. L'espace client (src/client/*) construit ses propres
+      // groupes librement (n'importe quelle paire peut y etre fusionnee).
+      groupes: construireGroupesParDefaut(evenements),
       evenements,
     },
     avertissements,
   };
+}
+
+/** Une carte par evenement, sauf houppa+reception regroupees (comportement
+ *  historique du site genere depuis l'Excel). */
+function construireGroupesParDefaut(evenements) {
+  const groupes = [];
+  const dejaGroupe = new Set();
+  for (const ev of evenements) {
+    if (dejaGroupe.has(ev.cle)) continue;
+    if (ev.cle === 'houppa') {
+      const reception = evenements.find((e) => e.cle === 'reception');
+      if (reception) {
+        groupes.push([ev, reception]);
+        dejaGroupe.add('houppa');
+        dejaGroupe.add('reception');
+        continue;
+      }
+    }
+    groupes.push([ev]);
+    dejaGroupe.add(ev.cle);
+  }
+  return groupes;
 }
 
 /* ==================================================================

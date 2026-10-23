@@ -82,10 +82,18 @@ var ClientInvitation = (function () {
         verset: VERSETS_PROPOSES[0],
         lien: '',
       },
-      ordreEvenements: ['houppa'],
-      fusionnerHouppaReception: true,
+      // Chaque "groupe" est une carte sur l'invitation finale : un tableau
+      // d'une ou plusieurs cles d'evenements. [['houppa']] par defaut (une
+      // carte, un evenement). Deposer un groupe sur un autre les fusionne
+      // en UN tableau (n'importe quelle paire, pas seulement houppa/reception).
+      groupes: [['houppa']],
       evenementsDonnees: {},   // { cle: { date, heure, dateHe, lieu, adresse } }
     };
+  }
+
+  /** Toutes les cles presentes, tous groupes confondus, dans l'ordre. */
+  function toutesLesCles(brouillon) {
+    return brouillon.groupes.reduce(function (a, g) { return a.concat(g); }, []);
   }
 
   function lireBrouillon() {
@@ -99,9 +107,14 @@ var ClientInvitation = (function () {
         d.couple = d.couple || def.couple;
         d.familles = d.familles || def.familles;
         d.site = Object.assign({}, def.site, d.site || {});
-        d.ordreEvenements = d.ordreEvenements && d.ordreEvenements.length ? d.ordreEvenements : def.ordreEvenements;
+        if (!Array.isArray(d.groupes) || !d.groupes.length) {
+          // Ancien format (ordreEvenements a plat) ou brouillon vide : on migre.
+          var plat = Array.isArray(d.ordreEvenements) && d.ordreEvenements.length ? d.ordreEvenements : null;
+          d.groupes = plat ? plat.map(function (c) { return [c]; }) : def.groupes;
+        }
+        delete d.ordreEvenements;
+        delete d.fusionnerHouppaReception;
         d.evenementsDonnees = d.evenementsDonnees || {};
-        if (typeof d.fusionnerHouppaReception !== 'boolean') d.fusionnerHouppaReception = true;
         return d;
       }
     } catch (e) { /* ignore */ }
@@ -180,6 +193,23 @@ var ClientInvitation = (function () {
    * Construction du JSON final (meme forme que le payload de build.mjs)
    * ---------------------------------------------------------------- */
 
+  function construireEvenement(cle, saisie) {
+    var def = infoEvenement(cle);
+    if (!def || !saisie || !saisie.date) return null;
+    return {
+      cle: cle,
+      titre: def.titre,
+      titreHe: def.titreHe,
+      dateFr: dateFr(saisie.date),
+      dateHe: saisie.dateHe || '',
+      heure: def.heure ? heureFr(saisie.heure) : '',
+      lieu: saisie.lieu || '',
+      adresse: saisie.adresse || '',
+      itineraire: urlMaps(saisie.adresse),
+      waze: urlWaze(saisie.adresse),
+    };
+  }
+
   function construireDonnees(brouillon) {
     var theme = null;
     for (var i = 0; i < THEMES.length; i++) if (THEMES[i].slug === brouillon.site.themeSlug) theme = THEMES[i];
@@ -188,23 +218,14 @@ var ClientInvitation = (function () {
     var couleurHex = '#C9A44C';
     for (var j = 0; j < COULEURS.length; j++) if (COULEURS[j][0] === brouillon.site.couleurNom) couleurHex = COULEURS[j][1];
 
-    var evenements = brouillon.ordreEvenements.map(function (cle) {
-      var def = infoEvenement(cle);
-      var saisie = brouillon.evenementsDonnees[cle] || {};
-      if (!def || !saisie.date) return null;
-      return {
-        cle: cle,
-        titre: def.titre,
-        titreHe: def.titreHe,
-        dateFr: dateFr(saisie.date),
-        dateHe: saisie.dateHe || '',
-        heure: def.heure ? heureFr(saisie.heure) : '',
-        lieu: saisie.lieu || '',
-        adresse: saisie.adresse || '',
-        itineraire: urlMaps(saisie.adresse),
-        waze: urlWaze(saisie.adresse),
-      };
-    }).filter(Boolean);
+    // groupes : une carte par groupe (1 evenement, ou plusieurs fusionnes).
+    // evenements : la meme chose a plat (compat RSVP, compte a rebours, etc.).
+    var groupes = brouillon.groupes
+      .map(function (groupe) {
+        return groupe.map(function (cle) { return construireEvenement(cle, brouillon.evenementsDonnees[cle]); }).filter(Boolean);
+      })
+      .filter(function (g) { return g.length > 0; });
+    var evenements = groupes.reduce(function (a, g) { return a.concat(g); }, []);
 
     var houppa = evenements.filter(function (e) { return e.cle === 'houppa'; })[0];
     var cible = brouillon.evenementsDonnees.houppa || {};
@@ -226,7 +247,6 @@ var ClientInvitation = (function () {
         verset: brouillon.site.verset || '',
         musique: null,     // pas d'upload audio en v1 (voir notes projet)
         image: null,       // idem pour l'image de couverture
-        fusionnerHouppaReception: !!brouillon.fusionnerHouppaReception,
       },
       compteARebours: {
         iso: new Date(ts).toISOString(),
@@ -236,6 +256,7 @@ var ClientInvitation = (function () {
         dateHe: houppa ? houppa.dateHe : '',
         heure: houppa ? houppa.heure : '',
       },
+      groupes: groupes,
       evenements: evenements,
     };
   }
@@ -249,6 +270,7 @@ var ClientInvitation = (function () {
     ecrireBrouillon: ecrireBrouillon,
     reinitialiser: reinitialiser,
     infoEvenement: infoEvenement,
+    toutesLesCles: toutesLesCles,
     dateFr: dateFr,
     construireDonnees: construireDonnees,
   };

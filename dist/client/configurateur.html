@@ -24,25 +24,22 @@
     <h1 class="titre">Quels événements souhaitez-vous ?</h1>
     <p class="chapo">
       Tout le monde ne fait pas un henné, ni un Chabbat 'Hatan, et la houppa n'a pas toujours
-      lieu au même endroit ni au même moment que la réception. Ajoutez les événements qui vous
-      concernent, saisissez une carte n'importe où pour la glisser dans l'ordre réel de votre
-      mariage, ou retirez-la. Déposez la houppa et la réception l'une sur l'autre pour les
-      réunir en une seule carte sur l'invitation.
+      lieu au même endroit ni au même moment que la réception. Composez votre propre déroulé
+      ci-dessous.
     </p>
+
+    <ul class="legende" aria-hidden="true">
+      <li><span class="legende__icone">+</span> Ajouter un événement</li>
+      <li><span class="legende__icone">↕</span> Glisser une carte pour la réordonner</li>
+      <li><span class="legende__icone">⊕</span> La déposer sur une autre pour les réunir en une seule carte</li>
+      <li><span class="legende__icone">✕</span> La retirer</li>
+    </ul>
 
     <p id="message-erreur" class="message-erreur" hidden></p>
 
     <div class="chips" id="chips" aria-label="Ajouter un événement"></div>
 
     <ul class="conf-liste" id="conf-liste" aria-label="Déroulé de votre mariage"></ul>
-
-    <div class="conf-fusion" id="conf-fusion-wrap" hidden>
-      <input type="checkbox" id="conf-fusion-input">
-      <label for="conf-fusion-input">
-        La houppa et la réception ont lieu à la suite, au même endroit : les regrouper en une
-        seule carte sur l'invitation (sinon, chacune garde sa propre carte).
-      </label>
-    </div>
 
     <div class="barre-actions">
       <a class="btn btn--texte" href="index.html">← Retour</a>

@@ -153,7 +153,7 @@
     var zone = document.getElementById('zone-evenements');
     while (zone.children.length > 1) zone.removeChild(zone.lastChild);   // garde le <h2>
 
-    brouillon.ordreEvenements.forEach(function (cle) {
+    ClientInvitation.toutesLesCles(brouillon).forEach(function (cle) {
       var def = ClientInvitation.infoEvenement(cle);
       if (!def) return;
       var saisie = brouillon.evenementsDonnees[cle] || {};
@@ -210,7 +210,7 @@
     brouillon.site.verset = selectVerset.value === '__autre__' ? autreVersetInput.value.trim() : selectVerset.value;
     brouillon.site.lien = val('f-lien');
 
-    brouillon.ordreEvenements.forEach(function (cle) {
+    ClientInvitation.toutesLesCles(brouillon).forEach(function (cle) {
       var def = ClientInvitation.infoEvenement(cle);
       brouillon.evenementsDonnees[cle] = {
         date: val(cle + '-date'),

@@ -208,7 +208,15 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .chip:hover { border-color: var(--accent); color: var(--accent-ink); }
 .chip__plus { font-size: 15px; color: var(--accent-ink); }
 
-.conf-liste { list-style: none; margin: 0 0 24px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.conf-liste {
+  position: relative;   /* repere stable pour offsetTop pendant le glissement */
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .conf-item {
   display: flex;
   align-items: center;
@@ -236,20 +244,32 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   box-shadow: 0 10px 20px rgba(42, 39, 34, .2);
   transition: transform .12s ease, box-shadow .12s ease;
 }
-.conf-item--espace {
-  background: var(--accent-bg);
-  border: 1.5px dashed var(--accent);
-}
-.conf-item--espace .conf-item__corps,
-.conf-item--espace .conf-item__poignee,
-.conf-item--espace .conf-item__fleches { visibility: hidden; }
 .conf-item--cible-fusion {
   border-color: var(--accent);
   border-width: 2px;
   background: var(--accent-bg);
   box-shadow: 0 0 0 3px var(--accent-bg);
+  transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
 }
+.conf-item--cible-fusion::after {
+  content: "Réunir ici";
+  position: absolute;
+  top: -10px; right: 12px;
+  background: var(--accent);
+  color: var(--surface);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.conf-item { position: relative; }
 .conf-item--fusion { border-style: dashed; }
+
+/* Ligne d'insertion : indique ou la carte atterrira si on la relache ici
+   (pas de deplacement des voisins pendant le glissement -- juste ce repere). */
+.conf-item--avant { box-shadow: inset 0 3px 0 0 var(--accent); }
+.conf-item--apres { box-shadow: inset 0 -3px 0 0 var(--accent); }
 
 .conf-item__poignee {
   flex: none;
@@ -299,17 +319,38 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   border-radius: var(--radius);
 }
 
-.conf-fusion {
+.legende {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 14px 16px;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 12px 14px;
   border-radius: var(--radius);
   background: var(--accent-bg);
-  font-size: 13.5px;
-  margin: 0 0 24px;
 }
-.conf-fusion input { margin-top: 3px; flex: none; width: 18px; height: 18px; accent-color: var(--accent); }
+.legende li { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); }
+.legende__icone {
+  display: inline-grid; place-items: center;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent-ink);
+  font-size: 11px;
+  font-weight: 600;
+  flex: none;
+}
+
+/* Un court temps apres l'arrivee sur la page (premiere visite seulement),
+   une legere pulsation sur la premiere carte suggere l'appui-glissement. */
+.conf-liste--demo li.conf-item:first-child { animation: conf-demo-pulse 1.1s ease-in-out 2; }
+@keyframes conf-demo-pulse {
+  0%, 100% { transform: none; box-shadow: none; }
+  50% { transform: scale(1.015) translateY(-2px); box-shadow: 0 8px 18px rgba(42, 39, 34, .16); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .conf-liste--demo li.conf-item:first-child { animation: none; }
+}
 
 /* ------------------------------------------------------------------ *
  * Formulaire

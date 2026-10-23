@@ -290,15 +290,11 @@
     inner.appendChild(h2);
     inner.appendChild(el('span', 'filet filet--invitation'));
 
-    /* 3. Une carte par evenement, dans l'ordre fourni par les donnees.
-     *    Si fusionnerHouppaReception (vrai par defaut, cf. build.mjs),
-     *    la reception n'a pas de carte separee : elle est annoncee a la
-     *    fin de la carte houppa -> on la retire de la boucle ici. */
-    var fusion = D.site.fusionnerHouppaReception !== false;
+    /* 3. Une carte par groupe (cf. D.groupes), dans l'ordre fourni par les
+     *    donnees. Un groupe de plusieurs evenements -> une seule carte. */
+    var groupes = (D.groupes && D.groupes.length) ? D.groupes : D.evenements.map(function (e) { return [e]; });
     var liste = el('div', 'evenements');
-    D.evenements
-      .filter(function (ev) { return !(fusion && ev.cle === 'reception'); })
-      .forEach(function (ev) { liste.appendChild(carteEvenement(ev)); });
+    groupes.forEach(function (groupe) { liste.appendChild(carteGroupe(groupe)); });
     inner.appendChild(liste);
 
     /* 4. Confirmation de presence (fictive : rien n'est envoye nulle part) */
@@ -333,16 +329,26 @@
     parent.appendChild(rtl ? he('p', cls, txt) : el('p', cls, txt));
   }
 
+  /** Une carte par groupe (cf. D.groupes). Un seul evenement -> dispatch
+   *  habituel ; houppa+reception ensemble -> le recit narratif ; toute
+   *  autre combinaison -> une carte generique qui empile chaque evenement. */
+  function carteGroupe(groupe) {
+    if (groupe.length === 1) return carteEvenement(groupe[0]);
+    var houppaEv = groupe.filter(function (e) { return e.cle === 'houppa'; })[0];
+    var receptionEv = groupe.filter(function (e) { return e.cle === 'reception'; })[0];
+    if (groupe.length === 2 && houppaEv && receptionEv) return carteHouppa(houppaEv, receptionEv);
+    return carteMultiple(groupe);
+  }
+
   function carteEvenement(ev) {
     if (ev.cle === 'mairie') return carteMairie(ev);
-    if (ev.cle === 'houppa') return carteHouppa(ev);
+    if (ev.cle === 'houppa') return carteHouppa(ev, null);
     return carteSimple(ev);
   }
 
-  /** Henne, Chabbat 'Hatan, Reception : carte sobre, icone + infos pratiques. */
-  function carteSimple(ev) {
-    var art = el('article', 'event event--' + ev.cle);
-
+  /** Contenu "sobre" (icone, date/heure, lieu/adresse, actions) commun a
+   *  Henne/Chabbat/Reception -- reutilise tel quel par carteMultiple. */
+  function remplirContenuSimple(container, ev) {
     var head = el('header', 'event__head');
     var icone = el('span', 'event__icon');
     icone.setAttribute('aria-hidden', 'true');
@@ -352,22 +358,42 @@
     titres.appendChild(el('h2', 'event__titre', ev.titre));
     if (ev.titreHe) titres.appendChild(he('p', 'event__titre-he', ev.titreHe));
     head.appendChild(titres);
-    art.appendChild(head);
+    container.appendChild(head);
 
-    art.appendChild(el('span', 'event__filet'));
+    container.appendChild(el('span', 'event__filet'));
 
     var quand = el('div', 'event__quand');
     ajouteSi(quand, ev.dateFr, 'p', 'event__date');
     ajouteSi(quand, ev.dateHe, 'p', 'event__date-he', true);
     ajouteSi(quand, ev.heure, 'p', 'event__heure');   // absent pour Chabbat 'Hatan
-    art.appendChild(quand);
+    container.appendChild(quand);
 
     var ou = el('div', 'event__ou');
     ajouteSi(ou, ev.lieu, 'p', 'event__lieu');
     ajouteSi(ou, ev.adresse, 'p', 'event__adresse');
-    art.appendChild(ou);
+    container.appendChild(ou);
 
-    ajouteActions(art, ev);
+    ajouteActions(container, ev);
+  }
+
+  /** Henne, Chabbat 'Hatan, Reception (seuls) : carte sobre. */
+  function carteSimple(ev) {
+    var art = el('article', 'event event--' + ev.cle);
+    remplirContenuSimple(art, ev);
+    return art;
+  }
+
+  /** N'importe quelle autre combinaison fusionnee par le client (ex. Henne
+   *  + Mairie) : une seule carte qui empile chaque evenement, separes par
+   *  un filet, dans l'ordre choisi. */
+  function carteMultiple(groupe) {
+    var art = el('article', 'event event--multiple');
+    groupe.forEach(function (ev, i) {
+      if (i > 0) art.appendChild(el('span', 'event__filet event__filet--groupe'));
+      var section = el('div', 'event__membre');
+      remplirContenuSimple(section, ev);
+      art.appendChild(section);
+    });
     return art;
   }
 
@@ -402,7 +428,7 @@
   /** Houppa : rappel des familles, phrase d'annonce, prenoms+hebreu,
    *  puis ceremonie religieuse (date/date hebraique/heure/lieu/adresse),
    *  et enfin la memoire des grands-parents si l'Excel la renseigne. */
-  function carteHouppa(ev) {
+  function carteHouppa(ev, reception) {
     var art = el('article', 'event event--houppa event--recit');
     var recit = el('div', 'recit');
 
@@ -444,13 +470,11 @@
       recit.appendChild(mem);
     }
 
-    /* Si fusionnerHouppaReception, la reception n'a pas sa propre carte :
-     * elle est annoncee ici, a la suite de la houppa (meme lieu la plupart
-     * du temps -> pas besoin de repeter l'adresse ni les boutons). Sinon
-     * elle garde sa propre carte plus loin dans la liste. */
-    var reception = (D.site.fusionnerHouppaReception !== false)
-      ? D.evenements.filter(function (e) { return e.cle === 'reception'; })[0]
-      : null;
+    /* Si la houppa et la reception sont dans le meme groupe (fusionnees
+     * par le client, ou comportement historique de l'Excel), la reception
+     * n'a pas sa propre carte : elle est annoncee ici, a la suite de la
+     * houppa (meme lieu la plupart du temps -> pas besoin de repeter
+     * l'adresse ni les boutons). */
     if (reception) {
       var memeLieu = reception.lieu && reception.lieu === ev.lieu;
       var phrase = "La cérémonie sera suivie d'une réception";
@@ -543,6 +567,8 @@
   function construireRSVP() {
     var mairie = D.evenements.filter(function (e) { return e.cle === 'mairie'; })[0];
     var houppa = D.evenements.filter(function (e) { return e.cle === 'houppa'; })[0];
+    var aReception = D.evenements.some(function (e) { return e.cle === 'reception'; });
+    var libelleHouppa = aReception ? 'la houppa & réception' : 'la houppa';
     if (!houppa) return null;   // la houppa est obligatoire dans l'Excel
 
     var section = el('section', 'rsvp');
@@ -573,14 +599,14 @@
       form.appendChild(fsMairie);
     }
 
-    /* --- Houppa & reception : choix oui/non, replie/deplie son champ nombre --- */
+    /* --- Houppa (& reception si presente) : choix oui/non, champ nombre repliable --- */
     var fsHouppa = el('fieldset', 'rsvp__section');
-    fsHouppa.appendChild(el('legend', null, 'À la houppa & réception - ' + houppa.dateFr));
-    var ouiHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-oui', 'Assisteront à la houppa & réception');
-    var nonHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-non', "N'assisteront pas à la réception");
+    fsHouppa.appendChild(el('legend', null, 'À ' + libelleHouppa + ' - ' + houppa.dateFr));
+    var ouiHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-oui', 'Assisteront à ' + libelleHouppa);
+    var nonHouppa = caseRsvp('radio', 'rsvp-houppa-presence', 'rsvp-houppa-non', "N'assisteront pas" + (aReception ? ' à la réception' : ''));
     fsHouppa.appendChild(ouiHouppa.label);
     fsHouppa.appendChild(nonHouppa.label);
-    var nbHouppa = champTexte('rsvp-houppa-nombre', 'Nombre de personnes à la houppa & réception', 'number', { requis: true, min: 1 });
+    var nbHouppa = champTexte('rsvp-houppa-nombre', 'Nombre de personnes à ' + libelleHouppa, 'number', { requis: true, min: 1 });
     nbHouppa.champ.classList.add('rsvp__champ--nombre');
     fsHouppa.appendChild(nbHouppa.champ);
     brancherNombre([ouiHouppa.input, nonHouppa.input], ouiHouppa.input, nbHouppa.champ, nbHouppa.input);

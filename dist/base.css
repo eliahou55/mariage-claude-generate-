@@ -414,6 +414,9 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 12px 0 14px;
   background: var(--rule);
 }
+/* Separe deux evenements fusionnes dans une meme carte generique
+   (ex. Henne + Mairie, combinaison libre choisie par le client). */
+.event__filet--groupe { margin: 22px 0 20px; background: var(--accent-soft); }
 
 .event__quand { margin: 0 0 12px; }
 .event__date {

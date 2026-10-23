@@ -1,13 +1,24 @@
 /**
- * Etape 1 : choix et ordre des evenements.
+ * Etape 1 : choix, ordre et regroupement des evenements.
  *
- * Glisser-depose fluide (Pointer Events, souris ET tactile) :
- *  - on saisit une carte n'importe ou dessus (pas seulement la poignee) ;
- *  - elle suit le doigt/curseur avec une legere rotation ("physique") ;
- *  - les autres cartes glissent pour faire de la place (anime en FLIP) ;
- *  - si on la relache superposee a la houppa/reception, elles fusionnent
- *    en une seule carte sur l'invitation finale.
- * Des fleches haut/bas restent disponibles en repli clavier/accessible.
+ * Modele : brouillon.groupes est un tableau de groupes, chaque groupe un
+ * tableau d'une ou plusieurs cles d'evenements (une carte sur l'invitation
+ * finale). N'IMPORTE QUELLE PAIRE peut etre fusionnee en glissant une carte
+ * sur une autre (pas seulement houppa/reception).
+ *
+ * Glisser-depose :
+ *  - une carte se saisit n'importe ou dessus ;
+ *  - a la souris, le glissement demarre immediatement ;
+ *  - au tactile, un appui bref et immobile (~180ms) "prend" la carte --
+ *    sinon un balayage reste un defilement normal de la page (le navigateur
+ *    gagne toujours la course si on essaie d'intercepter un defilement deja
+ *    engage, donc on ne lui dispute jamais un mouvement qui commence vite) ;
+ *  - PENDANT le glissement, on ne deplace jamais les autres cartes dans le
+ *    DOM (source des bugs precedents : lire la position d'un element en
+ *    pleine animation CSS donne une position transitoire, pas sa position
+ *    finale). On se contente d'un indicateur (ligne d'insertion / carte
+ *    survolee en surbrillance) ; le reordonnancement reel n'a lieu qu'UNE
+ *    fois, au relachement -- la liste est alors entierement redessinee.
  */
 (function () {
   'use strict';
@@ -15,29 +26,26 @@
   var brouillon = ClientInvitation.lireBrouillon();
   var listeEl = document.getElementById('conf-liste');
   var chipsEl = document.getElementById('chips');
-  var fusionWrap = document.getElementById('conf-fusion-wrap');
-  var fusionInput = document.getElementById('conf-fusion-input');
   var btnContinuer = document.getElementById('btn-continuer');
   var erreurEl = document.getElementById('message-erreur');
 
   function sauvegarder() { ClientInvitation.ecrireBrouillon(brouillon); }
-  function aLesDeux() { return brouillon.ordreEvenements.indexOf('houppa') !== -1 && brouillon.ordreEvenements.indexOf('reception') !== -1; }
-  function estFusionnee() { return !!brouillon.fusionnerHouppaReception && aLesDeux(); }
 
   /* ---------------------------------------------------------------- *
    * Chips "+ ajouter"
    * ---------------------------------------------------------------- */
 
   function rendreChips() {
+    var presentes = ClientInvitation.toutesLesCles(brouillon);
     chipsEl.innerHTML = '';
     ClientInvitation.CATALOGUE.forEach(function (def) {
-      if (brouillon.ordreEvenements.indexOf(def.cle) !== -1) return;
+      if (presentes.indexOf(def.cle) !== -1) return;
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'chip';
       btn.innerHTML = '<span class="chip__plus">+</span> ' + def.titre;
       btn.addEventListener('click', function () {
-        brouillon.ordreEvenements.push(def.cle);
+        brouillon.groupes.push([def.cle]);
         sauvegarder();
         rendreTout();
       });
@@ -45,38 +53,43 @@
     });
   }
 
-  function deplacer(cle, delta) {
-    var arr = brouillon.ordreEvenements;
-    var i = arr.indexOf(cle);
-    var j = i + delta;
-    if (i === -1 || j < 0 || j >= arr.length) return;
-    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  function deplacerGroupe(index, delta) {
+    var j = index + delta;
+    if (j < 0 || j >= brouillon.groupes.length) return;
+    var tmp = brouillon.groupes[index];
+    brouillon.groupes[index] = brouillon.groupes[j];
+    brouillon.groupes[j] = tmp;
     sauvegarder();
     rendreTout();
   }
 
-  function retirer(cle) {
-    brouillon.ordreEvenements = brouillon.ordreEvenements.filter(function (c) { return c !== cle; });
-    if (cle === 'houppa' || cle === 'reception') brouillon.fusionnerHouppaReception = false;
+  function retirerCle(cle) {
+    brouillon.groupes = brouillon.groupes
+      .map(function (g) { return g.filter(function (c) { return c !== cle; }); })
+      .filter(function (g) { return g.length > 0; });
     sauvegarder();
     rendreTout();
   }
 
-  function separer() {
-    brouillon.fusionnerHouppaReception = false;
+  function separerGroupe(index) {
+    var groupe = brouillon.groupes[index];
+    var separes = groupe.map(function (c) { return [c]; });
+    brouillon.groupes.splice.apply(brouillon.groupes, [index, 1].concat(separes));
     sauvegarder();
     rendreTout();
   }
 
   /* ---------------------------------------------------------------- *
-   * Liste : une ligne par evenement, sauf houppa+reception fusionnees
-   * (une seule ligne "Houppa & Réception").
+   * Liste : une ligne par groupe
    * ---------------------------------------------------------------- */
 
-  function creerLigne(cle, def, index, fusionnee) {
+  function creerLigne(groupe, index) {
+    var defs = groupe.map(ClientInvitation.infoEvenement).filter(Boolean);
+    var fusionnee = defs.length > 1;
+
     var li = document.createElement('li');
     li.className = 'conf-item' + (fusionnee ? ' conf-item--fusion' : '');
-    li.dataset.cle = cle;
+    li.dataset.index = String(index);
 
     var poignee = document.createElement('span');
     poignee.className = 'conf-item__poignee';
@@ -88,14 +101,14 @@
     corps.className = 'conf-item__corps';
     var titre = document.createElement('p');
     titre.className = 'conf-item__titre';
-    titre.textContent = fusionnee ? (def.titre + ' & Réception') : def.titre;
+    titre.textContent = defs.map(function (d) { return d.titre; }).join(' & ');
     corps.appendChild(titre);
-    var titreHeTxt = fusionnee ? (def.titreHe + ' · סעודה') : def.titreHe;
-    if (titreHeTxt) {
+    var hebreux = defs.map(function (d) { return d.titreHe; }).filter(Boolean).join(' · ');
+    if (hebreux) {
       var titreHe = document.createElement('p');
       titreHe.className = 'conf-item__titre-he';
       titreHe.setAttribute('dir', 'rtl');
-      titreHe.textContent = titreHeTxt;
+      titreHe.textContent = hebreux;
       corps.appendChild(titreHe);
     }
     if (fusionnee) {
@@ -111,13 +124,13 @@
     var haut = document.createElement('button');
     haut.type = 'button'; haut.className = 'conf-item__fleche'; haut.textContent = '↑';
     haut.disabled = index === 0;
-    haut.setAttribute('aria-label', 'Monter ' + def.titre);
-    haut.addEventListener('click', function () { deplacer(cle, -1); });
+    haut.setAttribute('aria-label', 'Monter ' + titre.textContent);
+    haut.addEventListener('click', function () { deplacerGroupe(index, -1); });
     var bas = document.createElement('button');
     bas.type = 'button'; bas.className = 'conf-item__fleche'; bas.textContent = '↓';
-    bas.disabled = index === brouillon.ordreEvenements.length - 1;
-    bas.setAttribute('aria-label', 'Descendre ' + def.titre);
-    bas.addEventListener('click', function () { deplacer(cle, 1); });
+    bas.disabled = index === brouillon.groupes.length - 1;
+    bas.setAttribute('aria-label', 'Descendre ' + titre.textContent);
+    bas.addEventListener('click', function () { deplacerGroupe(index, 1); });
     fleches.appendChild(haut);
     fleches.appendChild(bas);
     li.appendChild(fleches);
@@ -126,14 +139,14 @@
     action.type = 'button';
     action.className = 'conf-item__suppr';
     if (fusionnee) {
-      action.title = 'Séparer la houppa et la réception';
-      action.setAttribute('aria-label', 'Séparer la houppa et la réception');
+      action.title = 'Séparer ces cartes';
+      action.setAttribute('aria-label', 'Séparer ' + titre.textContent);
       action.textContent = '⤢';
-      action.addEventListener('click', separer);
+      action.addEventListener('click', function () { separerGroupe(index); });
     } else {
-      action.setAttribute('aria-label', 'Retirer ' + def.titre);
+      action.setAttribute('aria-label', 'Retirer ' + titre.textContent);
       action.textContent = '✕';
-      action.addEventListener('click', function () { retirer(cle); });
+      action.addEventListener('click', function () { retirerCle(groupe[0]); });
     }
     li.appendChild(action);
 
@@ -142,93 +155,44 @@
 
   function rendreListe() {
     listeEl.innerHTML = '';
-    var fusion = estFusionnee();
-    brouillon.ordreEvenements.forEach(function (cle, index) {
-      if (fusion && cle === 'reception') return;   // affichee fusionnee avec la houppa
-      var def = ClientInvitation.infoEvenement(cle);
-      if (!def) return;
-      listeEl.appendChild(creerLigne(cle, def, index, fusion && cle === 'houppa'));
+    brouillon.groupes.forEach(function (groupe, index) {
+      listeEl.appendChild(creerLigne(groupe, index));
     });
-  }
-
-  function rendreFusionCase() {
-    fusionWrap.hidden = !aLesDeux();
-    fusionInput.checked = estFusionnee();
   }
 
   function rendreTout() {
     erreurEl.hidden = true;
     rendreChips();
     rendreListe();
-    rendreFusionCase();
   }
 
-  fusionInput.addEventListener('change', function () {
-    brouillon.fusionnerHouppaReception = fusionInput.checked;
-    sauvegarder();
-    rendreTout();
-  });
-
   /* ---------------------------------------------------------------- *
-   * Glisser-deposer fluide (Pointer Events)
+   * Glisser-deposer
    * ---------------------------------------------------------------- */
 
-  var SEUIL_PX = 5;        // tolerance avant de considerer que c'est un glissement
-  var PAIRE_FUSION = { houppa: 'reception', reception: 'houppa' };
-  var etat = null;
   var DELAI_APPUI = 180;         // ms d'immobilite avant de "prendre" la carte au toucher
-  var SEUIL_AVANT_APPUI = 9;     // px : au-dela pendant l'attente, c'est un defilement, pas une prise
+  var SEUIL_AVANT_APPUI = 9;     // px : au-dela pendant l'attente, c'est un defilement
+  var etat = null;
 
   function estInteractif(el) {
     return !!(el && el.closest && el.closest('button, a, input, select, textarea'));
   }
 
-  /** Anime en FLIP le deplacement des cartes NON glissees (fluide, pas de saut). */
-  function avecAnimationVoisins(action) {
-    var voisins = Array.prototype.slice.call(listeEl.children).filter(function (c) { return c !== etat.li; });
-    var avant = voisins.map(function (c) { return c.getBoundingClientRect(); });
-    action();
-    var apres = voisins.map(function (c) { return c.getBoundingClientRect(); });
-    voisins.forEach(function (c, i) {
-      var dx = avant[i].left - apres[i].left;
-      var dy = avant[i].top - apres[i].top;
-      if (!dx && !dy) return;
-      c.style.transition = 'none';
-      c.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-      requestAnimationFrame(function () {
-        c.style.transition = 'transform .2s ease';
-        c.style.transform = '';
-      });
+  function nettoyerIndicateurs() {
+    listeEl.querySelectorAll('.conf-item--avant, .conf-item--apres, .conf-item--cible-fusion').forEach(function (c) {
+      c.classList.remove('conf-item--avant', 'conf-item--apres', 'conf-item--cible-fusion');
     });
-  }
-
-  function detecterCibleFusion(cle, cx, cy) {
-    if (estFusionnee()) return null;              // deja fusionnees
-    var cleCible = PAIRE_FUSION[cle];
-    if (!cleCible) return null;
-    var cibleLi = listeEl.querySelector('li[data-cle="' + cleCible + '"]');
-    if (!cibleLi) return null;
-    var r = cibleLi.getBoundingClientRect();
-    var chevauche = cx > r.left && cx < r.right && cy > r.top && cy < r.bottom;
-    return chevauche ? cibleLi : null;
   }
 
   function demarrerDrag(e) {
     var li = etat.li;
-    etat.demarre = true;
-    document.body.style.userSelect = 'none';
-
     var rect = li.getBoundingClientRect();
-    etat.origLeft = rect.left;
-    etat.origTop = rect.top;
     etat.largeur = rect.width;
     etat.hauteur = rect.height;
-
-    var espace = document.createElement('li');
-    espace.className = 'conf-item conf-item--espace';
-    espace.style.height = rect.height + 'px';
-    listeEl.insertBefore(espace, li);
-    etat.espace = espace;
+    // Position STABLE (ignore tout transform en cours) : le centre de la
+    // carte dans le repere de la liste, mesure juste avant de la sortir
+    // du flux normal.
+    etat.centreListeDepart = li.offsetTop + li.offsetHeight / 2;
 
     li.classList.remove('conf-item--pret');
     li.classList.add('conf-item--drag');
@@ -238,25 +202,25 @@
     li.style.width = rect.width + 'px';
     li.style.zIndex = '80';
 
+    document.body.style.userSelect = 'none';
     try { li.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    etat.demarre = true;
   }
 
-  /** Souris : glissement immediat. Tactile : il faut un court appui immobile
-   *  (comme sur iOS/Trello) pour "prendre" la carte -- sinon, un simple
-   *  balayage reste un defilement normal de la page. */
   function pointerdown(e) {
-    if (e.button !== undefined && e.button !== 0) return;   // clic gauche / tactile uniquement
-    if (estInteractif(e.target)) return;                     // laisse boutons/fleches fonctionner
+    if (e.button !== undefined && e.button !== 0) return;
+    if (estInteractif(e.target)) return;
     var li = e.target.closest ? e.target.closest('li.conf-item') : null;
-    if (!li || li.classList.contains('conf-item--espace')) return;
+    if (!li) return;
 
     var estTactile = e.pointerType === 'touch' || e.pointerType === 'pen';
 
     etat = {
-      li: li, cle: li.dataset.cle, pointerId: e.pointerId,
+      li: li, indexDepart: parseInt(li.dataset.index, 10), pointerId: e.pointerId,
       startX: e.clientX, startY: e.clientY,
-      origLeft: 0, origTop: 0, largeur: 0, hauteur: 0,
-      demarre: false, enAttente: estTactile, minuteur: null, cibleFusion: null,
+      largeur: 0, hauteur: 0, centreListeDepart: 0,
+      demarre: false, enAttente: estTactile, minuteur: null,
+      cibleLi: null, indexCible: null,
     };
 
     if (estTactile) {
@@ -279,8 +243,6 @@
     var dy = e.clientY - etat.startY;
 
     if (etat.enAttente) {
-      // Bouge trop avant la fin de l'appui -> c'est un defilement, on abandonne
-      // et on laisse le navigateur faire defiler la page normalement.
       if (Math.abs(dx) > SEUIL_AVANT_APPUI || Math.abs(dy) > SEUIL_AVANT_APPUI) {
         if (etat.minuteur) window.clearTimeout(etat.minuteur);
         document.removeEventListener('pointermove', pointermove);
@@ -288,7 +250,7 @@
         document.removeEventListener('pointercancel', pointerup);
         etat = null;
       }
-      return;
+      return;   // laisse le navigateur decider (defilement normal)
     }
 
     if (!etat.demarre) demarrerDrag(e);
@@ -297,29 +259,38 @@
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
     etat.li.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + inclinaison + 'deg) scale(1.03)';
 
-    var cx = etat.origLeft + etat.largeur / 2 + dx;
-    var cy = etat.origTop + etat.hauteur / 2 + dy;
+    // --- Fusion : la carte est-elle visuellement posee sur UNE AUTRE ? ---
+    var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li; });
+    var cibleLi = null;
+    for (var k = 0; k < autres.length; k++) {
+      var r = autres[k].getBoundingClientRect();
+      if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) { cibleLi = autres[k]; break; }
+    }
+    nettoyerIndicateurs();
+    etat.cibleLi = cibleLi;
 
-    var cible = detecterCibleFusion(etat.cle, cx, cy);
-    if (cible !== etat.cibleFusion) {
-      if (etat.cibleFusion) etat.cibleFusion.classList.remove('conf-item--cible-fusion');
-      if (cible) cible.classList.add('conf-item--cible-fusion');
-      etat.cibleFusion = cible;
+    if (cibleLi) {
+      cibleLi.classList.add('conf-item--cible-fusion');
+      etat.indexCible = null;
+      return;
     }
 
-    if (!cible) {
-      // Deplace l'espace reserve jusqu'a la position survolee -> reordonnancement.
-      var avant = null;
-      for (var i = 0; i < listeEl.children.length; i++) {
-        var enfant = listeEl.children[i];
-        if (enfant === etat.li || enfant === etat.espace) continue;
-        var r = enfant.getBoundingClientRect();
-        if (cy < r.top + r.height / 2) { avant = enfant; break; }
-      }
-      if (avant !== etat.espace.nextSibling) {
-        avecAnimationVoisins(function () { listeEl.insertBefore(etat.espace, avant); });
+    // --- Sinon : indicateur de ligne d'insertion, base sur une position
+    //     STABLE (offsetTop), jamais sur un rect en cours d'animation. ---
+    var centreActuel = etat.centreListeDepart + dy;
+    var indexCible = autres.length;
+    for (var i = 0; i < autres.length; i++) {
+      var milieu = autres[i].offsetTop + autres[i].offsetHeight / 2;
+      if (centreActuel < milieu) {
+        indexCible = i;
+        autres[i].classList.add('conf-item--avant');
+        break;
       }
     }
+    if (indexCible === autres.length && autres.length) {
+      autres[autres.length - 1].classList.add('conf-item--apres');
+    }
+    etat.indexCible = indexCible;
   }
 
   function pointerup() {
@@ -329,40 +300,57 @@
     document.removeEventListener('pointerup', pointerup);
     document.removeEventListener('pointercancel', pointerup);
     document.body.style.userSelect = '';
+    nettoyerIndicateurs();
 
     if (!etat.demarre) {
-      // Relache pendant l'attente (tactile) ou sans avoir bouge (souris) :
-      // simple clic/tapotement, pas un glissement.
       if (etat.li) etat.li.classList.remove('conf-item--pret');
       etat = null;
       return;
     }
 
-    var li = etat.li;
-    li.classList.remove('conf-item--drag');
-    li.style.position = ''; li.style.left = ''; li.style.top = ''; li.style.width = '';
-    li.style.zIndex = ''; li.style.transform = '';
-    if (etat.cibleFusion) etat.cibleFusion.classList.remove('conf-item--cible-fusion');
-
-    if (etat.espace && etat.espace.parentNode) etat.espace.parentNode.replaceChild(li, etat.espace);
-
-    if (etat.cibleFusion) {
-      brouillon.fusionnerHouppaReception = true;
-    } else {
-      brouillon.ordreEvenements = Array.prototype.map.call(listeEl.children, function (c) { return c.dataset.cle; });
+    if (etat.cibleLi) {
+      var indexCibleGroupe = parseInt(etat.cibleLi.dataset.index, 10);
+      var groupes = brouillon.groupes.slice();
+      var source = groupes.splice(etat.indexDepart, 1)[0];
+      var idxAjuste = indexCibleGroupe > etat.indexDepart ? indexCibleGroupe - 1 : indexCibleGroupe;
+      groupes[idxAjuste] = groupes[idxAjuste].concat(source);
+      brouillon.groupes = groupes;
+    } else if (etat.indexCible != null && etat.indexCible !== etat.indexDepart) {
+      var g = brouillon.groupes.slice();
+      var dep = g.splice(etat.indexDepart, 1)[0];
+      var cible = etat.indexCible > etat.indexDepart ? etat.indexCible - 1 : etat.indexCible;
+      g.splice(cible, 0, dep);
+      brouillon.groupes = g;
     }
 
     sauvegarder();
-    rendreTout();
+    rendreTout();   // reconstruit tout depuis zero : aucun etat transitoire ne peut rester bloque
     etat = null;
   }
 
   listeEl.addEventListener('pointerdown', pointerdown);
 
-  /* ---------------------------------------------------------------- */
+  /* ---------------------------------------------------------------- *
+   * Indication pour un premier usage (discretement, une seule fois)
+   * ---------------------------------------------------------------- */
+
+  (function indicationPremiereVisite() {
+    var CLE_VU = 'invitation-client:glisser-vu';
+    try { if (window.localStorage.getItem(CLE_VU)) return; } catch (e) { return; }
+
+    function marquerVu() {
+      try { window.localStorage.setItem(CLE_VU, '1'); } catch (e) { /* ignore */ }
+      listeEl.classList.remove('conf-liste--demo');
+      listeEl.removeEventListener('pointerdown', marquerVu);
+    }
+    window.setTimeout(function () { listeEl.classList.add('conf-liste--demo'); }, 400);
+    window.setTimeout(marquerVu, 5000);
+    listeEl.addEventListener('pointerdown', marquerVu);
+  })();
 
   btnContinuer.addEventListener('click', function () {
-    if (brouillon.ordreEvenements.indexOf('houppa') === -1) {
+    var presentes = ClientInvitation.toutesLesCles(brouillon);
+    if (presentes.indexOf('houppa') === -1) {
       erreurEl.textContent = "La date de la houppa est indispensable : ajoutez-la avant de continuer.";
       erreurEl.hidden = false;
       return;
