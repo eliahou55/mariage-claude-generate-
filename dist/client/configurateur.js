@@ -9,10 +9,18 @@
  * Glisser-depose :
  *  - une carte se saisit n'importe ou dessus ;
  *  - a la souris, le glissement demarre immediatement ;
- *  - au tactile, un appui bref et immobile (~180ms) "prend" la carte --
- *    sinon un balayage reste un defilement normal de la page (le navigateur
- *    gagne toujours la course si on essaie d'intercepter un defilement deja
- *    engage, donc on ne lui dispute jamais un mouvement qui commence vite) ;
+ *  - au tactile, touch-action:none retire TOUT defilement natif sur une
+ *    carte des le premier contact (le navigateur ne peut pas etre repris
+ *    une fois qu'il a commence a faire defiler -- on ne lui laisse jamais
+ *    commencer). A la place, un appui bref et immobile (~180ms) "prend" la
+ *    carte ; si l'utilisateur bouge avant la fin de ce delai, on considere
+ *    qu'il voulait juste defiler et on fait defiler la page NOUS-MEMES
+ *    (window.scrollBy) pendant le reste du geste ;
+ *  - la fusion ne se declenche que si le CENTRE de la carte glissee entre
+ *    dans la zone centrale (pas les bords) d'une autre carte -- sinon,
+ *    simple reordonnancement. Sans cette marge, une carte occupant presque
+ *    toute la hauteur disponible chevauche quasiment toujours sa voisine,
+ *    rendant l'insertion pure impossible a viser ;
  *  - PENDANT le glissement, on ne deplace jamais les autres cartes dans le
  *    DOM (source des bugs precedents : lire la position d'un element en
  *    pleine animation CSS donne une position transitoire, pas sa position
@@ -228,9 +236,9 @@
 
     etat = {
       li: li, indexDepart: parseInt(li.dataset.index, 10), pointerId: e.pointerId,
-      startX: e.clientX, startY: e.clientY,
+      startX: e.clientX, startY: e.clientY, dernierY: e.clientY,
       largeur: 0, hauteur: 0, centreListeDepart: 0, espace: null,
-      demarre: false, enAttente: estTactile, minuteur: null,
+      demarre: false, enAttente: estTactile, enDefilement: false, minuteur: null,
       cibleLi: null, indexCible: null,
     };
 
@@ -250,18 +258,31 @@
 
   function pointermove(e) {
     if (!etat) return;
+
+    if (etat.enDefilement) {
+      // touch-action:none a desactive le defilement natif sur la carte :
+      // on le pilote nous-memes tant que l'utilisateur n'a pas relache.
+      window.scrollBy(0, etat.dernierY - e.clientY);
+      etat.dernierY = e.clientY;
+      return;
+    }
+
     var dx = e.clientX - etat.startX;
     var dy = e.clientY - etat.startY;
 
     if (etat.enAttente) {
       if (Math.abs(dx) > SEUIL_AVANT_APPUI || Math.abs(dy) > SEUIL_AVANT_APPUI) {
+        // Mouvement net avant la fin de l'appui -> l'utilisateur voulait
+        // defiler, pas saisir la carte. touch-action:none empeche le
+        // navigateur de le faire lui-meme : on prend le relai nous-memes
+        // pour le reste du geste, plutot que d'abandonner le defilement.
         if (etat.minuteur) window.clearTimeout(etat.minuteur);
-        document.removeEventListener('pointermove', pointermove);
-        document.removeEventListener('pointerup', pointerup);
-        document.removeEventListener('pointercancel', pointerup);
-        etat = null;
+        etat.enAttente = false;
+        etat.enDefilement = true;
+        window.scrollBy(0, etat.dernierY - e.clientY);
+        etat.dernierY = e.clientY;
       }
-      return;   // laisse le navigateur decider (defilement normal)
+      return;
     }
 
     if (!etat.demarre) demarrerDrag(e);
@@ -270,24 +291,28 @@
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
     etat.li.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + inclinaison + 'deg) scale(1.03)';
 
-    // --- Fusion : la carte RECOUVRE-t-elle vraiment une autre (pas juste le
-    //     doigt/curseur qui passe dessus) ? Les cartes etant tres proches
-    //     (10px d'ecart), un point seul se faisait piéger par un minuscule
-    //     mouvement -- on exige desormais un chevauchement substantiel entre
-    //     les deux rectangles reels. ---
-    var SEUIL_FUSION = 0.55;   // part de la hauteur de la carte glissee qui doit chevaucher
+    // --- Fusion : le CENTRE de la carte glissee doit tomber dans la zone
+    //     CENTRALE d'une autre carte (ni pres de son bord haut, ni pres de
+    //     son bord bas). Une carte occupe presque toute la hauteur
+    //     disponible : avec un simple test de chevauchement, elle recouvre
+    //     quasiment toujours sa voisine des qu'on s'en approche, rendant
+    //     l'insertion pure (sans fusion) impossible a viser. En reservant
+    //     les 28% du haut et du bas de chaque carte a l'insertion, il reste
+    //     une vraie marge pour glisser une carte simplement ENTRE deux
+    //     autres, sans qu'elle s'associe. ---
+    var MARGE_INSERTION = 0.28;
     var rectLi = etat.li.getBoundingClientRect();
+    var centreX = rectLi.left + rectLi.width / 2;
+    var centreY = rectLi.top + rectLi.height / 2;
     var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li && c !== etat.espace; });
-    var cibleLi = null, meilleur = 0;
-    autres.forEach(function (c) {
-      var r = c.getBoundingClientRect();
-      var chevaucheH = Math.max(0, Math.min(rectLi.right, r.right) - Math.max(rectLi.left, r.left));
-      if (chevaucheH / rectLi.width < 0.5) return;   // trop decale horizontalement
-      var chevaucheV = Math.max(0, Math.min(rectLi.bottom, r.bottom) - Math.max(rectLi.top, r.top));
-      var frac = chevaucheV / rectLi.height;
-      if (frac > meilleur) { meilleur = frac; cibleLi = c; }
-    });
-    if (meilleur < SEUIL_FUSION) cibleLi = null;
+    var cibleLi = null;
+    for (var k = 0; k < autres.length; k++) {
+      var r = autres[k].getBoundingClientRect();
+      if (centreX < r.left || centreX > r.right) continue;
+      var zoneHaut = r.top + r.height * MARGE_INSERTION;
+      var zoneBas = r.bottom - r.height * MARGE_INSERTION;
+      if (centreY > zoneHaut && centreY < zoneBas) { cibleLi = autres[k]; break; }
+    }
 
     nettoyerIndicateurs();
     etat.cibleLi = cibleLi;
@@ -324,6 +349,8 @@
     document.removeEventListener('pointercancel', pointerup);
     document.body.style.userSelect = '';
     nettoyerIndicateurs();
+
+    if (etat.enDefilement) { etat = null; return; }   // defilement manuel termine, rien d'autre a faire
 
     if (!etat.demarre) {
       if (etat.li) etat.li.classList.remove('conf-item--pret');

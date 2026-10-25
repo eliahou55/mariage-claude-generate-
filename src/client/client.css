@@ -226,7 +226,7 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   border-radius: var(--radius);
   background: var(--surface);
   cursor: grab;
-  touch-action: pan-y;         /* defilement vertical normal tant que le JS n'a pas confirme un glissement */
+  touch-action: none;          /* le JS gere TOUT geste tactile sur une carte, y compris le defilement (voir configurateur.js) */
   -webkit-user-select: none;
   user-select: none;
 }
