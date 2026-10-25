@@ -184,9 +184,25 @@
   }
 
   function nettoyerIndicateurs() {
-    listeEl.querySelectorAll('.conf-item--avant, .conf-item--apres, .conf-item--cible-fusion').forEach(function (c) {
-      c.classList.remove('conf-item--avant', 'conf-item--apres', 'conf-item--cible-fusion');
+    listeEl.querySelectorAll('.conf-item--cible-fusion').forEach(function (c) {
+      c.classList.remove('conf-item--cible-fusion');
     });
+    if (etat && etat.curseur) etat.curseur.hidden = true;
+  }
+
+  /** Centre Y (repere stable offsetTop, relatif a listeEl) de l'emplacement
+   *  ou la carte glissee s'inserera si on la relache maintenant : juste
+   *  avant autres[indexCible], ou apres la derniere si indexCible deborde. */
+  function centreYInsertion(autres, indexCible) {
+    if (!autres.length) return 0;
+    if (indexCible <= 0) return autres[0].offsetTop - 6;
+    if (indexCible >= autres.length) {
+      var dernier = autres[autres.length - 1];
+      return dernier.offsetTop + dernier.offsetHeight + 6;
+    }
+    var precedent = autres[indexCible - 1];
+    var suivant = autres[indexCible];
+    return (precedent.offsetTop + precedent.offsetHeight + suivant.offsetTop) / 2;
   }
 
   function demarrerDrag(e) {
@@ -215,6 +231,17 @@
     espace.style.height = '16px';
     listeEl.insertBefore(espace, li);
     etat.espace = espace;
+
+    // Repere de depot : de la taille d'une carte (le meme "truc" visuel que
+    // l'espace reserve ci-dessus, mais affiche LA OU la carte atterrira si
+    // on la relache maintenant, pas seulement la ou elle a ete prise).
+    // Positionne en absolu (hors flux) : le deplacer pendant le glissement
+    // ne fait bouger aucune autre carte.
+    var curseur = document.createElement('div');
+    curseur.className = 'conf-curseur-insertion';
+    curseur.hidden = true;
+    listeEl.appendChild(curseur);
+    etat.curseur = curseur;
 
     li.classList.add('conf-item--drag');
     li.style.position = 'fixed';
@@ -258,7 +285,7 @@
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
     etat.li.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + inclinaison + 'deg) scale(1.03)';
 
-    // --- Fusion : le CENTRE de la carte glissee doit tomber dans la zone
+    // --- Fusion : le POINTEUR (doigt/curseur) doit se trouver dans la zone
     //     CENTRALE d'une autre carte (ni pres de son bord haut, ni pres de
     //     son bord bas). Une carte occupe presque toute la hauteur
     //     disponible : avec un simple test de chevauchement, elle recouvre
@@ -266,11 +293,14 @@
     //     l'insertion pure (sans fusion) impossible a viser. En reservant
     //     les 28% du haut et du bas de chaque carte a l'insertion, il reste
     //     une vraie marge pour glisser une carte simplement ENTRE deux
-    //     autres, sans qu'elle s'associe. ---
+    //     autres, sans qu'elle s'associe.
+    //     On utilise la position du POINTEUR, pas le centre de la carte
+    //     glissee : celle-ci s'amincit visuellement pendant le geste (cf.
+    //     demarrerDrag), donc son centre calcule ne correspond plus a
+    //     l'endroit ou se trouve reellement le doigt/curseur. ---
     var MARGE_INSERTION = 0.28;
-    var rectLi = etat.li.getBoundingClientRect();
-    var centreX = rectLi.left + rectLi.width / 2;
-    var centreY = rectLi.top + rectLi.height / 2;
+    var centreX = e.clientX;
+    var centreY = e.clientY;
     var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li && c !== etat.espace; });
     var cibleLi = null;
     for (var k = 0; k < autres.length; k++) {
@@ -290,20 +320,20 @@
       return;
     }
 
-    // --- Sinon : indicateur de ligne d'insertion, base sur une position
-    //     STABLE (offsetTop), jamais sur un rect en cours d'animation. ---
+    // --- Sinon : un repere de la taille d'une carte apparait ENTRE les deux
+    //     cartes concernees, base sur une position STABLE (offsetTop),
+    //     jamais sur un rect en cours d'animation. ---
     var centreActuel = etat.centreListeDepart + dy;
     var indexCible = autres.length;
     for (var i = 0; i < autres.length; i++) {
       var milieu = autres[i].offsetTop + autres[i].offsetHeight / 2;
-      if (centreActuel < milieu) {
-        indexCible = i;
-        autres[i].classList.add('conf-item--avant');
-        break;
-      }
+      if (centreActuel < milieu) { indexCible = i; break; }
     }
-    if (indexCible === autres.length && autres.length) {
-      autres[autres.length - 1].classList.add('conf-item--apres');
+    if (etat.curseur && autres.length) {
+      var centreY = centreYInsertion(autres, indexCible);
+      etat.curseur.style.top = (centreY - etat.hauteur / 2) + 'px';
+      etat.curseur.style.height = etat.hauteur + 'px';
+      etat.curseur.hidden = false;
     }
     etat.indexCible = indexCible;
   }

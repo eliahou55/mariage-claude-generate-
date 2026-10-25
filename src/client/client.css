@@ -295,10 +295,20 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .conf-item { position: relative; }
 .conf-item--fusion { border-style: dashed; }
 
-/* Ligne d'insertion : indique ou la carte atterrira si on la relache ici
-   (pas de deplacement des voisins pendant le glissement -- juste ce repere). */
-.conf-item--avant { box-shadow: inset 0 3px 0 0 var(--accent); }
-.conf-item--apres { box-shadow: inset 0 -3px 0 0 var(--accent); }
+/* Repere de depot, de la taille d'une carte : indique ENTRE QUELLES DEUX
+   CARTES on atterrira si on relache maintenant. Positionne en absolu (hors
+   flux), ne deplace donc aucune carte reelle pendant le glissement. */
+.conf-curseur-insertion {
+  position: absolute;
+  left: 4%;
+  width: 92%;
+  box-sizing: border-box;
+  border: 2px dashed var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-bg);
+  pointer-events: none;
+  z-index: 5;
+}
 
 .conf-item__poignee {
   flex: none;
