@@ -102,6 +102,14 @@
     li.className = 'conf-item' + (fusionnee ? ' conf-item--fusion' : '');
     li.dataset.index = String(index);
 
+    // Numero + ligne verticale (cf. .conf-liste::before) : rend visible que
+    // l'ordre de cette liste EST l'ordre des evenements sur l'invitation.
+    var numero = document.createElement('span');
+    numero.className = 'conf-item__numero';
+    numero.textContent = String(index + 1);
+    numero.setAttribute('aria-hidden', 'true');
+    li.appendChild(numero);
+
     var poignee = document.createElement('span');
     poignee.className = 'conf-item__poignee';
     poignee.textContent = '☰';
@@ -203,11 +211,12 @@
     // du flux normal.
     etat.centreListeDepart = li.offsetTop + li.offsetHeight / 2;
 
-    // Reserve la place d'origine avec un repere EN FLUX, a la taille d'une
-    // carte : un vrai espace qui ecarte les cartes voisines (pas un calque
-    // flottant par-dessus). Sans lui, passer la carte en position:fixed la
-    // retirerait du flux et la voisine remonterait aussitot combler le
-    // trou -- fusion non voulue des le premier pixel de mouvement.
+    // Reserve la place d'origine avec un repere EN FLUX, FIN (pas la taille
+    // d'une carte -- juste assez pour se voir clairement) : un vrai espace
+    // qui ecarte les cartes voisines (pas un calque flottant par-dessus).
+    // Sans lui, passer la carte en position:fixed la retirerait du flux et
+    // la voisine remonterait aussitot combler le trou -- fusion non voulue
+    // des le premier pixel de mouvement.
     //
     // Pendant le glissement, ce meme repere SE DEPLACE (toujours en un
     // seul mouvement instantane, jamais anime) pour suivre l'endroit
@@ -218,7 +227,7 @@
     // precisement ce qui causait les bugs precedents.
     var espace = document.createElement('li');
     espace.className = 'conf-item conf-item--espace';
-    espace.style.height = rect.height + 'px';
+    espace.style.height = '18px';
     listeEl.insertBefore(espace, li);
     etat.espace = espace;
 
@@ -299,7 +308,14 @@
       if (centreY > zoneHaut && centreY < zoneBas) { cibleLi = autres[k]; break; }
     }
 
-    nettoyerIndicateurs();
+    // Ne touche la classe QUE si la cible a reellement change -- sinon
+    // l'animation d'accueil (rebond) redemarrerait a chaque evenement
+    // pointermove (plusieurs fois par seconde) au lieu de jouer une fois
+    // puis de rester posee tant qu'on survole la meme carte.
+    if (cibleLi !== etat.cibleLi) {
+      if (etat.cibleLi) etat.cibleLi.classList.remove('conf-item--cible-fusion');
+      if (cibleLi) cibleLi.classList.add('conf-item--cible-fusion');
+    }
     etat.cibleLi = cibleLi;
 
     if (cibleLi) {

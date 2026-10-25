@@ -231,12 +231,26 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   position: relative;   /* repere stable pour offsetTop pendant le glissement */
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding-left: 24px;     /* place pour le rail numerote */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 20px;              /* plus d'air entre les cartes, pour un geste plus confortable */
 }
+/* Ligne verticale en pointilles derriere les numeros : rend visible que
+   cette liste EST une sequence ordonnee (l'ordre des cartes = l'ordre des
+   evenements sur l'invitation). */
+.conf-liste::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 16px;
+  bottom: 16px;
+  width: 0;
+  border-left: 2px dotted var(--accent-ink);
+  opacity: .45;
+}
+
 .conf-item {
   display: flex;
   align-items: center;
@@ -251,6 +265,7 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   -webkit-user-select: none;
   user-select: none;
   box-sizing: border-box;
+  position: relative;
 }
 .conf-item--drag {
   cursor: grabbing;
@@ -263,25 +278,70 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 }
 .conf-item--drag .conf-item__titre-he,
 .conf-item--drag .conf-item__note,
-.conf-item--drag .conf-item__fleches { display: none; }
+.conf-item--drag .conf-item__fleches,
+.conf-item--drag .conf-item__numero { display: none; }
 .conf-item--drag .conf-item__titre { font-size: 13px; }
-/* Repere EN FLUX, a la taille d'une carte : un vrai vide qui ecarte les
-   cartes voisines (pas un calque flottant par-dessus). Il suit l'endroit
-   survole -- "je vais atterrir ICI, entre ces deux cartes" -- d'ou son
-   style assorti (pointilles et fond colores) a .conf-item--cible-fusion :
-   c'est la meme idee de "ceci est la cible active" sous deux formes. */
+
+/* Numero rond + ligne (cf. .conf-liste::before) a gauche de chaque carte. */
+.conf-item__numero {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--accent-ink);
+  color: var(--accent-ink);
+  font-size: 10px;
+  font-weight: 700;
+  z-index: 2;
+}
+
+/* Repere EN FLUX, fin (pas la taille d'une carte -- juste assez pour se
+   voir clairement) : un vrai vide qui ecarte les cartes voisines pendant
+   le glissement (pas un calque flottant par-dessus). */
 .conf-item--espace {
   border: 2px dashed var(--accent);
   background: var(--accent-bg);
   box-shadow: none;
 }
 .conf-item--espace > * { visibility: hidden; }
+
+/* Repere permanent, discret, entre CHAQUE paire de cartes (meme hors
+   glissement) : suggere "on peut deposer ici" avant meme de commencer a
+   glisser. S'efface pendant un glissement actif (l'espace le remplace). */
+.conf-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: -11px;
+  height: 0;
+  border-top: 1.5px dashed var(--rule);
+  opacity: .6;
+  pointer-events: none;
+}
+.conf-item--drag::before,
+.conf-item--espace::before,
+.conf-item--cible-fusion::before { display: none; }
+
+/* Cible de fusion : le FOND devient semi-transparent (pas la carte entiere
+   via "opacity", qui emporterait aussi le texte avec elle) et la carte
+   s'agrandit avec un petit rebond, comme si elle "accueillait" la carte
+   posee dessus. Le texte reste donc net et lisible. */
 .conf-item--cible-fusion {
+  animation: conf-fusion-accueil .32s cubic-bezier(.34, 1.56, .64, 1) forwards;
   border-color: var(--accent);
   border-width: 2px;
-  background: var(--accent-bg);
-  box-shadow: 0 0 0 3px var(--accent-bg);
-  transition: box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  background: color-mix(in srgb, var(--accent-bg) 55%, transparent);
+  backdrop-filter: blur(1px);
+}
+@keyframes conf-fusion-accueil {
+  0% { transform: scale(1); }
+  60% { transform: scale(1.055); }
+  100% { transform: scale(1.025); }
 }
 .conf-item--cible-fusion::after {
   content: "Réunir ici";
@@ -294,9 +354,12 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   text-transform: uppercase;
   padding: 3px 9px;
   border-radius: 999px;
+  opacity: 1;
 }
-.conf-item { position: relative; }
 .conf-item--fusion { border-style: dashed; }
+@media (prefers-reduced-motion: reduce) {
+  .conf-item--cible-fusion { animation: none; transform: scale(1.025); }
+}
 
 .conf-item__poignee {
   flex: none;
