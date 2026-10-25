@@ -264,6 +264,16 @@
     var inclinaison = Math.max(-7, Math.min(7, dx / 10));
     etat.li.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + inclinaison + 'deg) scale(1.03)';
 
+    // --- Mesure "neutre" : on retire D'ABORD l'espace du flux, le temps de
+    //     lire ou se trouvent VRAIMENT les autres cartes. Sinon, des que
+    //     l'espace (plein format) se retrouve juste a cote d'une cible
+    //     potentielle, il la POUSSE et la deplace -- la cible se derobe
+    //     exactement au moment ou on essaie de la viser, et la zone de
+    //     fusion ne semble jamais atteignable. Tout se passe en synchrone,
+    //     avant le prochain rendu : aucun scintillement visible. ---
+    if (etat.espace.parentNode) etat.espace.parentNode.removeChild(etat.espace);
+    var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li; });
+
     // --- Fusion : le POINTEUR (doigt/curseur) doit se trouver dans la zone
     //     CENTRALE d'une autre carte (ni pres de son bord haut, ni pres de
     //     son bord bas). Une carte occupe presque toute la hauteur
@@ -280,7 +290,6 @@
     var MARGE_INSERTION = 0.28;
     var centreX = e.clientX;
     var centreY = e.clientY;
-    var autres = Array.prototype.slice.call(listeEl.querySelectorAll('.conf-item')).filter(function (c) { return c !== etat.li && c !== etat.espace; });
     var cibleLi = null;
     for (var k = 0; k < autres.length; k++) {
       var r = autres[k].getBoundingClientRect();
@@ -295,18 +304,18 @@
 
     if (cibleLi) {
       // En fusion : pas d'espace a afficher entre deux cartes (on ne va
-      // pas s'inserer, on va rejoindre cibleLi) -- l'espace se referme.
+      // pas s'inserer, on va rejoindre cibleLi) -- l'espace reste hors du
+      // flux (deja retire ci-dessus), juste cache pour qu'il existe
+      // toujours quelque part dans le DOM.
       etat.espace.hidden = true;
+      listeEl.appendChild(etat.espace);
       etat.indexCible = null;
       return;
     }
 
     // --- Sinon : l'espace (deja a la taille d'une carte, cf. demarrerDrag)
-    //     se DEPLACE EN FLUX pour s'ouvrir entre les deux cartes concernees
-    //     -- un vrai vide qui les ecarte, pas un calque par-dessus. Chaque
-    //     deplacement est instantane (jamais anime) : la prochaine lecture
-    //     de offsetTop reflete toujours une position stable, jamais une
-    //     valeur transitoire en pleine animation. ---
+    //     est REINSERE EN FLUX a l'endroit calcule -- un vrai vide qui
+    //     ecarte les deux cartes concernees, pas un calque par-dessus. ---
     etat.espace.hidden = false;
     var centreActuel = etat.centreListeDepart + dy;
     var indexCible = autres.length;
@@ -315,9 +324,7 @@
       if (centreActuel < milieu) { indexCible = i; break; }
     }
     var avant = indexCible < autres.length ? autres[indexCible] : null;
-    if (avant !== etat.espace.nextSibling) {
-      listeEl.insertBefore(etat.espace, avant);
-    }
+    listeEl.insertBefore(etat.espace, avant);
     etat.indexCible = indexCible;
   }
 
