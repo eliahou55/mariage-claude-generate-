@@ -7,15 +7,14 @@
  * sur une autre (pas seulement houppa/reception).
  *
  * Glisser-depose :
- *  - une carte se saisit n'importe ou dessus ;
- *  - a la souris, le glissement demarre immediatement ;
- *  - au tactile, touch-action:none retire TOUT defilement natif sur une
- *    carte des le premier contact (le navigateur ne peut pas etre repris
- *    une fois qu'il a commence a faire defiler -- on ne lui laisse jamais
- *    commencer). A la place, un appui bref et immobile (~180ms) "prend" la
- *    carte ; si l'utilisateur bouge avant la fin de ce delai, on considere
- *    qu'il voulait juste defiler et on fait defiler la page NOUS-MEMES
- *    (window.scrollBy) pendant le reste du geste ;
+ *  - une carte se saisit n'importe ou dessus, souris comme tactile, et le
+ *    glissement demarre immediatement (pas d'appui maintenu a attendre) ;
+ *  - les cartes vivent dans .conf-boite, un cadre visuellement distinct
+ *    (fond teinte) qui n'occupe pas toute la largeur de l'ecran : toucher
+ *    une carte = la glisser (touch-action:none), mais toucher la marge
+ *    autour (dans le cadre ou en dehors) fait defiler la page normalement.
+ *    Cette separation PHYSIQUE (plutot qu'un delai/seuil a deviner) est ce
+ *    qui evite le conflit avec le defilement de la page ;
  *  - la fusion ne se declenche que si le CENTRE de la carte glissee entre
  *    dans la zone centrale (pas les bords) d'une autre carte -- sinon,
  *    simple reordonnancement. Sans cette marge, une carte occupant presque
@@ -178,8 +177,6 @@
    * Glisser-deposer
    * ---------------------------------------------------------------- */
 
-  var DELAI_APPUI = 180;         // ms d'immobilite avant de "prendre" la carte au toucher
-  var SEUIL_AVANT_APPUI = 9;     // px : au-dela pendant l'attente, c'est un defilement
   var etat = null;
 
   function estInteractif(el) {
@@ -202,18 +199,23 @@
     // du flux normal.
     etat.centreListeDepart = li.offsetTop + li.offsetHeight / 2;
 
-    // Reserve la place d'origine avec un repere STATIQUE (pas anime). Sans
-    // lui, passer la carte en position:fixed la retire du flux et les
-    // voisines remontent aussitot combler le trou -- la carte suivante se
-    // retrouve alors exactement sous le doigt des le debut du geste, ce qui
-    // declenchait une fusion immediate et non voulue.
+    // Reserve la place d'origine avec un repere STATIQUE (pas anime, fixe
+    // une fois pose -- un redimensionnement anime relirait une position
+    // transitoire, le meme piege que les bugs precedents). Sans lui, passer
+    // la carte en position:fixed la retirerait du flux et la voisine
+    // remonterait aussitot combler le trou -- superposition immediate et
+    // fusion non voulue des le premier pixel de mouvement.
+    //
+    // Volontairement fin (pas la hauteur de la carte) : un repere mince
+    // rend plus lisible "c'est ICI, entre ces deux cartes, qu'elle va
+    // s'inserer" plutot que de laisser un grand trou de la taille d'une
+    // carte entiere.
     var espace = document.createElement('li');
     espace.className = 'conf-item conf-item--espace';
-    espace.style.height = rect.height + 'px';
+    espace.style.height = '16px';
     listeEl.insertBefore(espace, li);
     etat.espace = espace;
 
-    li.classList.remove('conf-item--pret');
     li.classList.add('conf-item--drag');
     li.style.position = 'fixed';
     li.style.left = rect.left + 'px';
@@ -232,24 +234,12 @@
     var li = e.target.closest ? e.target.closest('li.conf-item') : null;
     if (!li) return;
 
-    var estTactile = e.pointerType === 'touch' || e.pointerType === 'pen';
-
     etat = {
       li: li, indexDepart: parseInt(li.dataset.index, 10), pointerId: e.pointerId,
-      startX: e.clientX, startY: e.clientY, dernierY: e.clientY,
+      startX: e.clientX, startY: e.clientY,
       largeur: 0, hauteur: 0, centreListeDepart: 0, espace: null,
-      demarre: false, enAttente: estTactile, enDefilement: false, minuteur: null,
-      cibleLi: null, indexCible: null,
+      demarre: false, cibleLi: null, indexCible: null,
     };
-
-    if (estTactile) {
-      etat.minuteur = window.setTimeout(function () {
-        if (!etat || etat.pointerId !== e.pointerId) return;
-        etat.enAttente = false;
-        li.classList.add('conf-item--pret');
-        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-      }, DELAI_APPUI);
-    }
 
     document.addEventListener('pointermove', pointermove);
     document.addEventListener('pointerup', pointerup);
@@ -259,31 +249,8 @@
   function pointermove(e) {
     if (!etat) return;
 
-    if (etat.enDefilement) {
-      // touch-action:none a desactive le defilement natif sur la carte :
-      // on le pilote nous-memes tant que l'utilisateur n'a pas relache.
-      window.scrollBy(0, etat.dernierY - e.clientY);
-      etat.dernierY = e.clientY;
-      return;
-    }
-
     var dx = e.clientX - etat.startX;
     var dy = e.clientY - etat.startY;
-
-    if (etat.enAttente) {
-      if (Math.abs(dx) > SEUIL_AVANT_APPUI || Math.abs(dy) > SEUIL_AVANT_APPUI) {
-        // Mouvement net avant la fin de l'appui -> l'utilisateur voulait
-        // defiler, pas saisir la carte. touch-action:none empeche le
-        // navigateur de le faire lui-meme : on prend le relai nous-memes
-        // pour le reste du geste, plutot que d'abandonner le defilement.
-        if (etat.minuteur) window.clearTimeout(etat.minuteur);
-        etat.enAttente = false;
-        etat.enDefilement = true;
-        window.scrollBy(0, etat.dernierY - e.clientY);
-        etat.dernierY = e.clientY;
-      }
-      return;
-    }
 
     if (!etat.demarre) demarrerDrag(e);
     e.preventDefault();
@@ -343,17 +310,13 @@
 
   function pointerup() {
     if (!etat) return;
-    if (etat.minuteur) window.clearTimeout(etat.minuteur);
     document.removeEventListener('pointermove', pointermove);
     document.removeEventListener('pointerup', pointerup);
     document.removeEventListener('pointercancel', pointerup);
     document.body.style.userSelect = '';
     nettoyerIndicateurs();
 
-    if (etat.enDefilement) { etat = null; return; }   // defilement manuel termine, rien d'autre a faire
-
     if (!etat.demarre) {
-      if (etat.li) etat.li.classList.remove('conf-item--pret');
       etat = null;
       return;
     }
@@ -365,11 +328,16 @@
       var idxAjuste = indexCibleGroupe > etat.indexDepart ? indexCibleGroupe - 1 : indexCibleGroupe;
       groupes[idxAjuste] = groupes[idxAjuste].concat(source);
       brouillon.groupes = groupes;
-    } else if (etat.indexCible != null && etat.indexCible !== etat.indexDepart) {
+    } else if (etat.indexCible != null) {
+      // etat.indexCible a deja ete calcule par rapport a "autres" (la liste
+      // SANS la carte glissee, cf. pointermove) -- c'est donc deja l'index
+      // correct ou l'inserer une fois qu'on l'a retiree de brouillon.groupes.
+      // (Un ajustement supplementaire ici etait le bug : il annulait tout
+      // deplacement vers le bas tout en laissant les deplacements vers le
+      // haut fonctionner, d'ou l'asymetrie observee.)
       var g = brouillon.groupes.slice();
       var dep = g.splice(etat.indexDepart, 1)[0];
-      var cible = etat.indexCible > etat.indexDepart ? etat.indexCible - 1 : etat.indexCible;
-      g.splice(cible, 0, dep);
+      g.splice(etat.indexCible, 0, dep);
       brouillon.groupes = g;
     }
 

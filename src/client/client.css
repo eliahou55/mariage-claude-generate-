@@ -208,42 +208,63 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .chip:hover { border-color: var(--accent); color: var(--accent-ink); }
 .chip__plus { font-size: 15px; color: var(--accent-ink); }
 
+/* Zone dediee au glissement : fond legerement teinte, bien distincte du
+   reste de la page, pour que la limite "ici on glisse / ici la page
+   defile" soit visible et pas seulement comportementale. Les cartes n'en
+   occupent pas toute la largeur : la marge laissee de part et d'autre
+   (couleur du conteneur) reste une zone de defilement normal de la page,
+   meme a l'interieur du cadre. */
+.conf-boite {
+  padding: 16px 14px;
+  border-radius: calc(var(--radius) + 6px);
+  background: var(--accent-bg);
+  border: 1px dashed var(--accent-ink);
+}
+.conf-boite__aide {
+  margin: 8px 0 24px;
+  font-size: 11.5px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .conf-liste {
   position: relative;   /* repere stable pour offsetTop pendant le glissement */
   list-style: none;
-  margin: 0 0 24px;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 .conf-item {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 92%;
   padding: 12px 14px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
   cursor: grab;
-  touch-action: none;          /* le JS gere TOUT geste tactile sur une carte, y compris le defilement (voir configurateur.js) */
+  touch-action: none;          /* le JS gere TOUT geste tactile sur une carte (la zone autour, dans .conf-boite, defile normalement) */
   -webkit-user-select: none;
   user-select: none;
+  box-sizing: border-box;
 }
 .conf-item--drag {
   cursor: grabbing;
   box-shadow: 0 18px 36px rgba(42, 39, 34, .28);
   border-color: var(--accent);
   transition: none;             /* le JS pilote le transform image par image : pas de latence */
+  /* Amincie pendant le geste : moins de contenu affiche, plus facile de
+     "lire" ou elle va s'inserer entre deux autres cartes. */
+  padding-block: 7px;
 }
-/* Retour visuel au tactile : la carte est "prise" (appui maintenu confirme),
-   avant meme le premier mouvement -- confirme que le defilement a cede la
-   place au glissement. */
-.conf-item--pret {
-  transform: scale(1.025);
-  box-shadow: 0 10px 20px rgba(42, 39, 34, .2);
-  transition: transform .12s ease, box-shadow .12s ease;
-}
+.conf-item--drag .conf-item__titre-he,
+.conf-item--drag .conf-item__note,
+.conf-item--drag .conf-item__fleches { display: none; }
+.conf-item--drag .conf-item__titre { font-size: 13px; }
 /* Repere statique (jamais anime) qui garde la place de la carte glissee :
    empeche les voisines de remonter combler le trou pendant le geste. */
 .conf-item--espace {
