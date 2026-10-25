@@ -231,11 +231,13 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   position: relative;   /* repere stable pour offsetTop pendant le glissement */
   list-style: none;
   margin: 0;
-  padding-left: 24px;     /* place pour le rail numerote */
+  /* Marges FIXES (pas en %) : la ligne et les numeros sont aussi positionnes
+     en pixels fixes plus bas -- avec un centrage en %, leur alignement se
+     serait decale selon la largeur d'ecran. */
+  padding: 0 14px 0 32px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;              /* plus d'air entre les cartes, pour un geste plus confortable */
+  gap: 26px;              /* encore un peu plus d'air entre les cartes */
 }
 /* Ligne verticale en pointilles derriere les numeros : rend visible que
    cette liste EST une sequence ordonnee (l'ordre des cartes = l'ordre des
@@ -255,7 +257,7 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 92%;
+  width: 100%;
   padding: 12px 14px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
@@ -282,13 +284,16 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .conf-item--drag .conf-item__numero { display: none; }
 .conf-item--drag .conf-item__titre { font-size: 13px; }
 
-/* Numero rond + ligne (cf. .conf-liste::before) a gauche de chaque carte. */
+/* Numero rond, integre PILE sur la ligne (cf. .conf-liste::before a
+   left:9px) : le point du numero EST un point de cette ligne, pas un
+   element qui flotte a cote. Le fond plein (var(--surface)) interrompt
+   proprement la ligne pointillee derriere lui. */
 .conf-item__numero {
   position: absolute;
-  left: -24px;
+  left: -31.5px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px; height: 18px;
+  width: 19px; height: 19px;
   display: grid; place-items: center;
   border-radius: 50%;
   background: var(--surface);
@@ -301,11 +306,14 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 
 /* Repere EN FLUX, fin (pas la taille d'une carte -- juste assez pour se
    voir clairement) : un vrai vide qui ecarte les cartes voisines pendant
-   le glissement (pas un calque flottant par-dessus). */
+   le glissement (pas un calque flottant par-dessus). Pulsation continue,
+   comme la cible de fusion : les deux reperes actifs d'un glissement
+   "respirent" pour bien se distinguer des cartes immobiles. */
 .conf-item--espace {
   border: 2px dashed var(--accent);
   background: var(--accent-bg);
   box-shadow: none;
+  animation: conf-pulse 1s ease-in-out infinite;
 }
 .conf-item--espace > * { visibility: hidden; }
 
@@ -329,19 +337,26 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 
 /* Cible de fusion : le FOND devient semi-transparent (pas la carte entiere
    via "opacity", qui emporterait aussi le texte avec elle) et la carte
-   s'agrandit avec un petit rebond, comme si elle "accueillait" la carte
-   posee dessus. Le texte reste donc net et lisible. */
+   respire en continu (petit rebond repete), comme si elle "accueillait"
+   activement la carte posee dessus. Le texte reste donc net et lisible.
+   La classe n'etant desormais touchee QUE quand la cible change (cf.
+   configurateur.js), l'animation en boucle ne redemarre jamais en rafale. */
 .conf-item--cible-fusion {
-  animation: conf-fusion-accueil .32s cubic-bezier(.34, 1.56, .64, 1) forwards;
+  animation: conf-fusion-accueil 1s cubic-bezier(.34, 1.56, .64, 1) infinite;
   border-color: var(--accent);
   border-width: 2px;
   background: color-mix(in srgb, var(--accent-bg) 55%, transparent);
   backdrop-filter: blur(1px);
 }
 @keyframes conf-fusion-accueil {
-  0% { transform: scale(1); }
-  60% { transform: scale(1.055); }
-  100% { transform: scale(1.025); }
+  0%, 100% { transform: scale(1.02); }
+  50% { transform: scale(1.065); }
+}
+/* Meme idee de "respiration" pour le repere d'insertion -- garde en phase
+   avec la cible de fusion (duree identique) pour un rythme coherent. */
+@keyframes conf-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
 }
 .conf-item--cible-fusion::after {
   content: "Réunir ici";
@@ -359,6 +374,7 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .conf-item--fusion { border-style: dashed; }
 @media (prefers-reduced-motion: reduce) {
   .conf-item--cible-fusion { animation: none; transform: scale(1.025); }
+  .conf-item--espace { animation: none; }
 }
 
 .conf-item__poignee {
