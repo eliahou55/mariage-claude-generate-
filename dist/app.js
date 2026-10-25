@@ -314,10 +314,12 @@
     var fam = el('div', 'familles');
     var colHatan = el('div', 'familles__col familles__col--hatan');
     ajouteSi(colHatan, D.familles.parentsMarie, 'p', 'familles__parents');
-    ajouteSi(colHatan, D.familles.grandsParentsMarie, 'p', 'familles__gp');
+    ajouteSi(colHatan, D.familles.grandsParentsMarieMaman, 'p', 'familles__gp');
+    ajouteSi(colHatan, D.familles.grandsParentsMariePapa, 'p', 'familles__gp');
     var colKala = el('div', 'familles__col familles__col--kala');
     ajouteSi(colKala, D.familles.parentsMariee, 'p', 'familles__parents');
-    ajouteSi(colKala, D.familles.grandsParentsMariee, 'p', 'familles__gp');
+    ajouteSi(colKala, D.familles.grandsParentsMarieeMaman, 'p', 'familles__gp');
+    ajouteSi(colKala, D.familles.grandsParentsMarieePapa, 'p', 'familles__gp');
     if (colHatan.childNodes.length) fam.appendChild(colHatan);
     if (colKala.childNodes.length) fam.appendChild(colKala);
     return fam.childNodes.length ? fam : null;

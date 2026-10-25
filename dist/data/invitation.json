@@ -1,6 +1,6 @@
 {
   "id": "M001",
-  "genere": "2026-10-25T14:53:47.293Z",
+  "genere": "2026-10-25T15:33:17.096Z",
   "couple": {
     "marie": {
       "prenom": "Ilan",
@@ -16,8 +16,10 @@
   "familles": {
     "parentsMarie": "M. et Mme Élie Benhamou (née Ohayon)",
     "parentsMariee": "M. et Mme Simon Assouline (née Bensoussan)",
-    "grandsParentsMarie": "M. et Mme Raphaël Benhamou ; M. et Mme Charles Ohayon",
-    "grandsParentsMariee": "M. et Mme Maurice Assouline ; Mme Albert Bensoussan",
+    "grandsParentsMarieMaman": "M. et Mme Raphaël Benhamou ; M. et Mme Charles Ohayon",
+    "grandsParentsMariePapa": "",
+    "grandsParentsMarieeMaman": "M. et Mme Maurice Assouline ; Mme Albert Bensoussan",
+    "grandsParentsMarieePapa": "",
     "memoire": ""
   },
   "site": {

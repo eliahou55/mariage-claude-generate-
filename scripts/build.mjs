@@ -404,8 +404,14 @@ async function lireClasseur() {
       familles: {
         parentsMarie: info.txt('Parents du marié'),
         parentsMariee: info.txt('Parents de la mariée'),
-        grandsParentsMarie: info.txt('Grands-parents du marié'),
-        grandsParentsMariee: info.txt('Grands-parents de la mariée'),
+        // L'Excel n'a qu'une seule colonne par cote (pas de distinction
+        // maman/papa) : on la place dans le creneau "maman", le creneau
+        // "papa" reste vide et la carte affiche alors une seule ligne,
+        // comme avant. Le formulaire client (sans Excel) remplit lui les 4.
+        grandsParentsMarieMaman: info.txt('Grands-parents du marié'),
+        grandsParentsMariePapa: '',
+        grandsParentsMarieeMaman: info.txt('Grands-parents de la mariée'),
+        grandsParentsMarieePapa: '',
         // Colonne optionnelle (absente par defaut) : une ligne par grand-parent
         // decede, ex. "Eliahou Pinhas ז\"ל". Si la colonne n'existe pas ou est
         // vide, le paragraphe de memoire n'apparait pas sous la houppa.
@@ -589,25 +595,20 @@ ${cartes}
     if (!brut) return;
     var D = JSON.parse(brut);
 
+    // Cote client (sans Excel), aucun theme n'est choisi a l'avance : on
+    // retire tout badge/surbrillance "actif" (qui ne refleterait que la
+    // valeur par defaut interne) -- chaque carte ci-dessous est un choix
+    // ouvert, a comparer avec les vraies informations du client.
     document.querySelectorAll('.carte--actif').forEach(function (c) {
       c.classList.remove('carte--actif');
       var b = c.querySelector('.carte__badge');
       if (b) b.remove();
     });
-    document.querySelectorAll('.carte').forEach(function (c) {
-      var slug = (c.getAttribute('href') || '').split('/')[0];
-      if (slug !== D.site.themeSlug) return;
-      c.classList.add('carte--actif');
-      var badge = document.createElement('span');
-      badge.className = 'carte__badge';
-      badge.textContent = 'Votre thème choisi';
-      c.appendChild(badge);
-    });
 
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Les 10 thèmes, avec vos informations et la couleur « ' + D.site.couleurNom + ' ».';
+    if (sous) sous.textContent = 'Comparez les 10 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
     var pied = document.getElementById('pied-apercus');
     if (pied) {
       pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '

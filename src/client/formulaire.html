@@ -52,11 +52,13 @@
           </div>
           <div class="champ">
             <label for="f-marie-hebreu">Nom hébreu du marié</label>
+            <div class="suggestions-hebreu" id="suggestions-marie" hidden></div>
             <input type="text" id="f-marie-hebreu" dir="rtl">
-            <span class="aide">Ex. אילן בן אליהו</span>
+            <span class="aide">Ex. אילן בן אליהו — des suggestions apparaissent au-dessus dès que le prénom est reconnu.</span>
           </div>
           <div class="champ">
             <label for="f-mariee-hebreu">Nom hébreu de la mariée</label>
+            <div class="suggestions-hebreu" id="suggestions-mariee" hidden></div>
             <input type="text" id="f-mariee-hebreu" dir="rtl">
             <span class="aide">Ex. יעל בת שמעון</span>
           </div>
@@ -68,22 +70,39 @@
         <div class="grille-champs grille-champs--2">
           <div class="champ">
             <label for="f-parents-marie">Parents du marié</label>
-            <input type="text" id="f-parents-marie">
+            <input type="text" id="f-parents-marie" data-auto-format>
             <span class="aide">Ex. M. et Mme Élie Benhamou</span>
           </div>
           <div class="champ">
             <label for="f-parents-mariee">Parents de la mariée</label>
-            <input type="text" id="f-parents-mariee">
-          </div>
-          <div class="champ">
-            <label for="f-gparents-marie">Grands-parents du marié</label>
-            <input type="text" id="f-gparents-marie">
-          </div>
-          <div class="champ">
-            <label for="f-gparents-mariee">Grands-parents de la mariée</label>
-            <input type="text" id="f-gparents-mariee">
+            <input type="text" id="f-parents-mariee" data-auto-format>
           </div>
         </div>
+
+        <p class="familles__sous-titre">Grands-parents du marié</p>
+        <div class="grille-champs grille-champs--2">
+          <div class="champ">
+            <label for="f-gparents-marie-maman">Côté maman (papi/mami)</label>
+            <input type="text" id="f-gparents-marie-maman" data-auto-format placeholder="Ex. Papi Robert et Mami Estelle">
+          </div>
+          <div class="champ">
+            <label for="f-gparents-marie-papa">Côté papa (papi/mami)</label>
+            <input type="text" id="f-gparents-marie-papa" data-auto-format>
+          </div>
+        </div>
+
+        <p class="familles__sous-titre">Grands-parents de la mariée</p>
+        <div class="grille-champs grille-champs--2">
+          <div class="champ">
+            <label for="f-gparents-mariee-maman">Côté maman (papi/mami)</label>
+            <input type="text" id="f-gparents-mariee-maman" data-auto-format>
+          </div>
+          <div class="champ">
+            <label for="f-gparents-mariee-papa">Côté papa (papi/mami)</label>
+            <input type="text" id="f-gparents-mariee-papa" data-auto-format>
+          </div>
+        </div>
+
         <div class="champ" style="margin-top:16px">
           <label for="f-memoire">Mémoire des grands-parents disparus (facultatif)</label>
           <textarea id="f-memoire" placeholder="Un nom par ligne, ex. Eliahou Pinhas ז״ל"></textarea>
@@ -95,16 +114,6 @@
         <h2 class="soustitre">Votre site</h2>
 
         <div class="champ">
-          <label>Thème</label>
-          <div class="theme-grille" id="zone-themes"></div>
-        </div>
-
-        <div class="champ" style="margin-top:20px">
-          <label>Couleur principale</label>
-          <div class="couleur-grille" id="zone-couleurs"></div>
-        </div>
-
-        <div class="champ" style="margin-top:20px">
           <label for="f-verset">Verset affiché</label>
           <select id="f-verset"></select>
           <input type="text" id="f-verset-autre" dir="rtl" placeholder="Votre verset" hidden>
@@ -115,6 +124,10 @@
           <label for="f-lien">Lien du site (facultatif)</label>
           <input type="url" id="f-lien" placeholder="https://...">
         </div>
+        <p class="note" style="margin-top:10px">
+          Le thème et la couleur se choisissent à l'étape suivante, en comparant les 10 modèles avec
+          vos vraies informations.
+        </p>
       </section>
 
       <section class="form-section" id="zone-evenements">
@@ -131,6 +144,7 @@
 </div>
 
 <script src="../stockage.js"></script>
+<script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
 <script src="formulaire.js"></script>
 </body>

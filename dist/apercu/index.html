@@ -98,25 +98,20 @@ code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
     if (!brut) return;
     var D = JSON.parse(brut);
 
+    // Cote client (sans Excel), aucun theme n'est choisi a l'avance : on
+    // retire tout badge/surbrillance "actif" (qui ne refleterait que la
+    // valeur par defaut interne) -- chaque carte ci-dessous est un choix
+    // ouvert, a comparer avec les vraies informations du client.
     document.querySelectorAll('.carte--actif').forEach(function (c) {
       c.classList.remove('carte--actif');
       var b = c.querySelector('.carte__badge');
       if (b) b.remove();
     });
-    document.querySelectorAll('.carte').forEach(function (c) {
-      var slug = (c.getAttribute('href') || '').split('/')[0];
-      if (slug !== D.site.themeSlug) return;
-      c.classList.add('carte--actif');
-      var badge = document.createElement('span');
-      badge.className = 'carte__badge';
-      badge.textContent = 'Votre thème choisi';
-      c.appendChild(badge);
-    });
 
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Les 10 thèmes, avec vos informations et la couleur « ' + D.site.couleurNom + ' ».';
+    if (sous) sous.textContent = 'Comparez les 10 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
     var pied = document.getElementById('pied-apercus');
     if (pied) {
       pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '

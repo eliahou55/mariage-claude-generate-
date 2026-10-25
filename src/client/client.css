@@ -563,6 +563,46 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   color: var(--accent-ink);
 }
 
+.familles__sous-titre {
+  margin: 22px 0 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent-ink);
+}
+.form-section .familles__sous-titre:first-of-type { margin-top: 24px; }
+
+/* Suggestions de prenom hebreu : chips cliquables juste au-dessus du
+   champ, qui reste vide tant qu'on n'en choisit pas une (chacun ecrit
+   son prenom hebreu a sa facon -- ce n'est qu'une proposition). */
+.suggestions-hebreu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.suggestion-hebreu {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px dashed var(--accent-ink);
+  background: var(--accent-bg);
+  color: var(--accent-ink);
+  font-family: var(--font-he);
+  font-size: 14px;
+  cursor: pointer;
+}
+.suggestion-hebreu:hover { background: color-mix(in srgb, var(--accent) 20%, var(--accent-bg)); }
+.suggestion-hebreu__etiquette {
+  font-family: var(--font-corps);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+
 .message-erreur {
   margin: 0 0 18px;
   padding: 12px 14px;

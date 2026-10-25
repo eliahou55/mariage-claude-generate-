@@ -62,6 +62,61 @@ var ClientInvitation = (function () {
   ];
 
   /* ---------------------------------------------------------------- *
+   * Prenoms francais -> suggestion(s) d'ecriture en hebreu. Une
+   * PROPOSITION seulement (chacun a sa propre facon d'ecrire) : le champ
+   * reste vide tant que le client n'a pas clique sur une suggestion.
+   * Liste non exhaustive (v1) -- facile a completer : une entree par
+   * prenom francais (en minuscules, sans accent), un tableau d'une ou
+   * plusieurs graphies hebraiques possibles.
+   * ---------------------------------------------------------------- */
+  var PRENOMS_HEBREU = {
+    // -- masculins --
+    david: ['דוד'], ilan: ['אילן'], yonathan: ['יונתן'], jonathan: ['יונתן'],
+    avraham: ['אברהם'], abraham: ['אברהם'], isaac: ['יצחק'], itzhak: ['יצחק'],
+    jacob: ['יעקב'], yaakov: ['יעקב'], moise: ['משה'], moshe: ['משה'],
+    shalom: ['שלום'], eliahou: ['אליהו'], elie: ['אליהו'], elias: ['אליהו'],
+    simon: ['שמעון'], shimon: ['שמעון'], raphael: ['רפאל'], daniel: ['דניאל'],
+    michael: ['מיכאל'], mickael: ['מיכאל'], gabriel: ['גבריאל'],
+    nathan: ['נתן'], natan: ['נתן'], samuel: ['שמואל'], shmuel: ['שמואל'],
+    joseph: ['יוסף'], yossef: ['יוסף'], benjamin: ['בנימין'],
+    haim: ['חיים'], chaim: ['חיים'], meir: ['מאיר'], ariel: ['אריאל'],
+    noam: ['נועם'], eytan: ['איתן'], eitan: ['איתן'], yehouda: ['יהודה'],
+    juda: ['יהודה'], judah: ['יהודה'], reuben: ['ראובן'], reouven: ['ראובן'],
+    aaron: ['אהרון'], aharon: ['אהרון'], emmanuel: ['עמנואל'],
+    mardochee: ['מרדכי'], mordekhai: ['מרדכי'], josue: ['יהושע'],
+    asher: ['אשר'], boaz: ['בועז'], netanel: ['נתנאל'], ezra: ['עזרא'],
+    salomon: ['שלמה'], shlomo: ['שלמה'], jeremie: ['ירמיהו'],
+    sacha: ['אלכסנדר'], alexandre: ['אלכסנדר'], charles: ['קרל'],
+    albert: ['אברהם'], maurice: ['משה'], andre: ['אנדרה'], henri: ['צבי'],
+    robert: ['ראובן'], marcel: ['מרדכי'], jules: ['יהודה'],
+    // -- feminins --
+    sarah: ['שרה'], sara: ['שרה'], yael: ['יעל'], jael: ['יעל'],
+    rachel: ['רחל'], rebecca: ['רבקה'], rivka: ['רבקה'], myriam: ['מרים'],
+    miriam: ['מרים'], esther: ['אסתר'], hannah: ['חנה'], anna: ['חנה'],
+    lea: ['לאה'], noemie: ['נעמי'], naomi: ['נעמי'], dina: ['דינה'],
+    tamar: ['תמר'], shira: ['שירה'], abigael: ['אביגיל'], avigail: ['אביגיל'],
+    michal: ['מיכל'], ora: ['אורה'], yocheved: ['יוכבד'],
+    adina: ['עדינה'], liora: ['ליאורה'], aviva: ['אביבה'], talia: ['טליה'],
+    deborah: ['דבורה'], judith: ['יהודית'], yehoudith: ['יהודית'],
+    elisheva: ['אלישבע'], simone: ['שמחה'], simha: ['שמחה'],
+    estelle: ['אסתר'], jeanne: ['חנה'], paulette: ['פנינה'],
+    annette: ['חנה'], germaine: ['גילה'], colette: ['רחל'],
+  };
+
+  /** Normalise "Déborah", "deborah " etc. pour chercher dans PRENOMS_HEBREU. */
+  function normaliserPrenom(texte) {
+    return (texte || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '');   // retire les accents (diacritiques combinants)
+  }
+
+  function suggestionsHebreu(prenomFrancais) {
+    var cle = normaliserPrenom(prenomFrancais);
+    return PRENOMS_HEBREU[cle] || [];
+  }
+
+  /* ---------------------------------------------------------------- *
    * Brouillon : lecture / ecriture / valeurs par defaut
    * ---------------------------------------------------------------- */
 
@@ -73,10 +128,18 @@ var ClientInvitation = (function () {
       },
       familles: {
         parentsMarie: '', parentsMariee: '',
-        grandsParentsMarie: '', grandsParentsMariee: '',
+        // Les 4 couples de grands-parents (cote maman / cote papa, de
+        // chaque marie) plutot que 2 champs combines -- chacun sa propre
+        // ligne sur l'invitation.
+        grandsParentsMarieMaman: '', grandsParentsMariePapa: '',
+        grandsParentsMarieeMaman: '', grandsParentsMarieePapa: '',
         memoire: '',
       },
       site: {
+        // Le theme et la couleur se choisissent desormais sur la page des
+        // 10 apercus (etape suivante), pas dans ce formulaire -- ces deux
+        // valeurs par defaut restent utilisees en interne (accent par
+        // defaut) mais ne sont plus demandees au client.
         themeSlug: 'marbre-or',
         couleurNom: 'Or',
         verset: VERSETS_PROPOSES[0],
@@ -105,7 +168,17 @@ var ClientInvitation = (function () {
         // si de nouvelles sections sont ajoutees plus tard.
         var def = brouillonParDefaut();
         d.couple = d.couple || def.couple;
-        d.familles = d.familles || def.familles;
+        d.familles = Object.assign({}, def.familles, d.familles || {});
+        // Ancien format (grands-parents combines en 2 champs) -> on les
+        // reverse dans la case "cote maman" des 4 nouveaux champs.
+        if (d.familles.grandsParentsMarie && !d.familles.grandsParentsMarieMaman) {
+          d.familles.grandsParentsMarieMaman = d.familles.grandsParentsMarie;
+        }
+        if (d.familles.grandsParentsMariee && !d.familles.grandsParentsMarieeMaman) {
+          d.familles.grandsParentsMarieeMaman = d.familles.grandsParentsMariee;
+        }
+        delete d.familles.grandsParentsMarie;
+        delete d.familles.grandsParentsMariee;
         d.site = Object.assign({}, def.site, d.site || {});
         if (!Array.isArray(d.groupes) || !d.groupes.length) {
           // Ancien format (ordreEvenements a plat) ou brouillon vide : on migre.
@@ -273,5 +346,6 @@ var ClientInvitation = (function () {
     toutesLesCles: toutesLesCles,
     dateFr: dateFr,
     construireDonnees: construireDonnees,
+    suggestionsHebreu: suggestionsHebreu,
   };
 })();
