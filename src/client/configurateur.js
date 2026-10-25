@@ -15,17 +15,21 @@
  *    autour (dans le cadre ou en dehors) fait defiler la page normalement.
  *    Cette separation PHYSIQUE (plutot qu'un delai/seuil a deviner) est ce
  *    qui evite le conflit avec le defilement de la page ;
- *  - la fusion ne se declenche que si le CENTRE de la carte glissee entre
- *    dans la zone centrale (pas les bords) d'une autre carte -- sinon,
- *    simple reordonnancement. Sans cette marge, une carte occupant presque
- *    toute la hauteur disponible chevauche quasiment toujours sa voisine,
+ *  - la fusion ne se declenche que si le POINTEUR (pas le centre de la
+ *    carte, qui s'amincit visuellement pendant le geste) entre dans la
+ *    zone centrale (pas les bords) d'une autre carte -- sinon, simple
+ *    reordonnancement. Sans cette marge, une carte occupant presque toute
+ *    la hauteur disponible chevauche quasiment toujours sa voisine,
  *    rendant l'insertion pure impossible a viser ;
- *  - PENDANT le glissement, on ne deplace jamais les autres cartes dans le
- *    DOM (source des bugs precedents : lire la position d'un element en
- *    pleine animation CSS donne une position transitoire, pas sa position
- *    finale). On se contente d'un indicateur (ligne d'insertion / carte
- *    survolee en surbrillance) ; le reordonnancement reel n'a lieu qu'UNE
- *    fois, au relachement -- la liste est alors entierement redessinee.
+ *  - un repere EN FLUX, a la taille d'une carte, suit l'endroit survole et
+ *    ECARTE REELLEMENT les deux cartes concernees (pas un calque flottant
+ *    par-dessus) : il se DEPLACE (insertBefore) pour s'ouvrir entre elles,
+ *    toujours en un mouvement INSTANTANE, jamais anime -- c'est cette
+ *    absence d'animation qui garantit que la prochaine lecture de position
+ *    (offsetTop) reflete un etat stable, jamais une valeur transitoire en
+ *    pleine transition CSS (source des bugs precedents). Le reordonnancement
+ *    reel des DONNEES n'a lieu qu'au relachement -- la liste est alors
+ *    entierement redessinee, pour qu'aucun etat transitoire ne reste bloque.
  */
 (function () {
   'use strict';
@@ -187,22 +191,6 @@
     listeEl.querySelectorAll('.conf-item--cible-fusion').forEach(function (c) {
       c.classList.remove('conf-item--cible-fusion');
     });
-    if (etat && etat.curseur) etat.curseur.hidden = true;
-  }
-
-  /** Centre Y (repere stable offsetTop, relatif a listeEl) de l'emplacement
-   *  ou la carte glissee s'inserera si on la relache maintenant : juste
-   *  avant autres[indexCible], ou apres la derniere si indexCible deborde. */
-  function centreYInsertion(autres, indexCible) {
-    if (!autres.length) return 0;
-    if (indexCible <= 0) return autres[0].offsetTop - 6;
-    if (indexCible >= autres.length) {
-      var dernier = autres[autres.length - 1];
-      return dernier.offsetTop + dernier.offsetHeight + 6;
-    }
-    var precedent = autres[indexCible - 1];
-    var suivant = autres[indexCible];
-    return (precedent.offsetTop + precedent.offsetHeight + suivant.offsetTop) / 2;
   }
 
   function demarrerDrag(e) {
@@ -215,33 +203,24 @@
     // du flux normal.
     etat.centreListeDepart = li.offsetTop + li.offsetHeight / 2;
 
-    // Reserve la place d'origine avec un repere STATIQUE (pas anime, fixe
-    // une fois pose -- un redimensionnement anime relirait une position
-    // transitoire, le meme piege que les bugs precedents). Sans lui, passer
-    // la carte en position:fixed la retirerait du flux et la voisine
-    // remonterait aussitot combler le trou -- superposition immediate et
-    // fusion non voulue des le premier pixel de mouvement.
+    // Reserve la place d'origine avec un repere EN FLUX, a la taille d'une
+    // carte : un vrai espace qui ecarte les cartes voisines (pas un calque
+    // flottant par-dessus). Sans lui, passer la carte en position:fixed la
+    // retirerait du flux et la voisine remonterait aussitot combler le
+    // trou -- fusion non voulue des le premier pixel de mouvement.
     //
-    // Volontairement fin (pas la hauteur de la carte) : un repere mince
-    // rend plus lisible "c'est ICI, entre ces deux cartes, qu'elle va
-    // s'inserer" plutot que de laisser un grand trou de la taille d'une
-    // carte entiere.
+    // Pendant le glissement, ce meme repere SE DEPLACE (toujours en un
+    // seul mouvement instantane, jamais anime) pour suivre l'endroit
+    // survole : "je vais atterrir ICI, entre ces deux cartes". Comme
+    // chaque deplacement est instantane (pas de transition CSS), la
+    // prochaine lecture de position (offsetTop) refletera toujours un etat
+    // stable, jamais une valeur transitoire en pleine animation -- c'est
+    // precisement ce qui causait les bugs precedents.
     var espace = document.createElement('li');
     espace.className = 'conf-item conf-item--espace';
-    espace.style.height = '16px';
+    espace.style.height = rect.height + 'px';
     listeEl.insertBefore(espace, li);
     etat.espace = espace;
-
-    // Repere de depot : de la taille d'une carte (le meme "truc" visuel que
-    // l'espace reserve ci-dessus, mais affiche LA OU la carte atterrira si
-    // on la relache maintenant, pas seulement la ou elle a ete prise).
-    // Positionne en absolu (hors flux) : le deplacer pendant le glissement
-    // ne fait bouger aucune autre carte.
-    var curseur = document.createElement('div');
-    curseur.className = 'conf-curseur-insertion';
-    curseur.hidden = true;
-    listeEl.appendChild(curseur);
-    etat.curseur = curseur;
 
     li.classList.add('conf-item--drag');
     li.style.position = 'fixed';
@@ -315,25 +294,29 @@
     etat.cibleLi = cibleLi;
 
     if (cibleLi) {
-      cibleLi.classList.add('conf-item--cible-fusion');
+      // En fusion : pas d'espace a afficher entre deux cartes (on ne va
+      // pas s'inserer, on va rejoindre cibleLi) -- l'espace se referme.
+      etat.espace.hidden = true;
       etat.indexCible = null;
       return;
     }
 
-    // --- Sinon : un repere de la taille d'une carte apparait ENTRE les deux
-    //     cartes concernees, base sur une position STABLE (offsetTop),
-    //     jamais sur un rect en cours d'animation. ---
+    // --- Sinon : l'espace (deja a la taille d'une carte, cf. demarrerDrag)
+    //     se DEPLACE EN FLUX pour s'ouvrir entre les deux cartes concernees
+    //     -- un vrai vide qui les ecarte, pas un calque par-dessus. Chaque
+    //     deplacement est instantane (jamais anime) : la prochaine lecture
+    //     de offsetTop reflete toujours une position stable, jamais une
+    //     valeur transitoire en pleine animation. ---
+    etat.espace.hidden = false;
     var centreActuel = etat.centreListeDepart + dy;
     var indexCible = autres.length;
     for (var i = 0; i < autres.length; i++) {
       var milieu = autres[i].offsetTop + autres[i].offsetHeight / 2;
       if (centreActuel < milieu) { indexCible = i; break; }
     }
-    if (etat.curseur && autres.length) {
-      var centreY = centreYInsertion(autres, indexCible);
-      etat.curseur.style.top = (centreY - etat.hauteur / 2) + 'px';
-      etat.curseur.style.height = etat.hauteur + 'px';
-      etat.curseur.hidden = false;
+    var avant = indexCible < autres.length ? autres[indexCible] : null;
+    if (avant !== etat.espace.nextSibling) {
+      listeEl.insertBefore(etat.espace, avant);
     }
     etat.indexCible = indexCible;
   }

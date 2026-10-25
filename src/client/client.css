@@ -265,11 +265,14 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .conf-item--drag .conf-item__note,
 .conf-item--drag .conf-item__fleches { display: none; }
 .conf-item--drag .conf-item__titre { font-size: 13px; }
-/* Repere statique (jamais anime) qui garde la place de la carte glissee :
-   empeche les voisines de remonter combler le trou pendant le geste. */
+/* Repere EN FLUX, a la taille d'une carte : un vrai vide qui ecarte les
+   cartes voisines (pas un calque flottant par-dessus). Il suit l'endroit
+   survole -- "je vais atterrir ICI, entre ces deux cartes" -- d'ou son
+   style assorti (pointilles et fond colores) a .conf-item--cible-fusion :
+   c'est la meme idee de "ceci est la cible active" sous deux formes. */
 .conf-item--espace {
-  border: 1.5px dashed var(--rule);
-  background: transparent;
+  border: 2px dashed var(--accent);
+  background: var(--accent-bg);
   box-shadow: none;
 }
 .conf-item--espace > * { visibility: hidden; }
@@ -294,21 +297,6 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 }
 .conf-item { position: relative; }
 .conf-item--fusion { border-style: dashed; }
-
-/* Repere de depot, de la taille d'une carte : indique ENTRE QUELLES DEUX
-   CARTES on atterrira si on relache maintenant. Positionne en absolu (hors
-   flux), ne deplace donc aucune carte reelle pendant le glissement. */
-.conf-curseur-insertion {
-  position: absolute;
-  left: 4%;
-  width: 92%;
-  box-sizing: border-box;
-  border: 2px dashed var(--accent);
-  border-radius: var(--radius);
-  background: var(--accent-bg);
-  pointer-events: none;
-  z-index: 5;
-}
 
 .conf-item__poignee {
   flex: none;
