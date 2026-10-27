@@ -1,15 +1,13 @@
 {
   "id": "M001",
-  "genere": "2026-10-25T15:33:17.096Z",
+  "genere": "2026-10-27T19:58:57.283Z",
   "couple": {
     "marie": {
       "prenom": "Ilan",
-      "nom": "Benhamou",
       "hebreu": "אילן בן אליהו"
     },
     "mariee": {
       "prenom": "Yaël",
-      "nom": "Assouline",
       "hebreu": "יעל בת שמעון"
     }
   },

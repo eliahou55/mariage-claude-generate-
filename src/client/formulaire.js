@@ -28,10 +28,8 @@
   /* --- Pre-remplissage des champs simples depuis le brouillon --- */
   function preRemplir() {
     fixe('f-marie-prenom', brouillon.couple.marie.prenom);
-    fixe('f-marie-nom', brouillon.couple.marie.nom);
     fixe('f-marie-hebreu', brouillon.couple.marie.hebreu);
     fixe('f-mariee-prenom', brouillon.couple.mariee.prenom);
-    fixe('f-mariee-nom', brouillon.couple.mariee.nom);
     fixe('f-mariee-hebreu', brouillon.couple.mariee.hebreu);
     fixe('f-parents-marie', brouillon.familles.parentsMarie);
     fixe('f-parents-mariee', brouillon.familles.parentsMariee);
@@ -260,10 +258,8 @@
   /* --- Collecte : DOM -> brouillon --- */
   function collecter() {
     brouillon.couple.marie.prenom = val('f-marie-prenom');
-    brouillon.couple.marie.nom = val('f-marie-nom');
     brouillon.couple.marie.hebreu = val('f-marie-hebreu');
     brouillon.couple.mariee.prenom = val('f-mariee-prenom');
-    brouillon.couple.mariee.nom = val('f-mariee-nom');
     brouillon.couple.mariee.hebreu = val('f-mariee-hebreu');
 
     brouillon.familles.parentsMarie = val('f-parents-marie');

@@ -109,6 +109,25 @@
     return n;
   }
 
+  /** Un prenom + son nom hebreu juste a cote (en face), au lieu d'une
+   *  ligne hebraique separee et commune aux deux maries. */
+  function construireNomPersonne(personne) {
+    var p = el('span', 'noms__personne');
+    p.appendChild(el('span', 'noms__prenom', personne.prenom));
+    if (personne.hebreu) p.appendChild(he('span', 'noms__prenom-he', personne.hebreu));
+    return p;
+  }
+
+  /** "Prenom (+ hebreu) & Prenom (+ hebreu)", reutilise a l'accueil et
+   *  en tete de l'invitation -- meme balise/classe racine que l'appelant. */
+  function construireNomsCouple(tag, cls) {
+    var conteneur = el(tag, cls);
+    conteneur.appendChild(construireNomPersonne(D.couple.marie));
+    conteneur.appendChild(el('span', 'noms__lien', '&'));
+    conteneur.appendChild(construireNomPersonne(D.couple.mariee));
+    return conteneur;
+  }
+
   /** N'ajoute l'element que si le texte existe (colonne Excel vide -> rien). */
   function ajouteSi(parent, txt, tag, cls, rtl) {
     if (!txt) return null;
@@ -203,19 +222,7 @@
     inner.appendChild(he('p', 'bsd', 'בס״ד'));          // בס״ד
     inner.appendChild(el('span', 'filet filet--haut'));
 
-    var titre = el('h1', 'noms');
-    titre.appendChild(el('span', 'noms__prenom', D.couple.marie.prenom));
-    titre.appendChild(el('span', 'noms__lien', '&'));
-    titre.appendChild(el('span', 'noms__prenom', D.couple.mariee.prenom));
-    inner.appendChild(titre);
-
-    if (D.couple.marie.hebreu || D.couple.mariee.hebreu) {
-      var nh = he('p', 'noms-he');
-      if (D.couple.marie.hebreu) nh.appendChild(el('span', null, D.couple.marie.hebreu));
-      if (D.couple.marie.hebreu && D.couple.mariee.hebreu) nh.appendChild(el('span', 'noms-he__sep', '•'));
-      if (D.couple.mariee.hebreu) nh.appendChild(el('span', null, D.couple.mariee.hebreu));
-      inner.appendChild(nh);
-    }
+    inner.appendChild(construireNomsCouple('h1', 'noms'));
 
     ajouteSi(inner, D.site.verset, 'p', 'verset', true);
     inner.appendChild(el('span', 'filet filet--bas'));
@@ -283,11 +290,7 @@
 
     /* 2. Phrase d'invitation + prenoms */
     inner.appendChild(el('p', 'phrase', 'ont la joie de vous convier au mariage de leurs enfants'));
-    var h2 = el('p', 'invitation__noms');
-    h2.appendChild(el('span', 'noms__prenom', D.couple.marie.prenom));
-    h2.appendChild(el('span', 'noms__lien', '&'));
-    h2.appendChild(el('span', 'noms__prenom', D.couple.mariee.prenom));
-    inner.appendChild(h2);
+    inner.appendChild(construireNomsCouple('p', 'invitation__noms'));
     inner.appendChild(el('span', 'filet filet--invitation'));
 
     /* 3. Une carte par groupe (cf. D.groupes), dans l'ordre fourni par les
@@ -444,12 +447,12 @@
 
     var couple = el('div', 'recit__couple');
     var pMarie = el('div', 'recit__personne');
-    pMarie.appendChild(el('p', 'recit__personne-nom', D.couple.marie.prenom + ' ' + D.couple.marie.nom));
+    pMarie.appendChild(el('p', 'recit__personne-nom', D.couple.marie.prenom));
     if (D.couple.marie.hebreu) pMarie.appendChild(he('p', 'recit__personne-he', D.couple.marie.hebreu));
     couple.appendChild(pMarie);
     couple.appendChild(el('span', 'recit__esperluette recit__esperluette--couple', '&'));
     var pMariee = el('div', 'recit__personne');
-    pMariee.appendChild(el('p', 'recit__personne-nom', D.couple.mariee.prenom + ' ' + D.couple.mariee.nom));
+    pMariee.appendChild(el('p', 'recit__personne-nom', D.couple.mariee.prenom));
     if (D.couple.mariee.hebreu) pMariee.appendChild(he('p', 'recit__personne-he', D.couple.mariee.hebreu));
     couple.appendChild(pMariee);
     recit.appendChild(couple);

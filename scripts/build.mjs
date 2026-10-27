@@ -66,6 +66,10 @@ const THEMES = [
     nom: 'Bohème terracotta', slug: 'boheme-terracotta', sombre: false, surface: '#FBF2E7',
     fonts: 'family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;600&family=Frank+Ruhl+Libre:wght@400;500;700',
   },
+  {
+    nom: 'Toile de Jouy', slug: 'toile-de-jouy', sombre: false, surface: '#FBF6EA',
+    fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
+  },
 ];
 
 /* Couleurs proposees par la liste deroulante Excel (colonne K). */
@@ -398,8 +402,10 @@ async function lireClasseur() {
       id,
       genere: new Date().toISOString(),
       couple: {
-        marie: { prenom: info.txt('Prénom marié'), nom: info.txt('Nom marié'), hebreu: info.txt('Nom hébreu marié') },
-        mariee: { prenom: info.txt('Prénom mariée'), nom: info.txt('Nom mariée'), hebreu: info.txt('Nom hébreu mariée') },
+        // Le nom de famille n'est plus affiche sur la carte (demande explicite) :
+        // on ne lit meme plus ces colonnes Excel, meme si elles existent encore.
+        marie: { prenom: info.txt('Prénom marié'), hebreu: info.txt('Nom hébreu marié') },
+        mariee: { prenom: info.txt('Prénom mariée'), hebreu: info.txt('Nom hébreu mariée') },
       },
       familles: {
         parentsMarie: info.txt('Parents du marié'),
@@ -488,7 +494,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
   const payload = { ...donnees, site: { ...donnees.site, theme: theme.nom, themeSlug: theme.slug } };
 
   const { marie, mariee } = donnees.couple;
-  const description = `Invitation au mariage de ${marie.prenom} ${marie.nom} et ${mariee.prenom} ${mariee.nom}`;
+  const description = `Invitation au mariage de ${marie.prenom} et ${mariee.prenom}`;
   // L'image n'est plus affichee en tete de page : elle sert uniquement
   // d'aperçu (og:image) quand le lien de l'invitation est partage.
   const ogImage = donnees.site.image
@@ -708,7 +714,7 @@ async function main() {
   await fs.writeFile(path.join(DIST, 'apercu', 'index.html'), pageIndexApercus(donnees), 'utf8');
 
   /* ---- Rapport ---- */
-  console.log(`\n  Invitation ${donnees.id} — ${marie.prenom} ${marie.nom} & ${mariee.prenom} ${mariee.nom}`);
+  console.log(`\n  Invitation ${donnees.id} — ${marie.prenom} & ${mariee.prenom}`);
   console.log(`  Thème       : ${themePrincipal.nom} (${themePrincipal.slug})`);
   console.log(`  Couleur     : ${donnees.site.couleurNom} ${donnees.site.couleurHex}`);
   console.log(`  Houppa      : ${donnees.compteARebours.dateFr} ${donnees.compteARebours.heure} (Paris) -> ${donnees.compteARebours.iso}`);

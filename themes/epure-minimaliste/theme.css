@@ -60,7 +60,7 @@
   font-weight: 200;
   margin: 8px 0;
 }
-.noms-he { margin-top: 24px; font-size: 15px; }
+.noms__prenom-he { font-size: .5em; }
 
 .verset {
   margin-top: 40px;

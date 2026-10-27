@@ -36,6 +36,7 @@ var ClientInvitation = (function () {
     { nom: 'Dîner aux chandelles', slug: 'diner-chandelles' },
     { nom: 'Épuré minimaliste', slug: 'epure-minimaliste' },
     { nom: 'Bohème terracotta', slug: 'boheme-terracotta' },
+    { nom: 'Toile de Jouy', slug: 'toile-de-jouy' },
   ];
 
   var COULEURS = [
@@ -65,34 +66,62 @@ var ClientInvitation = (function () {
    * Prenoms francais -> suggestion(s) d'ecriture en hebreu. Une
    * PROPOSITION seulement (chacun a sa propre facon d'ecrire) : le champ
    * reste vide tant que le client n'a pas clique sur une suggestion.
-   * Liste non exhaustive (v1) -- facile a completer : une entree par
-   * prenom francais (en minuscules, sans accent), un tableau d'une ou
-   * plusieurs graphies hebraiques possibles.
+   * Grande liste (equivalences bibliques/traditionnelles quand elles
+   * existent, sinon simple transliteration phonetique -- les deux
+   * usages coexistent deja plus bas, ex. "maurice"->Moshe (equivalence)
+   * et "charles"->Karl (transliteration) ) : une entree par prenom
+   * francais (en minuscules, sans accent), un tableau d'une ou plusieurs
+   * graphies hebraiques possibles.
    * ---------------------------------------------------------------- */
   var PRENOMS_HEBREU = {
-    // -- masculins --
+    // -- masculins (bibliques / traditionnels) --
     david: ['דוד'], ilan: ['אילן'], yonathan: ['יונתן'], jonathan: ['יונתן'],
     avraham: ['אברהם'], abraham: ['אברהם'], isaac: ['יצחק'], itzhak: ['יצחק'],
     jacob: ['יעקב'], yaakov: ['יעקב'], moise: ['משה'], moshe: ['משה'],
-    shalom: ['שלום'], eliahou: ['אליהו'], elie: ['אליהו'], elias: ['אליהו'],
+    shalom: ['שלום'], chalom: ['שלום'], eliahou: ['אליהו'], elie: ['אליהו'], elias: ['אליהו'],
     simon: ['שמעון'], shimon: ['שמעון'], raphael: ['רפאל'], daniel: ['דניאל'],
     michael: ['מיכאל'], mickael: ['מיכאל'], gabriel: ['גבריאל'],
     nathan: ['נתן'], natan: ['נתן'], samuel: ['שמואל'], shmuel: ['שמואל'],
-    joseph: ['יוסף'], yossef: ['יוסף'], benjamin: ['בנימין'],
+    joseph: ['יוסף'], yossef: ['יוסף'], yossi: ['יוסי'], benjamin: ['בנימין'],
     haim: ['חיים'], chaim: ['חיים'], meir: ['מאיר'], ariel: ['אריאל'],
-    noam: ['נועם'], eytan: ['איתן'], eitan: ['איתן'], yehouda: ['יהודה'],
-    juda: ['יהודה'], judah: ['יהודה'], reuben: ['ראובן'], reouven: ['ראובן'],
-    aaron: ['אהרון'], aharon: ['אהרון'], emmanuel: ['עמנואל'],
-    mardochee: ['מרדכי'], mordekhai: ['מרדכי'], josue: ['יהושע'],
-    asher: ['אשר'], boaz: ['בועז'], netanel: ['נתנאל'], ezra: ['עזרא'],
-    salomon: ['שלמה'], shlomo: ['שלמה'], jeremie: ['ירמיהו'],
+    noam: ['נועם'], eytan: ['איתן'], eitan: ['איתן'], ethan: ['איתן'],
+    yehouda: ['יהודה'], juda: ['יהודה'], judah: ['יהודה'],
+    reuben: ['ראובן'], reouven: ['ראובן'], aaron: ['אהרון'], aharon: ['אהרון'],
+    emmanuel: ['עמנואל'], mardochee: ['מרדכי'], mordekhai: ['מרדכי'],
+    josue: ['יהושע'], asher: ['אשר'], boaz: ['בועז'], netanel: ['נתנאל'],
+    ezra: ['עזרא'], salomon: ['שלמה'], shlomo: ['שלמה'], jeremie: ['ירמיהו'],
+    adam: ['אדם'], noe: ['נח'], noah: ['נח'], caleb: ['כלב'], kaleb: ['כלב'],
+    elisee: ['אלישע'], ezechiel: ['יחזקאל'], gad: ['גד'], gedeon: ['גדעון'],
+    gideon: ['גדעון'], ismael: ['ישמעאל'], jonas: ['יונה'], yona: ['יונה'],
+    lazare: ['אליעזר'], eliezer: ['אליעזר'], levi: ['לוי'], malachie: ['מלאכי'],
+    nahum: ['נחום'], nessim: ['נסים'], nissim: ['נסים'], osee: ['הושע'],
+    samson: ['שמשון'], saul: ['שאול'], shaoul: ['שאול'], seth: ['שת'],
+    tobie: ['טוביה'], tobias: ['טוביה'], zacharie: ['זכריה'], zacharia: ['זכריה'],
+    baruch: ['ברוך'], yehiel: ['יחיאל'], yoel: ['יואל'], joel: ['יואל'],
+    yoram: ['יורם'], yoav: ['יואב'], pinhas: ['פנחס'], pinchas: ['פנחס'],
+    zevouloun: ['זבולון'], nephtali: ['נפתלי'], dan: ['דן'], jean: ['יוחנן'],
+    leon: ['אריה'], lion: ['אריה'],
+    // -- masculins (prenoms francais courants, transliteration phonetique) --
     sacha: ['אלכסנדר'], alexandre: ['אלכסנדר'], charles: ['קרל'],
     albert: ['אברהם'], maurice: ['משה'], andre: ['אנדרה'], henri: ['צבי'],
     robert: ['ראובן'], marcel: ['מרדכי'], jules: ['יהודה'],
-    // -- feminins --
+    paul: ['פול'], pierre: ['פייר'], georges: ['ז\'ורז\''], bernard: ['ברנאר'],
+    gerard: ['ג\'רר'], michel: ['מישל'], patrick: ['פטריק'], stephane: ['סטפן'],
+    julien: ['ז\'וליאן'], thomas: ['תומאס'], vincent: ['וינסן'], nicolas: ['ניקולא'],
+    philippe: ['פיליפ'], laurent: ['לוראן'], frederic: ['פרדריק'], olivier: ['אוליבייה'],
+    claude: ['קלוד'], marc: ['מרק'], luc: ['לוק'], guy: ['גי'], roger: ['רוג\'ה'],
+    rene: ['רנה'], armand: ['ארמאן'], edouard: ['אדוארד'], fernand: ['פרנאן'],
+    raymond: ['ריימונד'], gilbert: ['ז\'ילבר'], lucien: ['לוסיאן'], maxime: ['מקסים'],
+    yves: ['איב'], francois: ['פרנסואה'], felix: ['פליקס'], leo: ['ליאו'],
+    oscar: ['אוסקר'], victor: ['ויקטור'], gustave: ['גוסטב'], eugene: ['אוז\'ן'],
+    leonard: ['לאונרד'], lucas: ['לוקאס'], hugo: ['הוגו'], liam: ['ליאם'],
+    theo: ['תאו'], enzo: ['אנצו'], louis: ['לואי'], tom: ['תום'],
+    antoine: ['אנטואן'], maxence: ['מקסנס'], clement: ['קלמנט'], valentin: ['ולנטין'],
+    quentin: ['קנטן'], baptiste: ['בטיסט'], jacques: ['יעקב'],
+    // -- feminins (bibliques / traditionnels) --
     sarah: ['שרה'], sara: ['שרה'], yael: ['יעל'], jael: ['יעל'],
     rachel: ['רחל'], rebecca: ['רבקה'], rivka: ['רבקה'], myriam: ['מרים'],
-    miriam: ['מרים'], esther: ['אסתר'], hannah: ['חנה'], anna: ['חנה'],
+    miriam: ['מרים'], marie: ['מרים'], esther: ['אסתר'], hannah: ['חנה'], anna: ['חנה'],
     lea: ['לאה'], noemie: ['נעמי'], naomi: ['נעמי'], dina: ['דינה'],
     tamar: ['תמר'], shira: ['שירה'], abigael: ['אביגיל'], avigail: ['אביגיל'],
     michal: ['מיכל'], ora: ['אורה'], yocheved: ['יוכבד'],
@@ -101,6 +130,25 @@ var ClientInvitation = (function () {
     elisheva: ['אלישבע'], simone: ['שמחה'], simha: ['שמחה'],
     estelle: ['אסתר'], jeanne: ['חנה'], paulette: ['פנינה'],
     annette: ['חנה'], germaine: ['גילה'], colette: ['רחל'],
+    suzanne: ['שושנה'], fortunee: ['מזל'], blanche: ['לבנה'], zoe: ['חיה'],
+    rosette: ['ורדה'], marguerite: ['מרגריט', 'פנינה'],
+    // -- feminins (prenoms francais courants, transliteration phonetique) --
+    charlotte: ['שרלוט'], sophie: ['סופי'], julie: ['ז\'ולי'], camille: ['קמיל'],
+    emma: ['אמה'], chloe: ['קלואה'], nathalie: ['נטלי'], laurence: ['לורנס'],
+    sylvie: ['סילבי'], monique: ['מוניק'], danielle: ['דניאלה'], francine: ['פרנסין'],
+    nicole: ['ניקול'], josiane: ['ז\'וזיאן'], liliane: ['ליליאן'], arlette: ['ארלט'],
+    yvette: ['יבט'], henriette: ['הנרייט'], georgette: ['ז\'ורז\'ט'],
+    claire: ['קלייר'], caroline: ['קרולין'], valerie: ['ולרי'], isabelle: ['איזבל'],
+    christine: ['קריסטין'], veronique: ['ורוניק'], brigitte: ['בריז\'יט'],
+    martine: ['מרטין'], dominique: ['דומיניק'], corinne: ['קורין'], patricia: ['פטרישה'],
+    sandrine: ['סנדרין'], celine: ['סלין'], virginie: ['וירז\'יני'], aurelie: ['אורלי'],
+    stephanie: ['סטפני'], elodie: ['אלודי'], marion: ['מריון'], clemence: ['קלמנס'],
+    leonie: ['לאוני'], lucie: ['לוסי'], odette: ['אודט'], gisele: ['ז\'יזל'],
+    renee: ['רנה'], regine: ['רג\'ין'], mireille: ['מיראיי'], michele: ['מישל'],
+    nadine: ['נדין'], francoise: ['פרנסואז'], chantal: ['שנטל'], annick: ['אניק'],
+    berthe: ['ברת'], alice: ['אליס'], helene: ['הלנה'], yvonne: ['יבון'],
+    ines: ['אינס'], jade: ['ג\'ייד'], louise: ['לואיז'], lina: ['לינה'],
+    mia: ['מיה'], clara: ['קלרה'], juliette: ['ז\'ולייט'], margaux: ['מרגו'],
   };
 
   /** Normalise "Déborah", "deborah " etc. pour chercher dans PRENOMS_HEBREU. */
@@ -111,9 +159,71 @@ var ClientInvitation = (function () {
       .normalize('NFD').replace(/[̀-ͯ]/g, '');   // retire les accents (diacritiques combinants)
   }
 
+  /** Distance de Levenshtein, pour tolerer une faute de frappe ou une
+   *  variante orthographique tres proche d'un prenom connu. */
+  function distanceEdition(a, b) {
+    var m = a.length, n = b.length;
+    if (!m) return n;
+    if (!n) return m;
+    var prec = [];
+    for (var j = 0; j <= n; j++) prec[j] = j;
+    for (var i = 1; i <= m; i++) {
+      var cour = [i];
+      for (var j2 = 1; j2 <= n; j2++) {
+        var cout = a.charAt(i - 1) === b.charAt(j2 - 1) ? 0 : 1;
+        cour[j2] = Math.min(prec[j2] + 1, cour[j2 - 1] + 1, prec[j2 - 1] + cout);
+      }
+      prec = cour;
+    }
+    return prec[n];
+  }
+
+  var CLES_PRENOMS_HEBREU = Object.keys(PRENOMS_HEBREU);
+
+  /** Cherche les correspondances d'UN mot (pas de prenom compose) :
+   *  1) correspondance exacte, 2) prefixe partage avec un prenom connu
+   *  (remonte des suggestions "en direct" pendant la frappe, et couvre
+   *  aussi les diminutifs type "Gabi" -> "Gabriel"), 3) faute de frappe
+   *  / variante tres proche (distance d'edition courte). */
+  function suggestionsPourMot(mot) {
+    var cle = normaliserPrenom(mot);
+    if (!cle) return [];
+    if (PRENOMS_HEBREU[cle]) return PRENOMS_HEBREU[cle].slice();
+
+    if (cle.length >= 2) {
+      var parPrefixe = [];
+      CLES_PRENOMS_HEBREU.forEach(function (c) {
+        if (parPrefixe.length >= 4) return;
+        var correspond = (c.length >= 3 && c.indexOf(cle) === 0) || (cle.length >= 3 && cle.indexOf(c) === 0);
+        if (!correspond) return;
+        PRENOMS_HEBREU[c].forEach(function (h) { if (parPrefixe.indexOf(h) === -1) parPrefixe.push(h); });
+      });
+      if (parPrefixe.length) return parPrefixe;
+    }
+
+    var meilleure = null, meilleurScore = 3;
+    CLES_PRENOMS_HEBREU.forEach(function (c) {
+      if (Math.abs(c.length - cle.length) > 2) return;
+      var score = distanceEdition(cle, c);
+      if (score < meilleurScore) { meilleurScore = score; meilleure = c; }
+    });
+    return meilleure ? PRENOMS_HEBREU[meilleure].slice() : [];
+  }
+
+  /** Prenom compose ("Jean-Claude", "Marie Jeanne") : on cherche chaque
+   *  partie separement et on combine (le client assemble lui-meme). */
   function suggestionsHebreu(prenomFrancais) {
-    var cle = normaliserPrenom(prenomFrancais);
-    return PRENOMS_HEBREU[cle] || [];
+    var brut = (prenomFrancais || '').trim();
+    if (!brut) return [];
+    var parties = brut.split(/[\s-]+/).filter(Boolean);
+    if (parties.length > 1) {
+      var combine = [];
+      parties.forEach(function (p) {
+        suggestionsPourMot(p).forEach(function (h) { if (combine.indexOf(h) === -1) combine.push(h); });
+      });
+      if (combine.length) return combine;
+    }
+    return suggestionsPourMot(brut);
   }
 
   /* ---------------------------------------------------------------- *
@@ -123,8 +233,8 @@ var ClientInvitation = (function () {
   function brouillonParDefaut() {
     return {
       couple: {
-        marie: { prenom: '', nom: '', hebreu: '' },
-        mariee: { prenom: '', nom: '', hebreu: '' },
+        marie: { prenom: '', hebreu: '' },
+        mariee: { prenom: '', hebreu: '' },
       },
       familles: {
         parentsMarie: '', parentsMariee: '',

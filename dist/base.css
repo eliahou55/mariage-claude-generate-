@@ -161,19 +161,22 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .noms__prenom { display: block; }
 
-.noms-he {
-  margin: 12px 0 0;
-  font-family: var(--font-he);
-  font-size: clamp(16px, 4.6vw, 19px);
-  line-height: 1.7;
-  color: var(--muted);
-  display: flex;
+/* Le prenom hebreu est accole (en face) au prenom francais de la meme
+   personne, plutot qu'en ligne separee et commune aux deux maries. */
+.noms__personne {
+  display: inline-flex;
   flex-wrap: wrap;
-  justify-content: center;
   align-items: baseline;
-  gap: 10px;
+  justify-content: center;
+  gap: .32em;
+  max-width: 100%;
 }
-.noms-he__sep { color: var(--accent-ink); font-size: .8em; }
+.noms__prenom-he {
+  font-family: var(--font-he);
+  font-size: .56em;
+  line-height: 1.3;
+  color: var(--muted);
+}
 
 .verset {
   margin: 22px 0 0;
