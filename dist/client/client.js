@@ -37,6 +37,7 @@ var ClientInvitation = (function () {
     { nom: 'Épuré minimaliste', slug: 'epure-minimaliste' },
     { nom: 'Bohème terracotta', slug: 'boheme-terracotta' },
     { nom: 'Toile de Jouy', slug: 'toile-de-jouy' },
+    { nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu' },
   ];
 
   var COULEURS = [
@@ -262,7 +263,7 @@ var ClientInvitation = (function () {
       },
       site: {
         // Le theme et la couleur se choisissent desormais sur la page des
-        // 11 apercus (etape suivante), pas dans ce formulaire -- ces deux
+        // 12 apercus (etape suivante), pas dans ce formulaire -- ces deux
         // valeurs par defaut restent utilisees en interne (accent par
         // defaut) mais ne sont plus demandees au client.
         themeSlug: 'marbre-or',
@@ -284,7 +285,7 @@ var ClientInvitation = (function () {
    *  houppa+reception fusionnes) pour le bouton "Voir un exemple" de la
    *  page d'accueil -- genere entierement ici, jamais lu depuis l'Excel
    *  (qui contient les vraies donnees d'un client). Permet de visiter
-   *  directement la galerie des 11 themes sans remplir le formulaire. */
+   *  directement la galerie des 12 themes sans remplir le formulaire. */
   function exempleDateHe(iso) {
     if (typeof CalendrierHebreu === 'undefined') return '';
     var p = iso.split('-').map(Number);

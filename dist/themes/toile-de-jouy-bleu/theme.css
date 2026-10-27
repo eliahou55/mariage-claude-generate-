@@ -1,0 +1,83 @@
+/* Toile de Jouy bleu — ivoire, scene pastorale gravee en camaieu bleu
+   indigo (bergere, mouton, arche classique en ruine, chaumiere, oiseaux),
+   d'apres une vraie toile imprimee -- meme famille que "Toile de Jouy"
+   (vert), mais scene narrative plutot qu'arbre, en bleu plutot qu'en
+   vert : pas de cadre, pas de bloc, un trait fin continu. */
+
+:root {
+  --bg: #E6E6DC;
+  --surface: #FAFAF2;
+  --ink: #1F3A5C;
+  --muted: #5A7495;
+  --rule: rgba(31, 58, 92, .2);
+  --font-titre: "Libre Baskerville", Georgia, serif;
+  --font-corps: "Jost", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 0px;
+  --ombre: 0 24px 60px rgba(31, 58, 92, .22);
+}
+
+.decor__layer--1 {
+  background:
+    radial-gradient(90% 70% at 0% 0%, rgba(255, 253, 248, .6), transparent 62%),
+    radial-gradient(85% 65% at 100% 100%, rgba(31, 58, 92, .06), transparent 60%),
+    linear-gradient(170deg, #ECECE1, #E2E2D4);
+}
+
+/* Vignette repetee : arche antique en ruine, bergere et son panier, un
+   mouton, une chaumiere au loin, des oiseaux -- en trait grave fin,
+   comme sur une vraie toile de Jouy narrative. */
+.decor__layer--2 {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><g fill='none' stroke='rgba(31,58,92,0.4)' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(60 235) scale(0.85)'><path d='M-11 0 L-11 -22'/><path d='M11 0 L11 -22'/><path d='M-11 -22 C-11 -31 11 -31 11 -22'/><path d='M-14 0 L-8 0'/><path d='M8 0 L14 0'/><path d='M-11 -8 L-7 -9'/><path d='M11 -14 L7 -15'/></g><g transform='translate(130 230) scale(1.05)'><path d='M-14 0 C-17 -11 -15 -23 -8 -30 C-4 -34 4 -34 8 -30 C15 -23 17 -11 14 0 C8 5 -8 5 -14 0 Z'/><path d='M-10 -8 C-12 -4 -11 1 -14 3'/><path d='M10 -8 C12 -4 11 1 14 3'/><path d='M-6 -30 C-6 -38 6 -38 6 -30'/><circle cx='0' cy='-44' r='4.5'/><path d='M-4.5 -45.5 C-5 -52 5 -52 4.5 -45.5'/><path d='M4.5 -45 C7.5 -41 7.5 -37 5 -35'/><path d='M6 -34 C12 -30 16 -24 15 -18'/><ellipse cx='16.5' cy='-14' rx='4.2' ry='3.2'/><path d='M13.3 -16.8 C14.5 -20 18.5 -20 19.7 -16.8'/><path d='M-30 2 C-28 -4 -26 -4 -25 2'/><path d='M-24 2 C-22 -3 -20 -3 -19 2'/><path d='M24 3 C26 -3 28 -3 29 3'/><path d='M30 3 C32 -2 34 -2 35 3'/></g><g transform='translate(190 232) scale(0.95)'><path d='M10.9 -9.0 L12.6 -5.1 L7.6 -3.8 L7.1 -0.1 L4.7 3.0 L0.7 0.0 L-2.3 1.2 L-6.2 1.8 L-7.1 -2.4 L-9.9 -4.3 L-12.3 -7.1 L-9.3 -10.4 L-9.9 -13.8 L-9.7 -18.0 L-4.4 -16.6 L-2.5 -19.9 L1.0 -22.1 L3.3 -17.5 L6.7 -17.4 L10.4 -16.1 L8.5 -11.6 L11.2 -9.0 Z'/><path d='M0.8 -7.7 L4.4 -7.1'/><path d='M-6.5 -14.1 L-2.0 -13.9'/><path d='M-3.6 -11.9 L-1.1 -11.6'/><path d='M1.5 -0.7 L-3.0 -0.7'/><path d='M-1.6 -9.1 L1.0 -7.6'/><path d='M-6.5 -7.9 L-10.2 -5.4'/><path d='M5.8 -7.5 L7.4 -4.3'/><path d='M3.8 -16.3 L5.5 -14.0'/><path d='M4.3 -10.3 L0.7 -7.2'/><path d='M3.2 -5.7 L1.2 -4.1'/><path d='M6.6 -14.6 L9.6 -14.2'/><path d='M8.1 -11.3 L7.4 -8.5'/><path d='M2.0 -2.9 L-1.1 -2.5'/><path d='M3.8 -2.7 L6.6 -1.9'/><circle cx='13' cy='-13' r='3.6'/><path d='M15.5 -16 C17.5 -17.5 19 -16.5 18.5 -14.5'/><path d='M-6 1 L-6.5 7'/><path d='M-1.5 2 L-1.8 8'/><path d='M4 2 L4.3 8'/><path d='M9 0 L10 6'/></g><g transform='translate(235 110) scale(0.6)'><path d='M-10 0 L-10 -14 L10 -14 L10 0'/><path d='M-13 -14 L0 -25 L13 -14'/><path d='M6 -19 L6 -28'/><path d='M-2 0 L-2 -8 L2 -8 L2 0'/><path d='M-10 -7 L10 -7'/><path d='M-18 1 C-16 -5 -14 -5 -13 1'/><path d='M-12 1 C-10 -4 -8 -4 -7 1'/><path d='M10 1 C12 -5 14 -5 15 1'/><path d='M16 1 C18 -4 20 -4 21 1'/></g><path d='M29 57 C35 49 41 53 45 57 C49 53 55 49 61 57'/><path d='M174 42 C180 34 186 38 190 42 C194 38 200 34 206 42' transform='rotate(10 190 40)'/><path d='M239 192 C245 184 251 188 255 192 C259 188 265 184 271 192' transform='rotate(-8 255 190)'/></g></svg>");
+  background-size: 300px 300px;
+  opacity: .6;
+}
+.decor__layer--3 { background: none; }
+
+.filet {
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  position: relative;
+}
+.filet::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  border: 1.2px solid var(--accent);
+  background: var(--surface);
+}
+
+.noms { letter-spacing: .01em; }
+.noms__lien { font-style: italic; }
+.verset { color: var(--muted); }
+
+.event {
+  border: none;
+  border-top: 1px solid var(--accent-soft);
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  background: none;
+  padding-inline: 4px;
+}
+.event__titre { letter-spacing: .03em; }
+.event__icon {
+  border-radius: 50%;
+  background: none;
+  border: 1px solid var(--accent);
+}
+.event__filet { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+
+.btn--principal { border-radius: 2px; letter-spacing: .14em; }
+
+.compte__cell { background: none; border-radius: 0; }
+.compte__cell + .compte__cell { border-left: 1px solid var(--rule); }
+
+@media (prefers-reduced-motion: reduce) {
+  .decor__layer--2 { opacity: .45; }
+}

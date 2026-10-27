@@ -77,7 +77,13 @@ img { max-width: 100%; height: auto; display: block; }
   width: 100%;
   max-width: var(--carte-w);
   margin: 0 auto;
-  background: var(--surface);
+  /* Legerement translucide (pas opaque) : sur mobile, la carte occupe tout
+     l'ecran, donc le decor de fond (.decor, derriere) ne se voyait qu'aux
+     deux extremites de la page. En laissant passer un peu le fond partout,
+     chaque theme reste reconnaissable sur telephone, pas seulement sur
+     grand ecran. Le texte reste net : c'est l'arriere-plan qui est
+     translucide, pas le contenu (opacity ferait l'inverse). */
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
   min-height: 100vh;
 }
 

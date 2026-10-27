@@ -67,7 +67,11 @@ const THEMES = [
     fonts: 'family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;600&family=Frank+Ruhl+Libre:wght@400;500;700',
   },
   {
-    nom: 'Toile de Jouy', slug: 'toile-de-jouy', sombre: false, surface: '#FBF6EA',
+    nom: 'Toile de Jouy', slug: 'toile-de-jouy', sombre: false, surface: '#FAF7EB',
+    fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
+  },
+  {
+    nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu', sombre: false, surface: '#FAFAF2',
     fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
   },
 ];
@@ -614,7 +618,7 @@ ${cartes}
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Comparez les 11 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
+    if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
     var pied = document.getElementById('pied-apercus');
     if (pied) {
       pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '

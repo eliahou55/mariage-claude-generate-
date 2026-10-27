@@ -3,7 +3,7 @@
  * d'evenements choisi a l'etape 1, dans l'ordre choisi -- un groupe fusionne
  * affiche un seul jeu de champs partage). A la soumission : calcule le JSON
  * final (ClientInvitation.construireDonnees) et l'ecrit dans
- * CLE_STOCKAGE_DONNEES, puis redirige vers la galerie des 11 themes (theme
+ * CLE_STOCKAGE_DONNEES, puis redirige vers la galerie des 12 themes (theme
  * et couleur se choisissent la-bas, plus dans ce formulaire).
  */
 (function () {
