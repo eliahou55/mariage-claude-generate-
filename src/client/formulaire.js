@@ -123,6 +123,20 @@
     majApercuVerset();
   }
 
+  /* --- Musique (liste proposee, celle par defaut deja selectionnee). --- */
+  function rendreMusiques() {
+    var selectMusique = document.getElementById('f-musique');
+    if (!selectMusique) return;
+    selectMusique.innerHTML = '';
+    ClientInvitation.MUSIQUES.forEach(function (m) {
+      var opt = document.createElement('option');
+      opt.value = m.fichier;
+      opt.textContent = m.fichier === ClientInvitation.MUSIQUE_DEFAUT ? m.nom + ' (par défaut)' : m.nom;
+      selectMusique.appendChild(opt);
+    });
+    selectMusique.value = brouillon.site.musique || ClientInvitation.MUSIQUE_DEFAUT;
+  }
+
   function majApercuVerset() {
     var v = selectVerset.value === '__autre__' ? autreVersetInput.value : selectVerset.value;
     apercuVersetEl.textContent = v || '';
@@ -271,6 +285,7 @@
     brouillon.familles.memoire = val('f-memoire');
 
     brouillon.site.verset = selectVerset.value === '__autre__' ? autreVersetInput.value.trim() : selectVerset.value;
+    brouillon.site.musique = val('f-musique');
     brouillon.site.lien = val('f-lien');
 
     brouillon.groupes.forEach(function (groupe) {
@@ -303,6 +318,7 @@
   /* --- Initialisation --- */
   preRemplir();
   rendreVersets();
+  rendreMusiques();
   rendreEvenements();
   cablerSuggestionsHebreu('f-marie-prenom', 'f-marie-hebreu', 'suggestions-marie');
   cablerSuggestionsHebreu('f-mariee-prenom', 'f-mariee-hebreu', 'suggestions-mariee');

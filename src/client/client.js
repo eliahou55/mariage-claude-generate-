@@ -46,6 +46,21 @@ var ClientInvitation = (function () {
     ['Noir', '#1A1A1A'], ['Blanc', '#FFFFFF'],
   ];
 
+  /* Musiques proposees (fichiers dans src/client/musique/, copies tels
+   * quels vers dist/client/musique/ par le build). Si le client n'en
+   * choisit aucune, MUSIQUE_DEFAUT joue automatiquement. */
+  var MUSIQUES = [
+    { fichier: 'bereshit-olam.mp3', nom: 'Bereshit Olam — Shlomi Shabbat' },
+    { fichier: 'im-eshkakhekh.mp3', nom: 'Im Eshkakhekh — Ben Snouf' },
+    { fichier: 'im-eshkachech-yerushalaim.mp3', nom: 'Im Eshkachech Yerouchalaïm' },
+    { fichier: 'shaarei-houpa.mp3', nom: "Chaarei Houpa — Ben Snouf" },
+    { fichier: 'ishti.mp3', nom: 'Ichti — Maor Edri' },
+    { fichier: 'eze-mazal.mp3', nom: 'Eyzé Mazal' },
+    { fichier: 'haim-sheli.mp3', nom: 'Haim Cheli — Eden Ben Zaken' },
+    { fichier: 'ten-li-tefila.mp3', nom: 'Ten Li Tefila — Shmuel' },
+  ];
+  var MUSIQUE_DEFAUT = 'bereshit-olam.mp3';
+
   var VERSETS_PROPOSES = [
     'קול ששון וקול שמחה קול חתן וקול כלה',
     'בסימן טוב ובמזל טוב',
@@ -254,6 +269,7 @@ var ClientInvitation = (function () {
         couleurNom: 'Or',
         verset: VERSETS_PROPOSES[0],
         lien: '',
+        musique: '',   // vide = MUSIQUE_DEFAUT (Bereshit Olam) a la construction
       },
       // Chaque "groupe" est une carte sur l'invitation finale : un tableau
       // d'une ou plusieurs cles d'evenements. [['houppa']] par defaut (une
@@ -295,6 +311,7 @@ var ClientInvitation = (function () {
         couleurNom: 'Or',
         verset: VERSETS_PROPOSES[0],
         lien: '',
+        musique: '',   // aucune choisie -> MUSIQUE_DEFAUT (Bereshit Olam)
       },
       groupes: [['mairie'], ['henne'], ['houppa', 'reception'], ['chabbat']],
       evenementsDonnees: {
@@ -471,8 +488,12 @@ var ClientInvitation = (function () {
         couleurNom: brouillon.site.couleurNom,
         couleurHex: couleurHex,
         verset: brouillon.site.verset || '',
-        musique: null,     // pas d'upload audio en v1 (voir notes projet)
-        image: null,       // idem pour l'image de couverture
+        // Chemin relatif a la racine de dist/, resolu par app.js via
+        // BASE + musique (meme mecanisme que medias/<id>_musique.mp3 cote
+        // Excel). Aucun choix -> MUSIQUE_DEFAUT (Bereshit Olam) : il y a
+        // toujours une musique, jamais de silence par defaut.
+        musique: 'client/musique/' + (brouillon.site.musique || MUSIQUE_DEFAUT),
+        image: null,       // pas d'upload d'image en v1 (voir notes projet)
       },
       compteARebours: {
         iso: new Date(ts).toISOString(),
@@ -492,6 +513,8 @@ var ClientInvitation = (function () {
     THEMES: THEMES,
     COULEURS: COULEURS,
     VERSETS_PROPOSES: VERSETS_PROPOSES,
+    MUSIQUES: MUSIQUES,
+    MUSIQUE_DEFAUT: MUSIQUE_DEFAUT,
     lireBrouillon: lireBrouillon,
     ecrireBrouillon: ecrireBrouillon,
     reinitialiser: reinitialiser,
