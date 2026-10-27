@@ -247,7 +247,7 @@ var ClientInvitation = (function () {
       },
       site: {
         // Le theme et la couleur se choisissent desormais sur la page des
-        // 10 apercus (etape suivante), pas dans ce formulaire -- ces deux
+        // 11 apercus (etape suivante), pas dans ce formulaire -- ces deux
         // valeurs par defaut restent utilisees en interne (accent par
         // defaut) mais ne sont plus demandees au client.
         themeSlug: 'marbre-or',
@@ -261,6 +261,49 @@ var ClientInvitation = (function () {
       // en UN tableau (n'importe quelle paire, pas seulement houppa/reception).
       groupes: [['houppa']],
       evenementsDonnees: {},   // { cle: { date, heure, dateHe, lieu, adresse } }
+    };
+  }
+
+  /** Brouillon factice complet (couple, familles et les 5 evenements,
+   *  houppa+reception fusionnes) pour le bouton "Voir un exemple" de la
+   *  page d'accueil -- genere entierement ici, jamais lu depuis l'Excel
+   *  (qui contient les vraies donnees d'un client). Permet de visiter
+   *  directement la galerie des 11 themes sans remplir le formulaire. */
+  function exempleDateHe(iso) {
+    if (typeof CalendrierHebreu === 'undefined') return '';
+    var p = iso.split('-').map(Number);
+    try { return CalendrierHebreu.versHebreu(p[0], p[1], p[2]).texte; } catch (e) { return ''; }
+  }
+
+  function exempleBrouillon() {
+    return {
+      couple: {
+        marie: { prenom: 'Ruben', hebreu: 'ראובן' },
+        mariee: { prenom: 'Léa', hebreu: 'לאה' },
+      },
+      familles: {
+        parentsMarie: 'M. et Mme Jacques Attali',
+        parentsMariee: 'M. et Mme Henri Touitou',
+        grandsParentsMarieMaman: 'Papi Simon & Mami Alice',
+        grandsParentsMariePapa: 'Papi Max & Mami Rosette',
+        grandsParentsMarieeMaman: 'Papi Albert & Mami Suzanne',
+        grandsParentsMarieePapa: 'Papi Léon & Mami Paulette',
+        memoire: '',
+      },
+      site: {
+        themeSlug: 'marbre-or',
+        couleurNom: 'Or',
+        verset: VERSETS_PROPOSES[0],
+        lien: '',
+      },
+      groupes: [['mairie'], ['henne'], ['houppa', 'reception'], ['chabbat']],
+      evenementsDonnees: {
+        mairie: { date: '2027-06-15', heure: '10:00', dateHe: exempleDateHe('2027-06-15'), lieu: 'Mairie de Vincennes', adresse: '53 Rue de Fontenay, 94300 Vincennes' },
+        henne: { date: '2027-06-17', heure: '20:00', dateHe: exempleDateHe('2027-06-17'), lieu: 'Salle Les Orangers', adresse: '12 Avenue des Palmiers, 94100 Saint-Maur-des-Fossés' },
+        houppa: { date: '2027-06-20', heure: '19:00', dateHe: exempleDateHe('2027-06-20'), lieu: 'Domaine de la Roseraie', adresse: '4 Allée des Tilleuls, 78000 Versailles' },
+        reception: { date: '2027-06-20', heure: '', dateHe: exempleDateHe('2027-06-20'), lieu: 'Domaine de la Roseraie', adresse: '4 Allée des Tilleuls, 78000 Versailles' },
+        chabbat: { date: '2027-06-19', heure: '', dateHe: exempleDateHe('2027-06-19'), lieu: "Synagogue Or 'Haïm", adresse: '8 Rue du Chabbat, 75011 Paris' },
+      },
     };
   }
 
@@ -457,5 +500,6 @@ var ClientInvitation = (function () {
     dateFr: dateFr,
     construireDonnees: construireDonnees,
     suggestionsHebreu: suggestionsHebreu,
+    exempleBrouillon: exempleBrouillon,
   };
 })();

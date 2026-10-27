@@ -174,7 +174,8 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .etape-carte__texte { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.55; }
 
 .accueil__cta { text-align: center; margin: 0 0 32px; }
-.accueil__cta .btn { padding-inline: 44px; }
+.accueil__cta .btn--principal { padding-inline: 44px; }
+.accueil__cta #bouton-exemple { display: flex; margin: 14px auto 0; text-decoration: underline; text-underline-offset: 3px; }
 
 .rassurance {
   display: flex;

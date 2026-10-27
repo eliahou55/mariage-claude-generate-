@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Créer votre invitation — Invitations de mariage juif</title>
-<meta name="description" content="Configurez le déroulé de votre mariage et créez votre invitation en ligne, dans 10 thèmes élégants.">
+<meta name="description" content="Configurez le déroulé de votre mariage et créez votre invitation en ligne, dans 11 thèmes élégants.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
@@ -22,7 +22,7 @@
       <p class="chapo">
         Henné, mairie, Chabbat 'Hatan, houppa, réception : composez le déroulé exact de votre
         mariage, remplissez vos informations, et découvrez votre faire-part en ligne dans
-        10 thèmes élégants — prêt à partager à vos invités en quelques minutes.
+        11 thèmes élégants — prêt à partager à vos invités en quelques minutes.
       </p>
     </section>
 
@@ -53,7 +53,7 @@
         <div>
           <p class="etape-carte__titre">Votre invitation</p>
           <p class="etape-carte__texte">
-            Elle apparaît aussitôt avec vos vraies informations, dans les 10 thèmes — comparez,
+            Elle apparaît aussitôt avec vos vraies informations, dans les 11 thèmes — comparez,
             choisissez, et partagez le lien.
           </p>
         </div>
@@ -62,6 +62,7 @@
 
     <div class="accueil__cta">
       <a class="btn btn--principal" href="configurateur.html" id="lien-commencer">Commencer</a>
+      <button type="button" class="btn btn--texte" id="bouton-exemple">Voir un exemple</button>
     </div>
 
     <p class="rassurance">
@@ -73,6 +74,7 @@
 </div>
 
 <script src="../stockage.js"></script>
+<script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
 <script>
   // Si un brouillon existe deja, "Commencer" reprend la saisie en cours
@@ -84,6 +86,20 @@
       }
     } catch (e) { /* ignore */ }
   })();
+
+  // "Voir un exemple" : genere un mariage fictif complet (mairie, henne,
+  // houppa+reception, chabbat) et ouvre directement la galerie des 11
+  // themes avec ces donnees -- sans toucher au brouillon en cours du
+  // visiteur, qu'il pourra reprendre ensuite normalement.
+  document.getElementById('bouton-exemple').addEventListener('click', function () {
+    try {
+      var donnees = ClientInvitation.construireDonnees(ClientInvitation.exempleBrouillon());
+      window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(donnees));
+      window.location.href = '../apercu/index.html';
+    } catch (e) {
+      window.location.href = '../apercu/index.html';
+    }
+  });
 </script>
 </body>
 </html>

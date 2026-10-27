@@ -21,7 +21,7 @@ const XLSX = path.join(DATA_ROOT, 'invitation_mariage.xlsx');
 const DIST = path.join(PROJECT, 'dist');
 
 /* ------------------------------------------------------------------ *
- * Catalogue des 10 themes. `nom` doit correspondre EXACTEMENT au texte
+ * Catalogue des themes. `nom` doit correspondre EXACTEMENT au texte
  * de la liste deroulante Excel (colonne J de la feuille Site).
  * `surface` sert au calcul de contraste de la couleur d'accent.
  * ------------------------------------------------------------------ */
@@ -583,7 +583,7 @@ code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
 <body>
 <div class="wrap">
 <h1>${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</h1>
-<p class="sous">Les 10 thèmes, avec les données réelles de l’Excel et la couleur « ${echappe(donnees.site.couleurNom)} ».</p>
+<p class="sous">Les ${THEMES.length} thèmes, avec les données réelles de l’Excel et la couleur « ${echappe(donnees.site.couleurNom)} ».</p>
 <div class="grille">
 ${cartes}
 </div>
@@ -614,7 +614,7 @@ ${cartes}
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Comparez les 10 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
+    if (sous) sous.textContent = 'Comparez les 11 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
     var pied = document.getElementById('pied-apercus');
     if (pied) {
       pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '
@@ -701,7 +701,7 @@ async function main() {
     'utf8',
   );
 
-  // Apercus des 10 themes
+  // Apercus de tous les themes
   for (const t of THEMES) {
     const dir = path.join(DIST, 'apercu', t.slug);
     await fs.mkdir(dir, { recursive: true });
