@@ -67,7 +67,7 @@ const THEMES = [
     fonts: 'family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;600&family=Frank+Ruhl+Libre:wght@400;500;700',
   },
   {
-    nom: 'Toile de Jouy', slug: 'toile-de-jouy', sombre: false, surface: '#FAF7EB',
+    nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert', sombre: false, surface: '#FAF7EB',
     fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
   },
   {

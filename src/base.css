@@ -81,9 +81,9 @@ img { max-width: 100%; height: auto; display: block; }
      l'ecran, donc le decor de fond (.decor, derriere) ne se voyait qu'aux
      deux extremites de la page. En laissant passer un peu le fond partout,
      chaque theme reste reconnaissable sur telephone, pas seulement sur
-     grand ecran. Le texte reste net : c'est l'arriere-plan qui est
+     grand ecran (--carte-opacite : reglable par theme). Le texte reste net : c'est l'arriere-plan qui est
      translucide, pas le contenu (opacity ferait l'inverse). */
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  background: color-mix(in srgb, var(--surface) var(--carte-opacite, 58%), transparent);
   min-height: 100vh;
 }
 
@@ -207,33 +207,47 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.12;
   letter-spacing: .01em;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: .3em;
+  width: 100%;
 }
 .noms__lien {
   font-size: .48em;
   color: var(--accent-ink);
   line-height: 1;
-  margin: 4px 0;
+  margin: 0;
+  align-self: center;
+  flex: none;
 }
 .noms__prenom { display: block; }
 
-/* Le prenom hebreu est accole (en face) au prenom francais de la meme
-   personne, plutot qu'en ligne separee et commune aux deux maries. */
+/* Les deux maries face a face (marie a gauche, mariee a droite), chacun
+   avec son prenom hebreu juste en dessous de son prenom francais. Taille
+   reduite (.92em, et davantage pour les prenoms longs via --noms-echelle,
+   calcule par app.js) pour que les deux tiennent cote a cote sur telephone. */
 .noms__personne {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: .32em;
-  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: calc(.92em * var(--noms-echelle, 1));
+  text-align: center;
+  overflow-wrap: break-word;
 }
 .noms__prenom-he {
+  display: block;
+  margin-top: .18em;
+  text-align: center;
   font-family: var(--font-he);
-  font-size: .56em;
+  font-size: max(15px, .5em);
   line-height: 1.3;
   color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+  text-indent: 0;
 }
 
 .verset {
@@ -402,10 +416,12 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: clamp(28px, 9.5vw, 38px);
   line-height: 1.18;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: .3em;
 }
-.invitation__noms .noms__lien { font-size: .5em; color: var(--accent-ink); margin: 2px 0; }
+.invitation__noms .noms__lien { font-size: .5em; color: var(--accent-ink); margin: 0; align-self: center; flex: none; }
 
 /* Reutilise l'ornement .filet de chaque theme (deja dessine pour l'accueil)
    pour encadrer la liste d'evenements et le pied de page. */
@@ -425,7 +441,7 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 18px 18px 16px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 55%, transparent);
 }
 
 .event__head {
@@ -648,7 +664,7 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 28px 20px 26px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--accent) 4%, var(--surface));
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 55%, transparent);
 }
 .rsvp__titre {
   margin: 0;

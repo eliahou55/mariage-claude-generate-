@@ -36,7 +36,7 @@ var ClientInvitation = (function () {
     { nom: 'Dîner aux chandelles', slug: 'diner-chandelles' },
     { nom: 'Épuré minimaliste', slug: 'epure-minimaliste' },
     { nom: 'Bohème terracotta', slug: 'boheme-terracotta' },
-    { nom: 'Toile de Jouy', slug: 'toile-de-jouy' },
+    { nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert' },
     { nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu' },
   ];
 

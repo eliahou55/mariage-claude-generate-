@@ -135,6 +135,12 @@
    *  en tete de l'invitation -- meme balise/classe racine que l'appelant. */
   function construireNomsCouple(tag, cls) {
     var conteneur = el(tag, cls);
+    // Face a face : plus le plus long mot des deux prenoms est long, plus on
+    // reduit la taille, pour ne jamais couper un prenom au milieu d'un mot
+    // (seuls les traits d'union et les espaces peuvent passer a la ligne).
+    var plusLong = (D.couple.marie.prenom + ' ' + D.couple.mariee.prenom)
+      .split(/[s-]+/).reduce(function (m, w) { return Math.max(m, w.length); }, 0);
+    if (plusLong > 5) conteneur.style.setProperty('--noms-echelle', Math.max(0.45, 5.5 / plusLong).toFixed(3));
     conteneur.appendChild(construireNomPersonne(D.couple.marie));
     conteneur.appendChild(el('span', 'noms__lien', '&'));
     conteneur.appendChild(construireNomPersonne(D.couple.mariee));

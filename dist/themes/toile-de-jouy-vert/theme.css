@@ -1,0 +1,69 @@
+/* Toile de Jouy vert -- ivoire et camaieu vert sauge, sur fond de toile
+   de Jouy "aux arbres" (image fournie, themes/toile-de-jouy-vert/fond.jpg). */
+
+:root {
+  --bg: #EAE4D2;
+  --surface: #FAF7EB;
+  --ink: #45532F;
+  --muted: #74805A;
+  --rule: rgba(69, 83, 47, .2);
+  --font-titre: "Libre Baskerville", Georgia, serif;
+  --font-corps: "Jost", system-ui, sans-serif;
+  --font-he: "Frank Ruhl Libre", Georgia, serif;
+  --radius: 0px;
+  --ombre: 0 24px 60px rgba(69, 83, 47, .22);
+}
+
+/* Fond d'ecran : l'image de toile de Jouy fournie (fond.jpg), telle
+   quelle, en une seule piece qui couvre tout l'ecran (pas de raccords). */
+.decor__layer--1 { background: #F4F2EA url("fond.jpg") center top / cover no-repeat; }
+.decor__layer--2 { background: none; }
+.decor__layer--3 { background: none; }
+
+.filet {
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  position: relative;
+}
+.filet::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  border: 1.2px solid var(--accent);
+  background: var(--surface);
+}
+
+.noms { letter-spacing: .01em; }
+.noms__lien { font-style: italic; }
+.verset { color: var(--muted); }
+
+/* Trait fin en haut/bas, pas de bloc ferme : coherent avec le style
+   "gravure au trait" de la toile, plutot qu'une carte encadree. */
+.event {
+  border: none;
+  border-top: 1px solid var(--accent-soft);
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  background: none;
+  padding-inline: 4px;
+}
+.event__titre { letter-spacing: .03em; }
+.event__icon {
+  border-radius: 50%;
+  background: none;
+  border: 1px solid var(--accent);
+}
+.event__filet { background: linear-gradient(90deg, var(--accent-soft), transparent); }
+
+.btn--principal { border-radius: 2px; letter-spacing: .14em; }
+
+/* Chiffres du compte a rebours separes par un simple trait, pas de case. */
+.compte__cell { background: none; border-radius: 0; }
+.compte__cell + .compte__cell { border-left: 1px solid var(--rule); }
+
