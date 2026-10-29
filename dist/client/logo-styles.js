@@ -260,6 +260,66 @@ var LogoStyles = (function () {
     return s;
   }
 
+  /* ================================================================ *
+   * Lianes : feuillage leger qui court le long d'un cadre (arche,
+   * ecusson, ovale, cercle...), pour habiller tout le contour sans le
+   * surcharger. Le trace est mesure par le navigateur (getPointAtLength).
+   * ================================================================ */
+
+  var mesureur = null;
+  function echantillons(d, t0, t1, pas) {
+    if (!mesureur) {
+      var hote = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      hote.setAttribute('width', '0'); hote.setAttribute('height', '0');
+      hote.style.position = 'absolute'; hote.style.visibility = 'hidden';
+      mesureur = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      hote.appendChild(mesureur);
+      document.body.appendChild(hote);
+    }
+    mesureur.setAttribute('d', d);
+    var L = mesureur.getTotalLength(), pts = [];
+    for (var l = L * t0; l <= L * t1; l += pas) {
+      var p = mesureur.getPointAtLength(l), q = mesureur.getPointAtLength(Math.min(L, l + 1));
+      pts.push({ x: p.x, y: p.y, a: Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI });
+    }
+    return pts;
+  }
+  function arcD(R, a0, a1, cx, cy) {
+    var p0 = [(cx || 150) + Math.cos(rad(a0)) * R, (cy || 150) + Math.sin(rad(a0)) * R], p1 = [(cx || 150) + Math.cos(rad(a1)) * R, (cy || 150) + Math.sin(rad(a1)) * R];
+    return 'M' + r2(p0[0]) + ' ' + r2(p0[1]) + 'A' + R + ' ' + R + ' 0 ' + (Math.abs(a1 - a0) > 180 ? 1 : 0) + ' ' + (a1 > a0 ? 1 : 0) + ' ' + r2(p1[0]) + ' ' + r2(p1[1]);
+  }
+
+  /** Liane le long du trace `d` (entre les fractions t0 et t1 de sa
+   *  longueur), decalee vers l'exterieur. mode 'trait' ou 'aquarelle'. */
+  function liane(d, o) {
+    var pts = echantillons(d, o.t0 || 0, o.t1 == null ? 1 : o.t1, o.pas || 7);
+    if (pts.length < 2) return '';
+    var cx = o.cx || 150, cy = o.cy || 150, decal = o.decal == null ? 5 : o.decal, aq = o.mode === 'aquarelle';
+    var tige = [], s = '';
+    pts.forEach(function (p, i) {
+      // normale orientee vers l'exterieur (loin du centre du logo)
+      var n = p.a - 90, nx = Math.cos(rad(n)), ny = Math.sin(rad(n));
+      if (nx * (p.x - cx) + ny * (p.y - cy) < 0) { n += 180; nx = -nx; ny = -ny; }
+      var x = p.x + nx * decal + Math.sin(i * 1.7) * 1.4, y = p.y + ny * decal + Math.cos(i * 1.3) * 1.4;
+      tige.push(r2(x) + ' ' + r2(y));
+      var cote = i % 2 ? 1 : -1, ang = p.a + (cote > 0 ? 180 : 0) + cote * (38 + (i % 3) * 8);
+      // feuilles plutot tournees vers l'exterieur
+      var angExt = n + cote * 25;
+      var taille = (o.taille || (aq ? 12 : 8)) * (.75 + (i % 4) * .12);
+      if (aq) {
+        s += feuilleA(x, y, i % 3 ? ang : angExt, taille, taille * .3, i % 3 ? o.feuillage : teinte(o.feuillage, i % 2 ? .3 : -.12));
+        if (o.fleurs && i % 7 === 3) s += fleurA(x + nx * 3, y + ny * 3, 4.5, i % 2 ? o.fleurs : '#FFFFFF', '#E6B85C', i * 23);
+        else if (i % 5 === 0) s += point(x + nx * 4, y + ny * 4, 1.6, i % 2 ? '#FFFFFF' : teinte(o.feuillage, .5));
+      } else {
+        s += g(x, y, i % 3 ? ang : angExt, 1, feuilleT(taille, taille * .3, o.c, .55));
+        if (i % 9 === 4) s += anemone(x + nx * 4, y + ny * 4, 3.6, o.c, i * 17);
+        else if (i % 6 === 1) s += g(x, y, n, 1, boutonT(6, o.c));
+      }
+    });
+    var trait = '<path d="M' + tige.join('L') + '" fill="none" stroke="' + (aq ? teinte(o.feuillage, -.25) : o.c) + '" stroke-width="' + (aq ? .9 : .5) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+    return trait + s;
+  }
+
   /** Ecusson a epaules decoupees (comme un blason de mariage). */
   var ECUSSON = 'M150 54C168 54 184 50 196 42L204 48C212 46 218 44 222 40C225 74 226 108 222 142C216 192 188 226 150 246C112 226 84 192 78 142C74 108 75 74 78 40C82 44 88 46 96 48L104 42C116 50 132 54 150 54Z';
 
@@ -727,6 +787,33 @@ var LogoStyles = (function () {
     },
   ];
 
+  /* Lianes de feuillage par logo (voir liane()) : le long des cadres. */
+  var ARCHE_T = 'M92 236V118A58 58 0 0 1 208 118V236';
+  var ARCHE_J = 'M88 248V128C88 102 108 86 128 74C138 68 146 60 150 46C154 60 162 68 172 74C192 86 212 102 212 128V248';
+  var ARCHE_P = 'M98 252V128C98 104 116 88 136 76C144 71 148 62 150 50C152 62 156 71 164 76C184 88 202 104 202 128V252';
+  var COEUR_T = 'M150 250C112 222 70 188 68 140C66 108 88 88 114 88C130 88 143 98 150 110C157 98 170 88 186 88C212 88 234 108 232 140C230 188 188 222 150 250Z';
+  var ovale = function (rx, ry, cy) { return 'M' + (150 - rx) + ' ' + cy + 'A' + rx + ' ' + ry + ' 0 1 0 ' + (150 + rx) + ' ' + cy + 'A' + rx + ' ' + ry + ' 0 1 0 ' + (150 - rx) + ' ' + cy + 'Z'; };
+  var LIANES = {
+    couronne: function (c) { return liane(arcD(124, 112, 258), { c: c.ornement, decal: 0, taille: 9 }) + liane(arcD(124, 68, -78), { c: c.ornement, decal: 0, taille: 9 }); },
+    arche: function (c) { return liane(ARCHE_T, { c: c.ornement, decal: 6, t0: .04, t1: .96 }); },
+    ecusson: function (c) { return liane(ECUSSON, { c: c.ornement, decal: 6, t0: .02, t1: .98, cy: 146 }); },
+    cartouche: function (c) { return liane('M50 206V94', { c: c.ornement, decal: 7 }) + liane('M250 206V94', { c: c.ornement, decal: 7 }); },
+    medaillon: function (c) { return liane(ovale(66, 92, 148), { c: c.ornement, decal: 4, cy: 148, t0: .03, t1: .97 }); },
+    coeur: function (c) { return liane(COEUR_T, { c: c.ornement, decal: 7, cy: 160, t0: .12, t1: .88 }); },
+    cercle: function (c) { return liane(arcD(96, 18, 162), { c: c.ornement, decal: 6 }); },
+    brin: function (c) { return liane(arcD(100, 148, 214, 150, 160), { c: c.ornement, decal: 0, cy: 160 }) + liane(arcD(100, 32, -34, 150, 160), { c: c.ornement, decal: 0, cy: 160 }); },
+    'arche-jerusalem': function (c) { return liane(ARCHE_J, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 7, t0: .08, t1: .92 }); },
+    panorama: function (c) { return liane('M54 160A96 96 0 0 0 246 160', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, t0: .12, t1: .88 }); },
+    pivoines: function (c) { return liane(ECUSSON, { mode: 'aquarelle', feuillage: c.feuillage, decal: 9, t0: .35, t1: .65, cy: 146 }); },
+    'bord-de-mer': function (c) { return liane(ECUSSON, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 8, t0: .06, t1: .94, cy: 146 }); },
+    'arche-palmiers': function (c) { return liane(ARCHE_P, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 6, t0: .3, t1: .7 }); },
+    paon: function (c) { return liane('M64 254V176', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, cy: 200 }) + liane('M236 254V176', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, cy: 200 }); },
+    'houppa-fleurie': function (c) { return liane('M58 250V104', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 4, cy: 170 }) + liane('M242 250V104', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 4, cy: 170 }); },
+    'couronne-roses': function (c) { return liane(ovale(118, 118, 146), { mode: 'aquarelle', feuillage: c.feuillage, decal: 0, cy: 146, taille: 10, pas: 9 }); },
+    grenadier: function (c) { return liane(arcD(120, 104, 250, 150, 146), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 146 }) + liane(arcD(120, 76, -70, 150, 146), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 146 }); },
+    champetre: function (c) { return liane(arcD(104, 14, 166, 150, 126), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 126 }); },
+  };
+
   var FAMILLES = { trait: TRAIT, couleur: COULEUR };
 
   var LIBELLES = {
@@ -760,7 +847,12 @@ var LogoStyles = (function () {
     for (var k in style.couleurs) c[k] = (couleurs && couleurs[k]) || style.couleurs[k];
     policeChoisie = null;
     for (var i = 0; i < POLICES.length; i++) if (policeId && POLICES[i].id === policeId) policeChoisie = POLICES[i];
-    try { return style.dessin(echappe(a || ' '), echappe(b || ' '), c, echappe(texte || '')); }
+    try {
+      var rendu = style.dessin(echappe(a || ' '), echappe(b || ' '), c, echappe(texte || ''));
+      // Liane de feuillage glissee sous le reste du dessin.
+      if (LIANES[style.id]) rendu = rendu.replace(/(<svg[^>]*>(?:<defs>[\s\S]*?<\/defs>)?)/, function (m) { return m + LIANES[style.id](c); });
+      return rendu;
+    }
     finally { policeChoisie = null; }
   }
 
