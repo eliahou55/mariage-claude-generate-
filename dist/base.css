@@ -60,7 +60,9 @@ img { max-width: 100%; height: auto; display: block; }
 
 .decor {
   position: fixed;
-  inset: 0;
+  inset: 0 0 auto 0;
+  height: 100vh;
+  height: 100lvh;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
@@ -550,11 +552,13 @@ img { max-width: 100%; height: auto; display: block; }
 .event:not(.event--recit) { padding: 34px 22px 28px; }
 .event:not(.event--recit) .event__titre { font-size: 26px; }
 .event:not(.event--recit) .event__filet { margin: 16px auto 20px; }
-.event__texte { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 0 24px; }
+.event__texte { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0; }
 .event__texte p { margin: 0; }
 .event__phrase { max-width: 24em; margin-bottom: 8px !important; font-size: 15px; font-style: italic; line-height: 1.7; color: var(--muted); }
-.event__texte .event__date-phare { margin: 4px 0 0; font-size: clamp(18px, 5vw, 21px); }
-.event__heure-phare {
+.event__texte .date-phare { margin: 4px 0 0; font-size: clamp(18px, 5vw, 21px); }
+.heure-phare,
+.recit__details .heure-phare {
+  margin: 0;
   font-family: var(--font-titre);
   font-size: clamp(16px, 4.4vw, 18px);
   letter-spacing: .04em;
@@ -623,11 +627,11 @@ img { max-width: 100%; height: auto; display: block; }
 .recit__personne-nom {
   margin: 0;
   font-family: var(--font-titre);
-  font-size: 19px;
+  font-size: clamp(24px, 7vw, 30px);
   color: var(--accent-ink);
 }
-.recit__personne-he { margin: 0; font-family: var(--font-he); font-size: 14px; color: var(--muted); }
-.recit__esperluette--couple { font-size: 20px; margin: 0; }
+.recit__personne-he { margin: 0; font-family: var(--font-he); font-size: 15px; color: var(--muted); }
+.recit__esperluette--couple { font-size: 26px; margin: 0; }
 
 .recit__details {
   display: flex;
@@ -643,8 +647,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 /* Date et heure en evidence : une seule ligne, aeree, un peu plus grande
    que le texte autour. */
-.recit__details .recit__date-phare,
-.event__date-phare {
+.date-phare,
+.recit__details .date-phare {
   margin: 10px 0 2px;
   font-family: var(--font-titre);
   font-size: clamp(16px, 4.6vw, 19px);
@@ -653,6 +657,12 @@ img { max-width: 100%; height: auto; display: block; }
   white-space: nowrap;
   color: var(--oui, var(--accent-ink));
 }
+.recit__details .heure-phare { margin-bottom: 4px; }
+/* Pas de liens automatiques (iOS) sur les adresses et dates : les boutons
+   Itineraire / Waze sont la pour ca. */
+a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font: inherit !important; }
+.recit__details .recit__lieu { margin-top: 6px; font-weight: 500; }
+.recit__suite-lieu { margin: 2px 0 0; font-size: 14.5px; font-weight: 500; color: var(--ink); }
 .recit__details .recit__date-he { margin-bottom: 8px; font-family: var(--font-he); font-size: 14px; color: var(--muted); }
 
 .recit__memoire {
@@ -707,7 +717,7 @@ img { max-width: 100%; height: auto; display: block; }
   fill: var(--accent-ink);
 }
 
-.event__actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+.event__actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
 
 /* ------------------------------------------------------------------ *
  * Confirmation de presence (RSVP) -- fictif, rien n'est envoye.
@@ -768,7 +778,6 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .rsvp__section legend {
   width: 100%;
-  text-align: center;
   padding: 0 0 2px;
   font-size: 13.5px;
   font-weight: 600;

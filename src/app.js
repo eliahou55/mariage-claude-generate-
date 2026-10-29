@@ -383,10 +383,9 @@
     // Une phrase, puis date (mise en avant), lieu et adresse a la ligne.
     var texte = el('div', 'event__texte');
     ajouteSi(texte, PHRASES[ev.cle] || '', 'p', 'event__phrase');
-    ajouteSi(texte, ev.dateFr, 'p', 'event__date-phare');
-    if (ev.heure) ajouteSi(texte, 'à ' + ev.heure, 'p', 'event__heure-phare');
+    lignesDate(texte, ev);
     ajouteSi(texte, ev.dateHe, 'p', 'event__date-he', true);
-    if (ev.lieu) ajouteSi(texte, prepositionLieu(ev.lieu) + ev.lieu, 'p', 'event__lieu');
+    ajouteSi(texte, ev.lieu, 'p', 'event__lieu');
     ajouteSi(texte, ev.adresse, 'p', 'event__adresse');
     container.appendChild(texte);
 
@@ -402,24 +401,10 @@
     houppa: 'La cérémonie religieuse sera célébrée',
   };
 
-  /** "Dimanche 20 juin 2027 à 19h00" (ou la date seule, sans heure). */
-  function dateEtHeure(ev) {
-    if (!ev.dateFr) return '';
-    return ev.heure ? ev.dateFr + ' à ' + ev.heure : ev.dateFr;
-  }
-
-  /** "à la Salle...", "au Domaine...", "à l'Hôtel...", "aux Jardins..." :
-   *  la bonne preposition devant un nom de lieu, d'apres son premier mot. */
-  var LIEUX_FEMININS = /^(salle|synagogue|mairie|maison|villa|ferme|terrasse|p[ée]niche|propri[ée]t[ée]|bastide|demeure|r[ée]sidence|grange|tente|cour|plage|galerie|brasserie|guinguette|chapelle|communaut[ée]|yeshiva|orangerie|bergerie|abbaye)/i;
-  var LIEUX_MASCULINS = /^(domaine|ch[âa]teau|restaurant|moulin|manoir|pavillon|club|palais|jardin|mas|clos|parc|centre|cercle|salon|loft|golf|lac|bateau|temple|g[îi]te|cabaret|studio|caf[ée]|yacht)/i;
-  function prepositionLieu(lieu) {
-    var l = String(lieu).trim();
-    if (/^(la|le|l['’])s?/i.test(l)) return 'à ';            // "La Salle..." deja articule
-    if (/^less/i.test(l)) return '';                           // "Les Jardins de..." : tel quel
-    if (LIEUX_FEMININS.test(l)) return 'à la ';
-    if (LIEUX_MASCULINS.test(l)) return 'au ';
-    if (/^[aeiouyhâàéèêëîïôûü]/i.test(l)) return "à l'";
-    return 'à ';
+  /** Date puis heure, chacune sur sa ligne, mises en evidence. */
+  function lignesDate(parent, ev) {
+    ligneSi(parent, ev.dateFr, 'date-phare');
+    if (ev.heure) ligneSi(parent, 'à ' + ev.heure, 'heure-phare');
   }
 
   /** Henne, Chabbat 'Hatan, Reception (seuls) : carte sobre. */
@@ -460,9 +445,9 @@
     recit.appendChild(el('p', 'recit__oui', 'Oui'));
 
     var det = el('div', 'recit__details');
-    ligneSi(det, dateEtHeure(ev), 'recit__date-phare');
-    if (ev.lieu) ligneSi(det, prepositionLieu(ev.lieu) + ev.lieu);
-    ligneSi(det, ev.adresse);
+    lignesDate(det, ev);
+    ligneSi(det, ev.lieu, 'recit__lieu');
+    ligneSi(det, ev.adresse, 'recit__adresse');
     recit.appendChild(det);
 
     art.appendChild(recit);
@@ -500,10 +485,10 @@
     recit.appendChild(el('p', 'recit__intro', 'Et seraient honorés de votre présence à la cérémonie religieuse qui sera célébrée le'));
 
     var det = el('div', 'recit__details');
-    ligneSi(det, dateEtHeure(ev), 'recit__date-phare');
+    lignesDate(det, ev);
     ligneSi(det, ev.dateHe, 'recit__date-he', true);
-    if (ev.lieu) ligneSi(det, prepositionLieu(ev.lieu) + ev.lieu);
-    ligneSi(det, ev.adresse);
+    ligneSi(det, ev.lieu, 'recit__lieu');
+    ligneSi(det, ev.adresse, 'recit__adresse');
     recit.appendChild(det);
 
     if (D.familles.memoire) {
@@ -523,9 +508,9 @@
       var memeLieu = reception.lieu && reception.lieu === ev.lieu;
       var phrase = "La cérémonie sera suivie d'une réception";
       if (reception.heure) phrase += ' à ' + reception.heure;
-      if (reception.lieu && !memeLieu) phrase += ', ' + prepositionLieu(reception.lieu) + reception.lieu;
       phrase += '.';
       ligneSi(recit, phrase, 'recit__suite');
+      if (reception.lieu && !memeLieu) ligneSi(recit, reception.lieu, 'recit__suite-lieu');
       if (reception.adresse && reception.adresse !== ev.adresse) {
         ligneSi(recit, reception.adresse, 'recit__suite-adresse');
       }

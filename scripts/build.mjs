@@ -511,6 +511,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no, address=no, date=no, email=no">
 <meta name="description" content="${echappe(description)}">
 <meta name="theme-color" content="${theme.surface}">
 <meta property="og:type" content="website">
