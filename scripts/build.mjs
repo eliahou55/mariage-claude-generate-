@@ -550,7 +550,7 @@ function pageIndexApercus(donnees) {
     const actif = t.slug === donnees.site.themeSlug;
     return `  <a class="carte${actif ? ' carte--actif' : ''}" href="${t.slug}/index.html">
     <span class="carte__swatch" style="background:${t.surface};border-color:${encre}"><span style="background:${encre}"></span></span>
-    <span class="carte__texte"><strong>${echappe(t.nom)}</strong><em>${t.slug}</em></span>
+    <span class="carte__texte"><strong>${echappe(t.nom)}</strong></span>
     ${actif ? '<span class="carte__badge">Choisi dans l\u2019Excel</span>' : ''}
   </a>`;
   }).join('\n');
@@ -581,7 +581,6 @@ p.sous{margin:0 0 26px;color:#9fa6b2;font-size:14px}
 .carte__swatch span{width:16px;height:16px;border-radius:50%;display:block}
 .carte__texte{display:flex;flex-direction:column;gap:2px;min-width:0}
 .carte__texte strong{font-weight:500;font-size:15px}
-.carte__texte em{font-style:normal;font-size:12px;color:#8d94a3;font-family:ui-monospace,Menlo,Consolas,monospace}
 .carte__badge{position:absolute;top:-9px;right:12px;background:#c9a44c;color:#1a1a1a;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:500}
 footer{margin-top:30px;color:#767d8c;font-size:13px;line-height:1.7}
 code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
