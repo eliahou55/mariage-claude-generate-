@@ -900,7 +900,10 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
 .apercu-bar__back { color: #cfd4de; text-decoration: none; padding: 6px 4px; }
 .apercu-bar__name { font-weight: 500; letter-spacing: .04em; }
 .apercu-bar__dot { width: 10px; height: 10px; border-radius: 50%; margin-left: auto; }
-body:has(.apercu-bar) .app { margin-top: 44px; }
+/* Decalage sous la barre d'apercu : padding du body (une marge sur .app
+   "traversait" le body et allongeait la page de 44 px). */
+body:has(.apercu-bar) { padding-top: 44px; }
+@media (min-width: 560px) { body:has(.apercu-bar) { padding-top: 72px; } }
 body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
 
 /* ------------------------------------------------------------------ *
@@ -957,3 +960,22 @@ body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
    (les familles ne sont plus repetees ici, voir la carte houppa). */
 .app .logo-site--invitation { width: clamp(140px, 42vw, 180px); margin: 4px auto 10px; }
 .app .invitation__noms { font-size: clamp(38px, 12vw, 52px); margin-bottom: 4px; }
+/* Avec la barre d'apercu (44 px, page decalee d'autant) : l'accueil
+   occupe la hauteur restante, pas tout l'ecran, sinon la page defile. */
+@media (max-width: 559px) {
+  body:has(.apercu-bar) .app { min-height: calc(100vh - 44px); min-height: calc(100svh - 44px); }
+  body:has(.apercu-bar) .app .ecran--accueil {
+    min-height: calc(100vh - 44px);
+    min-height: calc(100svh - 44px);
+    padding-top: clamp(10px, 2.4vh, 28px);
+  }
+}
+/* La bordure eventuelle de la carte (certains themes) ne doit pas
+   s'ajouter a la hauteur d'ecran ; les grands telephones (plus larges)
+   ne doivent pas grossir le logo au-dela de ce que la hauteur permet. */
+.app { box-sizing: border-box; }
+.app .ecran--accueil .logo-site--accueil { width: clamp(96px, min(42vw, 20vh), 180px); }
+.app .ecran--accueil .noms { font-size: min(clamp(30px, 11vw, 48px), 5.8vh); }
+@media (max-width: 559px) {
+  body .app { border-top-width: 0; border-bottom-width: 0; }
+}

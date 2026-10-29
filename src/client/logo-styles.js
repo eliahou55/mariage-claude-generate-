@@ -277,7 +277,8 @@ var LogoStyles = (function () {
     if (!mesureur) {
       var hote = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       hote.setAttribute('width', '0'); hote.setAttribute('height', '0');
-      hote.style.position = 'absolute'; hote.style.visibility = 'hidden';
+      // fixe en haut a gauche : ne doit jamais allonger la page (defilement)
+      hote.style.position = 'fixed'; hote.style.top = '0'; hote.style.left = '0'; hote.style.visibility = 'hidden'; hote.style.pointerEvents = 'none';
       mesureur = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       hote.appendChild(mesureur);
       document.body.appendChild(hote);

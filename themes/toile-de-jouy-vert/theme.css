@@ -122,3 +122,14 @@ html:root { --accent-ink: var(--oui); }
 /* Cartes plus transparentes, bordures plus discretes. */
 .event { border-top-color: color-mix(in srgb, var(--accent-soft) 60%, transparent); border-bottom-color: color-mix(in srgb, var(--rule) 55%, transparent); }
 .rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
+
+/* Accueil sur un ecran : arches proportionnelles a la hauteur, et
+   contenu toujours entre l'arche du haut et celle du bas. */
+:root { --arche-h: clamp(84px, 17vh, 150px); }
+body .app .ecran--accueil,
+body:has(.apercu-bar) .app .ecran--accueil {
+  padding-top: calc(var(--arche-h) * .58);
+  padding-bottom: calc(var(--arche-h) * .72);
+  padding-inline: 30px;
+}
+@media (max-height: 660px) { body .app .ecran--accueil .compte { margin-block: 4px 8px; } body .app .ecran--accueil .logo-site--accueil { width: clamp(80px, 15vh, 120px); } }
