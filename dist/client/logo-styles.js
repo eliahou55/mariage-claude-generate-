@@ -76,8 +76,14 @@ var LogoStyles = (function () {
   function legende(texte, y, couleur, o) {
     if (!texte) return '';
     o = o || {};
-    return '<text x="150" y="' + y + '" text-anchor="middle" font-family="' + (o.police || 'Cormorant Garamond, serif') + '" font-weight="' + (o.graisse || 600) + '" font-size="' + (o.taille || 10.5) +
-      '" letter-spacing="' + (o.espace == null ? 3.2 : o.espace) + '" fill="' + couleur + '"' + (o.italique ? ' font-style="italic"' : '') + '>' +
+    // Largeur estimee (capitales ~0.68 em + espacement) : on reduit taille et
+    // espacement pour que le texte tienne dans o.max (largeur disponible).
+    var taille = o.taille || 10.5, espace = o.espace == null ? 3.2 : o.espace, max = o.max || 250;
+    var n = String(texte).replace(/&amp;/g, '&').length;
+    var largeurTxt = n * (taille * .68 + espace);
+    if (largeurTxt > max) { var k = max / largeurTxt; taille = r2(taille * Math.max(.6, k)); espace = r2(espace * k * k); }
+    return '<text x="150" y="' + y + '" text-anchor="middle" font-family="' + (o.police || 'Cormorant Garamond, serif') + '" font-weight="' + (o.graisse || 600) + '" font-size="' + taille +
+      '" letter-spacing="' + espace + '" fill="' + couleur + '"' + (o.italique ? ' font-style="italic"' : '') + '>' +
       (o.casse === false ? texte : texte.toUpperCase()) + '</text>';
   }
 
@@ -292,6 +298,7 @@ var LogoStyles = (function () {
   /** Liane le long du trace `d` (entre les fractions t0 et t1 de sa
    *  longueur), decalee vers l'exterieur. mode 'trait' ou 'aquarelle'. */
   function liane(d, o) {
+    if (o.sym) return symetrie(liane(d, Object.assign({}, o, { sym: false })));
     var pts = echantillons(d, o.t0 || 0, o.t1 == null ? 1 : o.t1, o.pas || 7);
     if (pts.length < 2) return '';
     var cx = o.cx || 150, cy = o.cy || 150, decal = o.decal == null ? 5 : o.decal, aq = o.mode === 'aquarelle';
@@ -399,7 +406,7 @@ var LogoStyles = (function () {
     return '<path d="M54 ' + (y - 6) + 'L74 ' + (y - 14) + 'L72 ' + (y + 8) + 'L54 ' + (y + 12) + 'L62 ' + (y + 3) + 'Z" fill="' + teinte(c, -.15) + '"/>' +
       '<path d="M246 ' + (y - 6) + 'L226 ' + (y - 14) + 'L228 ' + (y + 8) + 'L246 ' + (y + 12) + 'L238 ' + (y + 3) + 'Z" fill="' + teinte(c, -.15) + '"/>' +
       '<path d="M72 ' + (y - 14) + 'Q150 ' + (y - 24) + ' 228 ' + (y - 14) + 'L228 ' + (y + 8) + 'Q150 ' + (y - 2) + ' 72 ' + (y + 8) + 'Z" fill="' + c + '"/>' +
-      '<text x="150" y="' + (y + 1) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-weight="600" font-size="10.5" letter-spacing="2.6" fill="' + cTexte + '">' + texte.toUpperCase() + '</text>';
+      legende(texte, y + 1, cTexte, { taille: 10.5, espace: 2.6, max: 140 });
   }
 
   /** Paysage de Jerusalem (silhouettes) pour une vignette. */
@@ -456,7 +463,7 @@ var LogoStyles = (function () {
           '<path d="M86 246H214M92 250H208" stroke="' + o + '" stroke-width=".6"/>' + orn +
           '<g transform="translate(0 292) scale(1 -1)">' + orn + '</g>' +
           monogramme(a, b, { couleur: c.lettres, taille: 76, cy: 156, dx: 12, dy: 22, police: 'Bodoni Moda, serif' }) +
-          legende(t, 212, c.lettres, { taille: 9.5, espace: 3 }) + '<path d="M132 222H168" stroke="' + o + '" stroke-width=".5"/>' + point(150, 222, 1.1, o));
+          legende(t, 212, c.lettres, { taille: 9.5, espace: 3, max: 92 }) + '<path d="M132 222H168" stroke="' + o + '" stroke-width=".5"/>' + point(150, 222, 1.1, o));
       },
     },
     {
@@ -501,7 +508,7 @@ var LogoStyles = (function () {
           acanthe(72, 1) + acanthe(228, -1) + symetrie(cote) +
           symetrie(brin([[128, 66], [110, 58], [90, 60], [70, 70]], { c: o, n: 8, l0: 8, l1: 4, ouv: 48, tsw: .5 }) +
                    brin([[128, 234], [110, 242], [90, 240], [70, 230]], { c: o, n: 8, l0: 8, l1: 4, ouv: 48, tsw: .5 })) +
-          monogramme(a, b, { couleur: c.lettres, taille: 90, cy: 146, dx: 16, dy: 18, police: 'Pinyon Script, cursive' }) + legende(t, 284, c.lettres));
+          monogramme(a, b, { couleur: c.lettres, taille: 66, cy: 160, cx: 147, dx: 13, dy: 0, police: 'Pinyon Script, cursive' }) + legende(t, 284, c.lettres));
       },
     },
     {
@@ -793,25 +800,28 @@ var LogoStyles = (function () {
   var ARCHE_P = 'M98 252V128C98 104 116 88 136 76C144 71 148 62 150 50C152 62 156 71 164 76C184 88 202 104 202 128V252';
   var COEUR_T = 'M150 250C112 222 70 188 68 140C66 108 88 88 114 88C130 88 143 98 150 110C157 98 170 88 186 88C212 88 234 108 232 140C230 188 188 222 150 250Z';
   var ovale = function (rx, ry, cy) { return 'M' + (150 - rx) + ' ' + cy + 'A' + rx + ' ' + ry + ' 0 1 0 ' + (150 + rx) + ' ' + cy + 'A' + rx + ' ' + ry + ' 0 1 0 ' + (150 - rx) + ' ' + cy + 'Z'; };
+  var demiOvale = function (rx, ry, cy) { return 'M150 ' + (cy - ry) + 'A' + rx + ' ' + ry + ' 0 0 0 150 ' + (cy + ry); };
+  var T = function (c, o) { return Object.assign({ c: c.ornement, sym: true }, o); };
+  var A = function (c, o) { return Object.assign({ mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, sym: true }, o); };
   var LIANES = {
-    couronne: function (c) { return liane(arcD(124, 112, 258), { c: c.ornement, decal: 0, taille: 9 }) + liane(arcD(124, 68, -78), { c: c.ornement, decal: 0, taille: 9 }); },
-    arche: function (c) { return liane(ARCHE_T, { c: c.ornement, decal: 6, t0: .04, t1: .96 }); },
-    ecusson: function (c) { return liane(ECUSSON, { c: c.ornement, decal: 6, t0: .02, t1: .98, cy: 146 }); },
-    cartouche: function (c) { return liane('M50 206V94', { c: c.ornement, decal: 7 }) + liane('M250 206V94', { c: c.ornement, decal: 7 }); },
-    medaillon: function (c) { return liane(ovale(66, 92, 148), { c: c.ornement, decal: 4, cy: 148, t0: .03, t1: .97 }); },
-    coeur: function (c) { return liane(COEUR_T, { c: c.ornement, decal: 7, cy: 160, t0: .12, t1: .88 }); },
-    cercle: function (c) { return liane(arcD(96, 18, 162), { c: c.ornement, decal: 6 }); },
-    brin: function (c) { return liane(arcD(100, 148, 214, 150, 160), { c: c.ornement, decal: 0, cy: 160 }) + liane(arcD(100, 32, -34, 150, 160), { c: c.ornement, decal: 0, cy: 160 }); },
-    'arche-jerusalem': function (c) { return liane(ARCHE_J, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 7, t0: .08, t1: .92 }); },
-    panorama: function (c) { return liane('M54 160A96 96 0 0 0 246 160', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, t0: .12, t1: .88 }); },
-    pivoines: function (c) { return liane(ECUSSON, { mode: 'aquarelle', feuillage: c.feuillage, decal: 9, t0: .35, t1: .65, cy: 146 }); },
-    'bord-de-mer': function (c) { return liane(ECUSSON, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 8, t0: .06, t1: .94, cy: 146 }); },
-    'arche-palmiers': function (c) { return liane(ARCHE_P, { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 6, t0: .3, t1: .7 }); },
-    paon: function (c) { return liane('M64 254V176', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, cy: 200 }) + liane('M236 254V176', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 5, cy: 200 }); },
-    'houppa-fleurie': function (c) { return liane('M58 250V104', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 4, cy: 170 }) + liane('M242 250V104', { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 4, cy: 170 }); },
-    'couronne-roses': function (c) { return liane(ovale(118, 118, 146), { mode: 'aquarelle', feuillage: c.feuillage, decal: 0, cy: 146, taille: 10, pas: 9 }); },
-    grenadier: function (c) { return liane(arcD(120, 104, 250, 150, 146), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 146 }) + liane(arcD(120, 76, -70, 150, 146), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 146 }); },
-    champetre: function (c) { return liane(arcD(104, 14, 166, 150, 126), { mode: 'aquarelle', feuillage: c.feuillage, fleurs: c.fleurs, decal: 0, cy: 126 }); },
+    couronne: function (c) { return liane(arcD(124, 112, 258), T(c, { decal: 0, taille: 9 })); },
+    arche: function (c) { return liane('M92 236V118A58 58 0 0 1 150 60', T(c, { decal: 6, t0: .04 })); },
+    ecusson: function (c) { return liane(ECUSSON, T(c, { decal: 6, t0: .52, t1: .99, cy: 146 })); },
+    cartouche: function (c) { return liane('M50 206V94', T(c, { decal: 7 })); },
+    medaillon: function (c) { return liane(demiOvale(66, 92, 148), T(c, { decal: 4, cy: 148, t0: .04, t1: .96 })); },
+    coeur: function (c) { return liane(COEUR_T, T(c, { decal: 7, cy: 160, t0: .12, t1: .5 })); },
+    cercle: function (c) { return liane(arcD(96, 90, 162), T(c, { decal: 6 })); },
+    brin: function (c) { return liane(arcD(100, 148, 214, 150, 160), T(c, { decal: 0, cy: 160 })); },
+    'arche-jerusalem': function (c) { return liane('M88 248V128C88 102 108 86 128 74C138 68 146 60 150 46', A(c, { decal: 7, t0: .16 })); },
+    panorama: function (c) { return liane('M54 160A96 96 0 0 0 150 256', A(c, { decal: 5, t0: .24 })); },
+    pivoines: function (c) { return liane(ECUSSON, A(c, { fleurs: null, decal: 9, t0: .52, t1: .66, cy: 146 })); },
+    'bord-de-mer': function (c) { return liane(ECUSSON, A(c, { decal: 8, t0: .52, t1: .94, cy: 146 })); },
+    'arche-palmiers': function (c) { return liane('M98 252V128C98 104 116 88 136 76C144 71 148 62 150 50', A(c, { decal: 6, t0: .6 })); },
+    paon: function (c) { return liane('M64 254V176', A(c, { decal: 5, cy: 200 })); },
+    'houppa-fleurie': function (c) { return liane('M58 250V104', A(c, { decal: 4, cy: 170 })); },
+    'couronne-roses': function (c) { return liane(demiOvale(118, 118, 146), A(c, { fleurs: null, decal: 0, cy: 146, taille: 10, pas: 9 })); },
+    grenadier: function (c) { return liane(arcD(120, 104, 250, 150, 146), A(c, { decal: 0, cy: 146 })); },
+    champetre: function (c) { return liane(arcD(104, 90, 166, 150, 126), A(c, { decal: 0, cy: 126 })); },
   };
 
   var FAMILLES = { trait: TRAIT, couleur: COULEUR };
@@ -826,23 +836,21 @@ var LogoStyles = (function () {
   /** Polices proposees pour les initiales (null = celle du style). */
   var POLICES = [
     { id: '', nom: 'Police du logo' },
+    { id: 'pinyon', nom: 'Pinyon Script', famille: 'Pinyon Script, cursive' },
+    { id: 'great-vibes', nom: 'Great Vibes', famille: 'Great Vibes, cursive' },
+    { id: 'parisienne', nom: 'Parisienne', famille: 'Parisienne, cursive' },
+    { id: 'allura', nom: 'Allura', famille: 'Allura, cursive' },
     { id: 'bodoni', nom: 'Bodoni', famille: 'Bodoni Moda, serif' },
-    { id: 'cormorant', nom: 'Cormorant', famille: 'Cormorant Garamond, serif', graisse: 500 },
     { id: 'playfair', nom: 'Playfair', famille: 'Playfair Display, serif' },
     { id: 'playfair-italique', nom: 'Playfair italique', famille: 'Playfair Display, serif', italique: true },
     { id: 'cinzel', nom: 'Cinzel', famille: 'Cinzel, serif' },
     { id: 'italiana', nom: 'Italiana', famille: 'Italiana, serif' },
-    { id: 'baskerville', nom: 'Baskerville', famille: 'Libre Baskerville, serif' },
     { id: 'marcellus', nom: 'Marcellus', famille: 'Marcellus, serif' },
     { id: 'josefin', nom: 'Josefin', famille: 'Josefin Sans, sans-serif', graisse: 300 },
-    { id: 'great-vibes', nom: 'Great Vibes', famille: 'Great Vibes, cursive' },
-    { id: 'pinyon', nom: 'Pinyon Script', famille: 'Pinyon Script, cursive' },
-    { id: 'parisienne', nom: 'Parisienne', famille: 'Parisienne, cursive' },
-    { id: 'allura', nom: 'Allura', famille: 'Allura, cursive' },
   ];
 
   /** Dessine le style avec les initiales, couleurs, texte et police donnes. */
-  function dessiner(style, a, b, couleurs, texte, policeId) {
+  function dessiner(style, a, b, couleurs, texte, policeId, options) {
     var c = {};
     for (var k in style.couleurs) c[k] = (couleurs && couleurs[k]) || style.couleurs[k];
     policeChoisie = null;
@@ -851,10 +859,47 @@ var LogoStyles = (function () {
       var rendu = style.dessin(echappe(a || ' '), echappe(b || ' '), c, echappe(texte || ''));
       // Liane de feuillage glissee sous le reste du dessin.
       if (LIANES[style.id]) rendu = rendu.replace(/(<svg[^>]*>(?:<defs>[\s\S]*?<\/defs>)?)/, function (m) { return m + LIANES[style.id](c); });
+      // Sur un fond colore (themes sombres...), les petales "blancs" qui
+      // masquent les tiges prennent la couleur du fond.
+      if (options && options.papier) rendu = rendu.replace(/fill="#fff"/g, 'fill="' + options.papier + '"');
       return rendu;
     }
     finally { policeChoisie = null; }
   }
 
-  return { FAMILLES: FAMILLES, LIBELLES: LIBELLES, POLICES: POLICES, dessiner: dessiner };
+  /* Logo automatique de chaque theme : un style au trait, aux couleurs du
+   * theme, avec les initiales des maries. */
+  var AUTO = {
+    'marbre-or': { style: 'medaillon', couleurs: { lettres: '#2B2722', ornement: '#A88638' } },
+    'botanique-sauge': { style: 'couronne', couleurs: { lettres: '#2F3A2B', ornement: '#6C8062' } },
+    'nuit-etoilee': { style: 'cercle', couleurs: { lettres: '#E8CF8E', ornement: '#C9A85A' } },
+    'mediterranee': { style: 'brin', couleurs: { lettres: '#33381F', ornement: '#5E6A34' } },
+    'rose-poudre': { style: 'coeur', couleurs: { lettres: '#6E4448', ornement: '#B87478' } },
+    'jardin-blanc': { style: 'couronne', couleurs: { lettres: '#343C33', ornement: '#879A80' } },
+    'esquisse-illustree': { style: 'cartouche', couleurs: { lettres: '#23324F', ornement: '#23324F' } },
+    'diner-chandelles': { style: 'medaillon', couleurs: { lettres: '#F4E8DA', ornement: '#D8B46A' } },
+    'epure-minimaliste': { style: 'superpose', couleurs: { lettres: '#2E2A25', ornement: '#8B7D6B' } },
+    'boheme-terracotta': { style: 'arche', couleurs: { lettres: '#4A2C1E', ornement: '#C46A45' } },
+    'toile-de-jouy-vert': { style: 'ecusson', couleurs: { lettres: '#45532F', ornement: '#5E6E45' } },
+    'toile-de-jouy-bleu': { style: 'ecusson', couleurs: { lettres: '#1F3A5C', ornement: '#2B4A72' } },
+  };
+
+  function trouverStyle(famille, id) {
+    var liste = FAMILLES[famille] || [];
+    for (var i = 0; i < liste.length; i++) if (liste[i].id === id) return liste[i];
+    return null;
+  }
+
+  /** Logo de l'invitation : celui choisi dans le generateur (choix), sinon
+   *  le logo automatique du theme. Renvoie le SVG, ou '' si aucun. */
+  function logoInvitation(choix, themeSlug, initiales, papier) {
+    if (choix && choix.style) {
+      var st = trouverStyle(choix.famille || 'trait', choix.style);
+      if (st) return dessiner(st, choix.lettres[0], choix.lettres[1], choix.couleurs, choix.texte, choix.police, { papier: choix.famille === 'couleur' ? null : papier });
+    }
+    var auto = AUTO[themeSlug] || AUTO['marbre-or'];
+    return dessiner(trouverStyle('trait', auto.style), initiales[0], initiales[1], auto.couleurs, '', '', { papier: papier });
+  }
+
+  return { FAMILLES: FAMILLES, LIBELLES: LIBELLES, POLICES: POLICES, AUTO: AUTO, dessiner: dessiner, logoInvitation: logoInvitation };
 })();

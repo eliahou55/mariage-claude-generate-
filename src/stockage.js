@@ -10,3 +10,5 @@
  */
 var CLE_STOCKAGE_BROUILLON = 'invitation-client:brouillon';
 var CLE_STOCKAGE_DONNEES = 'invitation-client:donnees';
+// Logo choisi dans le generateur (src/client/logo.html) : { choisi: {...} }.
+var CLE_STOCKAGE_LOGO = 'invitation-client:logo';

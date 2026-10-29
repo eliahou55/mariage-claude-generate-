@@ -121,6 +121,20 @@
         </div>
 
         <div class="champ" style="margin-top:20px">
+          <span class="champ__titre">Logo</span>
+          <div class="logo-choix" role="radiogroup" aria-label="Logo">
+            <label class="logo-choix__option"><input type="radio" name="f-logo" value="auto"> Automatique, adapté au thème</label>
+            <label class="logo-choix__option"><input type="radio" name="f-logo" value="perso"> Mon logo personnalisé</label>
+            <label class="logo-choix__option"><input type="radio" name="f-logo" value="aucun"> Pas de logo</label>
+          </div>
+          <div class="logo-choix__perso" id="logo-perso" hidden>
+            <div class="logo-choix__apercu" id="logo-apercu"></div>
+            <a class="btn btn--secondaire" href="logo.html?retour=formulaire" id="lien-logo">Créer mon logo</a>
+          </div>
+          <span class="aide">Automatique : vos initiales dans un monogramme assorti au thème choisi. Le logo s'affiche en haut de l'accueil et de l'invitation.</span>
+        </div>
+
+        <div class="champ" style="margin-top:20px">
           <label for="f-lien">Lien du site (facultatif)</label>
           <input type="url" id="f-lien" placeholder="https://...">
         </div>
@@ -146,6 +160,7 @@
 <script src="../stockage.js"></script>
 <script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
+<script src="logo-styles.js"></script>
 <script src="lecteur-musique.js"></script>
 <script src="formulaire.js"></script>
 </body>

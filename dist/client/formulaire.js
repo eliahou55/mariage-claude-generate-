@@ -304,6 +304,8 @@
     brouillon.site.verset = selectVerset.value === '__autre__' ? autreVersetInput.value.trim() : selectVerset.value;
     brouillon.site.musique = val('f-musique');
     brouillon.site.lien = val('f-lien');
+    var radioLogo = document.querySelector('input[name="f-logo"]:checked');
+    brouillon.site.logoMode = radioLogo ? radioLogo.value : 'auto';
 
     brouillon.groupes.forEach(function (groupe) {
       var prefixe = groupe.join('-');
@@ -332,8 +334,33 @@
     ClientInvitation.ecrireBrouillon(brouillon);
   }
 
+  /* --- Logo : automatique / personnalise / aucun --- */
+  function rendreLogo() {
+    var mode = brouillon.site.logoMode || 'auto';
+    var radio = document.querySelector('input[name="f-logo"][value="' + mode + '"]');
+    if (radio) radio.checked = true;
+    var zone = document.getElementById('logo-perso');
+    var apercu = document.getElementById('logo-apercu');
+    var lien = document.getElementById('lien-logo');
+    if (!zone) return;
+    zone.hidden = mode !== 'perso';
+    var choisi = ClientInvitation.logoChoisi();
+    apercu.innerHTML = '';
+    if (choisi && typeof LogoStyles !== 'undefined') {
+      var st = (LogoStyles.FAMILLES[choisi.famille || 'trait'] || []).filter(function (x) { return x.id === choisi.style; })[0];
+      if (st) apercu.innerHTML = LogoStyles.dessiner(st, choisi.lettres[0], choisi.lettres[1], choisi.couleurs, choisi.texte, choisi.police);
+      lien.textContent = 'Modifier mon logo';
+    } else {
+      lien.textContent = 'Créer mon logo';
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('input[name="f-logo"]'), function (r) {
+    r.addEventListener('change', function () { brouillon.site.logoMode = r.value; rendreLogo(); });
+  });
+
   /* --- Initialisation --- */
   preRemplir();
+  rendreLogo();
   rendreVersets();
   rendreMusiques();
   rendreEvenements();

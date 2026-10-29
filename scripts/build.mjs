@@ -489,6 +489,9 @@ const echappe = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 /** JSON sur pour une balise <script>. */
 const jsonSur = (o) => JSON.stringify(o).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
 
+/** Polices utilisees par les logos (src/client/logo-styles.js). */
+const POLICES_LOGO = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Great+Vibes&family=Cinzel:wght@400;500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:wght@200;300&family=Italiana&family=Pinyon+Script&family=Libre+Baskerville&family=Marcellus&family=Parisienne&family=Allura&display=swap';
+
 function page({ donnees, theme, base, titre, bandeau = '' }) {
   const accent = donnees.site.couleurHex;
   const encre = accentLisible(accent, theme.surface, 4.5);
@@ -521,6 +524,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?${theme.fonts}&display=swap">
+<link rel="stylesheet" href="${POLICES_LOGO.replace(/&/g, '&amp;')}">
 <link rel="stylesheet" href="${base}base.css">
 <link rel="stylesheet" href="${base}themes/${theme.slug}/theme.css">
 <style>:root{--accent:${accent};--accent-ink:${encre};--accent-soft:${encreDouce};--accent-on:${surAccent};}</style>
@@ -532,6 +536,7 @@ ${bandeau}
 <script type="application/json" id="invitation-data">${jsonSur(payload)}</script>
 <script src="${base}stockage.js"></script>
 <script src="${base}versets.js"></script>
+<script src="${base}client/logo-styles.js"></script>
 <script src="${base}app.js"></script>
 </body>
 </html>

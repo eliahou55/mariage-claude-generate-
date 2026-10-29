@@ -629,3 +629,13 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
   --lecteur-sur-accent: #FFFFFF;
   --lecteur-piste: rgba(42, 39, 34, .16);
 }
+
+/* Choix du logo dans le formulaire */
+.champ__titre { font-weight: 600; font-size: 14px; }
+.logo-choix { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 6px; }
+.logo-choix__option { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
+.logo-choix__option input { width: 18px; height: 18px; accent-color: var(--accent-ink); }
+.logo-choix__perso { display: flex; align-items: center; gap: 16px; margin: 6px 0 8px; }
+.logo-choix__apercu { width: 92px; flex: none; }
+.logo-choix__apercu:empty { display: none; }
+.logo-choix__apercu svg { width: 100%; height: auto; display: block; }

@@ -454,6 +454,19 @@ var ClientInvitation = (function () {
     };
   }
 
+  function logoChoisi() {
+    try {
+      var e = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_LOGO) || 'null');
+      return e && e.choisi ? e.choisi : null;
+    } catch (err) { return null; }
+  }
+  function logoDuBrouillon(brouillon) {
+    var mode = brouillon.site.logoMode || 'auto';
+    if (mode === 'aucun') return 'aucun';
+    if (mode === 'perso') return logoChoisi();
+    return null;
+  }
+
   function construireDonnees(brouillon) {
     var theme = null;
     for (var i = 0; i < THEMES.length; i++) if (THEMES[i].slug === brouillon.site.themeSlug) theme = THEMES[i];
@@ -494,6 +507,9 @@ var ClientInvitation = (function () {
         // Excel). Aucun choix -> MUSIQUE_DEFAUT (Bereshit Olam) : il y a
         // toujours une musique, jamais de silence par defaut.
         musique: 'client/musique/' + (brouillon.site.musique || MUSIQUE_DEFAUT),
+        // Logo : 'aucun', le logo choisi dans le generateur ('perso'), ou
+        // null = logo automatique du theme (initiales des maries).
+        logo: logoDuBrouillon(brouillon),
         image: null,       // pas d'upload d'image en v1 (voir notes projet)
       },
       compteARebours: {
@@ -525,5 +541,6 @@ var ClientInvitation = (function () {
     construireDonnees: construireDonnees,
     suggestionsHebreu: suggestionsHebreu,
     exempleBrouillon: exempleBrouillon,
+    logoChoisi: logoChoisi,
   };
 })();

@@ -109,6 +109,23 @@
     n.setAttribute('aria-hidden', 'true');
     return n;
   }
+  /** Logo des maries (src/client/logo-styles.js) : celui choisi dans le
+   *  generateur, sinon le logo automatique du theme affiche, avec leurs
+   *  initiales. null si "aucun logo" ou si le generateur n'est pas charge. */
+  function construireLogo(cls) {
+    if (typeof LogoStyles === 'undefined' || D.site.logo === 'aucun') return null;
+    var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
+    var initiales = [D.couple.marie.prenom, D.couple.mariee.prenom].map(function (p) { return String(p || '').trim().charAt(0).toUpperCase(); });
+    var surface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#FFFFFF';
+    var svg = '';
+    try { svg = LogoStyles.logoInvitation(D.site.logo && D.site.logo.style ? D.site.logo : null, m ? m[1] : D.site.themeSlug, initiales, surface); } catch (e) { return null; }
+    if (!svg) return null;
+    var n = el('div', 'logo-site ' + cls);
+    n.setAttribute('aria-hidden', 'true');
+    n.innerHTML = svg;
+    return n;
+  }
+
   /** Les 4 coins decoratifs d'un ecran. */
   function coins(parent) {
     ['hg', 'hd', 'bg', 'bd'].forEach(function (c) { parent.appendChild(orn('coin orn--' + c)); });
@@ -231,7 +248,9 @@
     sec.appendChild(inner);
 
     inner.appendChild(he('p', 'bsd', 'בס״ד'));          // בס״ד
-    inner.appendChild(orn('haut'));
+    // Le logo prend la place de la guirlande au-dessus des prenoms.
+    var logoAccueil = construireLogo('logo-site--accueil');
+    inner.appendChild(logoAccueil || orn('haut'));
     inner.appendChild(el('span', 'filet filet--haut'));
 
     inner.appendChild(construireNomsCouple('h1', 'noms'));
@@ -292,7 +311,8 @@
     coins(sec);
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
-    inner.appendChild(orn('haut'));
+    var logoInvit = construireLogo('logo-site--invitation');
+    inner.appendChild(logoInvit || orn('haut'));
 
     /* 0. Verset d'ouverture, en texte courbe */
     var arcHaut = texteCourbe(VERSETS.aniLedodi);

@@ -229,7 +229,18 @@
     var style = styles()[indexCourant()];
     etat.choisi = { famille: etat.famille, style: style.id, lettres: etat.lettres.slice(), texte: etat.texte, couleurs: etat.couleurs[style.id] || {}, police: etat.polices[style.id] || '' };
     ecrireEtat();
-    confirmation.textContent = '« ' + style.nom + ' » est enregistré comme votre logo (dans ce navigateur).';
+    // Le formulaire passe en "logo personnalise", et une invitation deja
+    // generee (CLE_STOCKAGE_DONNEES) affiche tout de suite ce logo.
+    try {
+      var b = ClientInvitation.lireBrouillon();
+      b.site.logoMode = 'perso';
+      ClientInvitation.ecrireBrouillon(b);
+      var brut = window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
+      if (brut) { var D = JSON.parse(brut); if (!D.exemple) { D.site.logo = etat.choisi; window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D)); } }
+    } catch (err) { /* ignore */ }
+    var retour = /[?&]retour=formulaire/.test(window.location.search);
+    confirmation.innerHTML = '« ' + style.nom + ' » est enregistré comme votre logo. ' +
+      (retour ? '<a href="formulaire.html">Revenir au formulaire</a>' : '<a href="../apercu/index.html">Voir mon invitation</a>');
     confirmation.hidden = false;
   });
 
