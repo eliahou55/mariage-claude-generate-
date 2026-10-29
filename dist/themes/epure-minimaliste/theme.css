@@ -160,3 +160,6 @@ html:root { --accent-ink: var(--oui); }
 /* Cartes plus transparentes, bordures plus discretes. */
 .event { border-top-color: color-mix(in srgb, var(--rule) 55%, transparent); }
 .rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
+
+/* Accueil sur un ecran : trait vertical plus court sur les ecrans bas. */
+.app .ecran--accueil .filet { height: clamp(14px, 4.4vh, 46px); }

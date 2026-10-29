@@ -156,7 +156,7 @@
     // reduit la taille, pour ne jamais couper un prenom au milieu d'un mot
     // (seuls les traits d'union et les espaces peuvent passer a la ligne).
     var plusLong = (D.couple.marie.prenom + ' ' + D.couple.mariee.prenom)
-      .split(/[s-]+/).reduce(function (m, w) { return Math.max(m, w.length); }, 0);
+      .split(/[\s-]+/).reduce(function (m, w) { return Math.max(m, w.length); }, 0);
     if (plusLong > 5) conteneur.style.setProperty('--noms-echelle', Math.max(0.45, 5.5 / plusLong).toFixed(3));
     conteneur.appendChild(construireNomPersonne(D.couple.marie));
     conteneur.appendChild(el('span', 'noms__lien', '&'));
@@ -325,13 +325,8 @@
     var logoInvit = construireLogo('logo-site--invitation');
     if (logoInvit) inner.appendChild(logoInvit);
 
-    /* 1. Parents (hatan a gauche, kala a droite, face a face),
-     *    puis grands-parents (plus petit) dans la meme colonne */
-    var fam = construireFamilles();
-    if (fam) inner.appendChild(fam);
-
-    /* 2. Phrase d'invitation + prenoms */
-    inner.appendChild(el('p', 'phrase', 'ont la joie de vous convier au mariage de leurs enfants'));
+    /* 1. Prenoms des maries. Parents et grands-parents ne sont plus
+     *    repetes ici : ils figurent dans la carte de la houppa. */
     inner.appendChild(construireNomsCouple('p', 'invitation__noms'));
     inner.appendChild(orn('sep'));
     inner.appendChild(el('span', 'filet filet--invitation'));

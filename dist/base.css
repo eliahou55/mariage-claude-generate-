@@ -916,3 +916,44 @@ body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
   }
   .ecran--invitation { opacity: 1; transform: none; }
 }
+
+/* ------------------------------------------------------------------ *
+ * Accueil sur un seul ecran : sans defilement, le bouton "Voir
+ * l'invitation" reste visible. Espacements, guirlandes, logo et compte a
+ * rebours se resserrent selon la HAUTEUR disponible (vh). Selecteurs
+ * prefixes par .app pour passer devant les reglages propres aux themes.
+ * ------------------------------------------------------------------ */
+.app .ecran--accueil {
+  padding: clamp(14px, 3.6vh, 40px) 22px clamp(14px, 3.2vh, 40px);
+}
+@media (min-width: 560px) {
+  .app .ecran--accueil { min-height: min(640px, calc(100svh - 56px)); }
+}
+.app .ecran--accueil .bsd { margin-bottom: clamp(6px, 1.6vh, 20px); }
+.app .ecran--accueil .orn--haut { width: min(210px, 78%, 30vh); margin-bottom: 0; }
+.app .ecran--accueil .filet { margin-block: clamp(6px, 1.4vh, 18px); }
+.app .ecran--accueil .noms { font-size: min(clamp(30px, 11vw, 48px), 6.2vh); }
+.app .ecran--accueil .logo-site--accueil {
+  width: clamp(96px, min(46vw, 22vh), 190px);
+  margin-block: clamp(6px, 1.4vh, 14px) clamp(2px, .6vh, 4px);
+}
+.app .ecran--accueil .accueil__date { margin-top: clamp(2px, .5vh, 4px); }
+.app .ecran--accueil .compte { margin: clamp(10px, 2.4vh, 26px) 0 clamp(12px, 2.8vh, 30px); }
+.app .ecran--accueil .compte__cell { padding-block: clamp(4px, 1vh, 10px); }
+.app .ecran--accueil .orn--bas { width: min(210px, 78%, 24vh); margin-top: clamp(8px, 2vh, 22px); }
+@media (max-height: 720px) {
+  .app .ecran--accueil .orn--bas { display: none; }
+}
+@media (max-height: 660px) {
+  .app .ecran--accueil { padding-block: 10px; }
+  .app .ecran--accueil .orn--haut { width: min(170px, 70%, 24vh); }
+  .app .ecran--accueil .logo-site--accueil { width: clamp(88px, 18vh, 140px); }
+  .app .ecran--accueil .compte { margin-block: 8px 12px; }
+  .app .ecran--accueil .compte__n { font-size: 22px; }
+  .app .ecran--accueil .accueil__date-he { margin-top: 3px; }
+}
+
+/* Haut de l'invitation : verset en arche, logo puis prenoms, en grand
+   (les familles ne sont plus repetees ici, voir la carte houppa). */
+.app .logo-site--invitation { width: clamp(140px, 42vw, 180px); margin: 4px auto 10px; }
+.app .invitation__noms { font-size: clamp(38px, 12vw, 52px); margin-bottom: 4px; }
