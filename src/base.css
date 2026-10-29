@@ -134,7 +134,7 @@ img { max-width: 100%; height: auto; display: block; }
 /* Logo des maries : discret, pour ne pas ecraser les prenoms. */
 .logo-site { margin: 0 auto 6px; flex: none; }
 .logo-site svg { display: block; width: 100%; height: auto; }
-.logo-site--accueil { width: clamp(104px, 30vw, 132px); }
+.logo-site--accueil { width: clamp(150px, 46vw, 190px); margin: 14px auto 4px; }
 .logo-site--invitation { width: clamp(88px, 24vw, 108px); margin-bottom: 2px; }
 
 .orn--haut, .orn--bas {

@@ -219,6 +219,10 @@
     txt.setAttribute('direction', 'ltr');
     txt.setAttribute('unicode-bidi', 'bidi-override');
     txt.setAttribute('class', 'verset-arc__texte');
+    // Verset long (choisi ou saisi librement) : taille reduite pour tenir
+    // dans l'arche (environ 24 caracteres a la taille normale).
+    var nCar = Array.from(texte).length;
+    if (nCar > 24) txt.style.fontSize = Math.max(15, Math.round(27 * 24 / nCar)) + 'px';
 
     var textPath = document.createElementNS(NS, 'textPath');
     textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + idArc);
@@ -248,14 +252,15 @@
     sec.appendChild(inner);
 
     inner.appendChild(he('p', 'bsd', 'בס״ד'));          // בס״ד
-    // Le logo prend la place de la guirlande au-dessus des prenoms.
-    var logoAccueil = construireLogo('logo-site--accueil');
-    inner.appendChild(logoAccueil || orn('haut'));
+    inner.appendChild(orn('haut'));
     inner.appendChild(el('span', 'filet filet--haut'));
 
     inner.appendChild(construireNomsCouple('h1', 'noms'));
 
-    ajouteSi(inner, D.site.verset, 'p', 'verset', true);
+    // Logo sous les prenoms (le verset est desormais en arche en haut de
+    // l'invitation : on l'enleve de l'accueil pour l'aerer).
+    var logoAccueil = construireLogo('logo-site--accueil');
+    if (logoAccueil) inner.appendChild(logoAccueil);
     inner.appendChild(el('span', 'filet filet--bas'));
 
     ajouteSi(inner, D.compteARebours.dateFr, 'p', 'accueil__date');
@@ -311,12 +316,14 @@
     coins(sec);
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
-    var logoInvit = construireLogo('logo-site--invitation');
-    inner.appendChild(logoInvit || orn('haut'));
+    inner.appendChild(orn('haut'));
 
-    /* 0. Verset d'ouverture, en texte courbe */
-    var arcHaut = texteCourbe(VERSETS.aniLedodi);
+    /* 0. Verset d'ouverture en arche : celui choisi dans le formulaire
+     *    (liste deroulante), puis le logo juste en dessous. */
+    var arcHaut = texteCourbe(D.site.verset || VERSETS.aniLedodi);
     if (arcHaut) inner.appendChild(arcHaut);
+    var logoInvit = construireLogo('logo-site--invitation');
+    if (logoInvit) inner.appendChild(logoInvit);
 
     /* 1. Parents (hatan a gauche, kala a droite, face a face),
      *    puis grands-parents (plus petit) dans la meme colonne */
