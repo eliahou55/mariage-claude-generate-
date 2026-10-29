@@ -156,6 +156,13 @@ img { max-width: 100%; height: auto; display: block; }
   opacity: .9;
 }
 .event > :not(.orn) { position: relative; z-index: 1; }
+/* Alternance : une carte sur deux a son petit dessin en haut a gauche
+   (dessin retourne en miroir pour garder le meme mouvement). */
+.evenements > .event:nth-child(even) > .orn--event {
+  right: auto;
+  left: var(--orn-event-droite, -8px);
+  transform: scaleX(-1);
+}
 
 /* ------------------------------------------------------------------ *
  * Accueil
@@ -713,6 +720,8 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
 .verset-arc-wrap { width: 100%; max-width: 320px; margin: 0 auto 4px; }
 .verset-arc { display: block; width: 100%; height: auto; overflow: visible; }
 .verset-arc__texte {
+  direction: ltr;
+  unicode-bidi: bidi-override;
   font-family: var(--font-he);
   font-size: 27px;
   fill: var(--accent-ink);

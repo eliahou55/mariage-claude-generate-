@@ -193,16 +193,21 @@
     path.setAttribute('fill', 'none');
     svg.appendChild(path);
 
+    // Safari (iPhone, Mac) place mal l'hebreu le long d'une courbe : les
+    // lettres sortent dans l'ordre inverse et les mots se melangent. On
+    // ecrit donc les lettres deja dans leur ordre visuel (inversees) et on
+    // force un trace de gauche a droite : meme rendu correct partout.
     var txt = document.createElementNS(NS, 'text');
     txt.setAttribute('text-anchor', 'middle');
-    txt.setAttribute('direction', 'rtl');
+    txt.setAttribute('direction', 'ltr');
+    txt.setAttribute('unicode-bidi', 'bidi-override');
     txt.setAttribute('class', 'verset-arc__texte');
 
     var textPath = document.createElementNS(NS, 'textPath');
     textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + idArc);
     textPath.setAttribute('href', '#' + idArc);
     textPath.setAttribute('startOffset', '50%');
-    textPath.textContent = texte;
+    textPath.textContent = Array.from(texte).reverse().join('');
     txt.appendChild(textPath);
     svg.appendChild(txt);
 
