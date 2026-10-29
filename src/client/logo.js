@@ -16,6 +16,7 @@
   var points = document.getElementById('points');
   var nomStyle = document.getElementById('nom-style');
   var zoneCouleurs = document.getElementById('couleurs');
+  var zonePolices = document.getElementById('polices');
   var champ1 = document.getElementById('lettre-1');
   var champ2 = document.getElementById('lettre-2');
   var champTexte = document.getElementById('texte-logo');
@@ -38,6 +39,7 @@
     if (!FAMILLES[e.famille]) e.famille = 'trait';
     e.index = e.index && typeof e.index === 'object' ? e.index : { trait: 0, couleur: 0 };
     e.couleurs = e.couleurs || {};
+    e.polices = e.polices || {};
     return e;
   }
 
@@ -49,7 +51,7 @@
 
   /* --- Galerie --- */
   function dessin(style) {
-    return LogoStyles.dessiner(style, etat.lettres[0], etat.lettres[1], etat.couleurs[style.id], etat.texte);
+    return LogoStyles.dessiner(style, etat.lettres[0], etat.lettres[1], etat.couleurs[style.id], etat.texte, etat.polices[style.id]);
   }
 
   function rendreGalerie() {
@@ -94,6 +96,7 @@
       p.setAttribute('aria-selected', k === i ? 'true' : 'false');
     });
     rendreCouleurs();
+    rendrePolices();
     confirmation.hidden = true;
   }
 
@@ -128,6 +131,43 @@
   Array.prototype.forEach.call(onglets, function (o) {
     o.addEventListener('click', function () { choisirFamille(o.getAttribute('data-famille')); });
   });
+
+  /* --- Police des initiales du logo affiche --- */
+  function rendrePolices() {
+    var style = styles()[indexCourant()];
+    var actuelle = etat.polices[style.id] || '';
+    zonePolices.innerHTML = '';
+    LogoStyles.POLICES.forEach(function (pol) {
+      var bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'logo-police' + (pol.id === actuelle ? ' logo-police--active' : '');
+      bouton.setAttribute('role', 'radio');
+      bouton.setAttribute('aria-checked', pol.id === actuelle ? 'true' : 'false');
+      var apercu = document.createElement('span');
+      apercu.className = 'logo-police__apercu';
+      apercu.textContent = (etat.lettres[0] || 'A') + (etat.lettres[1] || 'B');
+      if (pol.famille) {
+        apercu.style.fontFamily = pol.famille;
+        if (pol.graisse) apercu.style.fontWeight = pol.graisse;
+        if (pol.italique) apercu.style.fontStyle = 'italic';
+      } else {
+        apercu.textContent = '★';
+      }
+      var nom = document.createElement('span');
+      nom.className = 'logo-police__nom';
+      nom.textContent = pol.nom;
+      bouton.appendChild(apercu);
+      bouton.appendChild(nom);
+      bouton.addEventListener('click', function () {
+        if (pol.id) etat.polices[style.id] = pol.id; else delete etat.polices[style.id];
+        ecrireEtat();
+        redessiner(indexCourant());
+        rendrePolices();
+        confirmation.hidden = true;
+      });
+      zonePolices.appendChild(bouton);
+    });
+  }
 
   /* --- Couleurs du logo affiche --- */
   function rendreCouleurs() {
@@ -174,6 +214,7 @@
     etat.texte = champTexte.value.trim();
     ecrireEtat();
     toutRedessiner();
+    rendrePolices();
     confirmation.hidden = true;
   }
   champ1.value = etat.lettres[0];
@@ -186,7 +227,7 @@
   /* --- Choix final (garde dans ce navigateur pour plus tard) --- */
   document.getElementById('choisir').addEventListener('click', function () {
     var style = styles()[indexCourant()];
-    etat.choisi = { famille: etat.famille, style: style.id, lettres: etat.lettres.slice(), texte: etat.texte, couleurs: etat.couleurs[style.id] || {} };
+    etat.choisi = { famille: etat.famille, style: style.id, lettres: etat.lettres.slice(), texte: etat.texte, couleurs: etat.couleurs[style.id] || {}, police: etat.polices[style.id] || '' };
     ecrireEtat();
     confirmation.textContent = '« ' + style.nom + ' » est enregistré comme votre logo (dans ce navigateur).';
     confirmation.hidden = false;

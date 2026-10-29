@@ -58,7 +58,10 @@ var LogoStyles = (function () {
   var LARGEURS = { I: .34, J: .4, L: .58, F: .58, E: .62, P: .6, T: .62, S: .55, Z: .62, Y: .7, K: .7, B: .66, R: .68, C: .7, X: .72, V: .72, A: .74, D: .76, H: .78, U: .76, N: .8, G: .76, O: .8, Q: .8, M: .96, W: 1.02 };
   function largeur(l) { return LARGEURS[String(l).toUpperCase()] || .7; }
 
+  var policeChoisie = null;   // fixee par dessiner() le temps d'un rendu
+
   function monogramme(a, b, o) {
+    if (policeChoisie) o = Object.assign({}, o, { police: policeChoisie.famille, graisse: policeChoisie.graisse, italique: policeChoisie.italique });
     var somme = largeur(a) + largeur(b), facteur = Math.max(1, somme / 1.04);
     var cx = o.cx || 150, cy = o.cy || 150, taille = (o.taille || 96) * Math.min(1, 1.55 / somme);
     var dx = (o.dx == null ? (o.taille || 96) * .2 : o.dx) * facteur, dy = o.dy == null ? taille * .3 : o.dy;
@@ -227,15 +230,26 @@ var LogoStyles = (function () {
     var a0 = o.a0 || 104, a1 = o.a1 || 238;
     var p0 = P(a0), p1 = P(a0 + (a1 - a0) * .33, R * 1.04), p2 = P(a0 + (a1 - a0) * .7, R * 1.02), p3 = P(a1, R * .96);
     var tige = [p0, p1, p2, p3];
-    var s = brin(tige, { c: c, n: 13, l0: 13, l1: 7, ouv: 44, tsw: .9, bouton: true });
+    var s = brin(tige, { c: c, n: 22, l0: 14, l1: 7, ouv: 42, tsw: .9, bouton: true });
+    // seconde tige, plus fine, doublant la premiere a l'interieur
+    var q0 = P(a0 + 6, R * .93), q1 = P(a0 + (a1 - a0) * .35, R * .9), q2 = P(a0 + (a1 - a0) * .68, R * .9), q3 = P(a1 - 14, R * .86);
+    s += brin([q0, q1, q2, q3], { c: c, n: 16, l0: 10, l1: 5, ouv: 48, tsw: .6, alterne: true });
     // rameaux secondaires vers l'exterieur
-    [.22, .5, .76].forEach(function (t, i) {
-      var b = bz(tige, t), ang = bzAngle(tige, t) - 55, L = 34 - i * 6;
+    [.12, .28, .44, .6, .76, .9].forEach(function (t, i) {
+      var b = bz(tige, t), ang = bzAngle(tige, t) - 55 + (i % 2 ? 12 : 0), L = 36 - i * 3.5;
       var fin = [b[0] + Math.cos(rad(ang)) * L, b[1] + Math.sin(rad(ang)) * L];
       var ctl = [b[0] + Math.cos(rad(ang + 20)) * L * .5, b[1] + Math.sin(rad(ang + 20)) * L * .5];
-      s += brin([b, ctl, ctl, fin], { c: c, n: 4, l0: 9, l1: 5, ouv: 46, tsw: .6, bouton: i === 2 });
+      s += brin([b, ctl, ctl, fin], { c: c, n: 6, l0: 9, l1: 5, ouv: 46, tsw: .6, bouton: i % 3 === 2 });
+    });
+    // petits brins vers l'interieur
+    [.3, .55, .82].forEach(function (t) {
+      var b = bz(tige, t), ang = bzAngle(tige, t) + 60, L = 18;
+      var fin = [b[0] + Math.cos(rad(ang)) * L, b[1] + Math.sin(rad(ang)) * L];
+      s += brin([b, [b[0] + Math.cos(rad(ang - 15)) * L * .5, b[1] + Math.sin(rad(ang - 15)) * L * .5], fin, fin], { c: c, n: 4, l0: 7, l1: 4, ouv: 48, tsw: .5 });
     });
     // fougere interieure
+    var bf = bz(tige, .7), af = bzAngle(tige, .7) - 70;
+    s += fougere([bf, [bf[0] + Math.cos(rad(af)) * 10, bf[1] + Math.sin(rad(af)) * 10], [bf[0] + Math.cos(rad(af - 12)) * 20, bf[1] + Math.sin(rad(af - 12)) * 20], [bf[0] + Math.cos(rad(af - 25)) * 28, bf[1] + Math.sin(rad(af - 25)) * 28]], c, 10);
     var bi = bz(tige, .4), ai = bzAngle(tige, .4) + 40;
     s += fougere([bi, [bi[0] + Math.cos(rad(ai)) * 12, bi[1] + Math.sin(rad(ai)) * 12], [bi[0] + Math.cos(rad(ai + 10)) * 22, bi[1] + Math.sin(rad(ai + 10)) * 22], [bi[0] + Math.cos(rad(ai + 25)) * 30, bi[1] + Math.sin(rad(ai + 25)) * 30]], c, 11);
     // fleurs
@@ -390,8 +404,12 @@ var LogoStyles = (function () {
       couleurs: { lettres: '#2A2A26', ornement: '#5C5C52' },
       dessin: function (a, b, c, t) {
         var o = c.ornement;
-        var cote = brin([[100, 236], [78, 214], [58, 184], [50, 132]], { c: o, n: 10, l0: 12, l1: 6, ouv: 46, bouton: true }) +
-          brin([[78, 214], [62, 210], [44, 200], [36, 182]], { c: o, n: 4, l0: 9, l1: 5, ouv: 46 }) +
+        var cote = brin([[100, 236], [78, 214], [58, 184], [50, 132]], { c: o, n: 18, l0: 13, l1: 6, ouv: 44, bouton: true }) +
+          brin([[96, 230], [70, 216], [50, 196], [40, 168]], { c: o, n: 12, l0: 10, l1: 5, ouv: 48, tsw: .6, alterne: true }) +
+          brin([[78, 214], [62, 210], [44, 200], [36, 182]], { c: o, n: 7, l0: 9, l1: 5, ouv: 46 }) +
+          brin([[60, 186], [46, 176], [36, 160], [34, 146]], { c: o, n: 6, l0: 8, l1: 4, ouv: 46, tsw: .5 }) +
+          brin([[54, 150], [44, 136], [44, 118], [50, 104]], { c: o, n: 6, l0: 8, l1: 4, ouv: 46, tsw: .5, bouton: true }) +
+          fougere([[88, 232], [74, 234], [60, 232], [50, 226]], o, 9) +
           g(56, 176, -120, 1, lys(20, o)) + g(48, 128, -95, 1, boutonT(12, o)) + anemone(68, 206, 6.5, o, 10) +
           fougere([[64, 160], [52, 152], [42, 144], [38, 132]], o, 9);
         return svg(symetrie(cote) +
@@ -421,6 +439,8 @@ var LogoStyles = (function () {
         var cote = g(46, 150, 0, 1, '<path d="M0 -14C-8 -6 -8 6 0 14" fill="none" stroke="' + o + '" stroke-width=".8"/>' + g(0, 0, 180, 1, feuilleT(12, 3.5, o)) + g(-2, -8, 210, 1, feuilleT(9, 3, o)) + g(-2, 8, 150, 1, feuilleT(9, 3, o)) + point(4, 0, 1.3, o));
         return svg('<path d="' + bord(0) + '" fill="none" stroke="' + o + '" stroke-width="1.1"/><path d="' + bord(7) + '" fill="none" stroke="' + o + '" stroke-width=".5"/>' +
           acanthe(72, 1) + acanthe(228, -1) + symetrie(cote) +
+          symetrie(brin([[128, 66], [110, 58], [90, 60], [70, 70]], { c: o, n: 8, l0: 8, l1: 4, ouv: 48, tsw: .5 }) +
+                   brin([[128, 234], [110, 242], [90, 240], [70, 230]], { c: o, n: 8, l0: 8, l1: 4, ouv: 48, tsw: .5 })) +
           monogramme(a, b, { couleur: c.lettres, taille: 90, cy: 146, dx: 16, dy: 18, police: 'Pinyon Script, cursive' }) + legende(t, 284, c.lettres));
       },
     },
@@ -446,8 +466,12 @@ var LogoStyles = (function () {
       dessin: function (a, b, c, t) {
         var o = c.ornement;
         var coeur = 'M150 250C112 222 70 188 68 140C66 108 88 88 114 88C130 88 143 98 150 110C157 98 170 88 186 88C212 88 234 108 232 140C230 188 188 222 150 250Z';
-        var flore = brin([[150, 246], [118, 236], [86, 212], [70, 172]], { c: o, n: 11, l0: 11, l1: 6, ouv: 46, bouton: true }) +
-          brin([[100, 226], [84, 228], [66, 222], [56, 208]], { c: o, n: 4, l0: 9, l1: 5 }) +
+        var flore = brin([[150, 246], [118, 236], [86, 212], [70, 172]], { c: o, n: 18, l0: 12, l1: 6, ouv: 44, bouton: true }) +
+          brin([[146, 240], [116, 228], [92, 206], [80, 178]], { c: o, n: 12, l0: 9, l1: 5, ouv: 48, tsw: .55, alterne: true }) +
+          brin([[100, 226], [84, 228], [66, 222], [56, 208]], { c: o, n: 7, l0: 9, l1: 5 }) +
+          brin([[80, 200], [66, 192], [56, 178], [54, 160]], { c: o, n: 6, l0: 8, l1: 4, tsw: .5 }) +
+          brin([[72, 174], [62, 160], [62, 142], [68, 128]], { c: o, n: 6, l0: 8, l1: 4, tsw: .5, bouton: true }) +
+          fougere([[126, 242], [112, 248], [98, 248], [88, 244]], o, 9) +
           cosmos(78, 200, 10, o, 15) + anemone(104, 230, 6.5, o, 30) + g(66, 166, -100, 1, boutonT(11, o)) + baies(124, 244, 170, o);
         return svg('<path d="' + coeur + '" fill="none" stroke="' + o + '" stroke-width="1.1"/>' +
           '<path transform="translate(150 160) scale(.93) translate(-150 -160)" d="' + coeur + '" fill="none" stroke="' + o + '" stroke-width=".45"/>' +
@@ -489,8 +513,10 @@ var LogoStyles = (function () {
       couleurs: { lettres: '#2A2A26', ornement: '#5C5C52' },
       dessin: function (a, b, c, t) {
         var o = c.ornement;
-        return svg(brin([[150, 236], [112, 232], [82, 214], [62, 186]], { c: o, n: 9, l0: 13, l1: 7, ouv: 40, ratio: .24, bouton: false }) +
-          brin([[150, 236], [188, 232], [218, 214], [238, 186]], { c: o, n: 9, l0: 13, l1: 7, ouv: 40, ratio: .24 }) +
+        var olivier = brin([[150, 236], [112, 232], [82, 214], [62, 186]], { c: o, n: 16, l0: 14, l1: 7, ouv: 38, ratio: .24 }) +
+          brin([[132, 234], [104, 222], [84, 200], [76, 174]], { c: o, n: 10, l0: 11, l1: 6, ouv: 42, ratio: .24, tsw: .55, alterne: true }) +
+          brin([[110, 228], [96, 236], [80, 238], [66, 232]], { c: o, n: 6, l0: 10, l1: 6, ouv: 40, ratio: .24, tsw: .55 });
+        return svg(symetrie(olivier) +
           [[96, 224], [204, 224], [76, 204], [224, 204]].map(function (q) { return '<ellipse cx="' + q[0] + '" cy="' + (q[1] + 4) + '" rx="2.8" ry="3.8" fill="none" stroke="' + o + '" stroke-width=".7"/>'; }).join('') +
           monogramme(a, b, { couleur: c.lettres, taille: 92, cy: 150, dx: 15, dy: 26, police: 'Cormorant Garamond, serif', graisse: 500 }) +
           legende(t, 262, c.lettres, { taille: 11, espace: 3.6 }));
@@ -537,6 +563,9 @@ var LogoStyles = (function () {
       dessin: function (a, b, c, t) {
         var id = ++uid, s = '';
         var C = { fleurs: c.fleurs, fleurs2: c.fleurs2, feuillage: c.feuillage };
+        [[96, 52, 22], [80, 92, 60], [72, 140, 90], [78, 186, 110], [104, 226, 140]].forEach(function (q) {
+          for (var f = 0; f < 5; f++) s += feuilleA(q[0], q[1], q[2] + 140 + f * 22, 24, 7, f % 2 ? c.feuillage : teinte(c.feuillage, .3));
+        });
         [[86, 70, .7, 10], [76, 116, .75, 40], [74, 164, .7, 80], [90, 206, .72, 120]].forEach(function (q) { s += bouquetA(q[0], q[1], q[2], C, q[3]); });
         return svg('<path d="' + ECUSSON + '" fill="#FFF9FA" stroke="' + c.ecusson + '" stroke-width="4"/>' +
           '<path transform="translate(150 146) scale(.9) translate(-150 -146)" d="' + ECUSSON + '" fill="none" stroke="' + c.ecusson + '" stroke-width="1"/>' +
@@ -619,9 +648,9 @@ var LogoStyles = (function () {
             '<ellipse cx="' + r2(x - r * .38) + '" cy="' + r2(y - r * .32) + '" rx="' + r2(r * .28) + '" ry="' + r2(r * .16) + '" fill="#fff" opacity=".4" transform="rotate(-30 ' + r2(x - r * .38) + ' ' + r2(y - r * .32) + ')"/>';
         };
         var gauche = '';
-        for (var k = 0; k < 14; k++) {
-          var ang = 100 + k * 10, p = [150 + Math.cos(rad(ang)) * 102, 146 + Math.sin(rad(ang)) * 102];
-          gauche += feuilleA(p[0], p[1], ang + 90 + (k % 2 ? 40 : -40), 22, 6.5, k % 3 ? c.feuillage : teinte(c.feuillage, .3));
+        for (var k = 0; k < 30; k++) {
+          var ang = 100 + k * 4.8, rr = 102 + (k % 3 - 1) * 5, p = [150 + Math.cos(rad(ang)) * rr, 146 + Math.sin(rad(ang)) * rr];
+          gauche += feuilleA(p[0], p[1], ang + 90 + (k % 2 ? 42 : -42), k % 4 ? 22 : 16, 6.5, k % 3 ? c.feuillage : teinte(c.feuillage, k % 2 ? .3 : -.15));
         }
         gauche += '<path d="M' + r2(150 + Math.cos(rad(100)) * 102) + ' ' + r2(146 + Math.sin(rad(100)) * 102) + 'A102 102 0 0 1 ' + r2(150 + Math.cos(rad(240)) * 102) + ' ' + r2(146 + Math.sin(rad(240)) * 102) + '" fill="none" stroke="#7A5A3A" stroke-width="1.6"/>';
         [[150, 15], [190, 12], [228, 10]].forEach(function (q) { var p = [150 + Math.cos(rad(q[0])) * 106, 146 + Math.sin(rad(q[0])) * 106]; gauche += grenade(p[0], p[1], q[1]); });
@@ -661,9 +690,9 @@ var LogoStyles = (function () {
       couleurs: { lettres: '#22385C', fleurs: '#E58FA0', fleurs2: '#F2B48C', feuillage: '#6E9A6A' },
       dessin: function (a, b, c, t) {
         var id = ++uid, s = '';
-        for (var k = 0; k < 34; k++) {
-          var ang = -90 + k * 360 / 34, p = [150 + Math.cos(rad(ang)) * 100, 146 + Math.sin(rad(ang)) * 100];
-          s += feuilleA(p[0], p[1], ang + 90 + (k % 2 ? 38 : -38), 22, 6.5, k % 3 ? c.feuillage : teinte(c.feuillage, .3));
+        for (var k = 0; k < 64; k++) {
+          var ang = -90 + k * 360 / 64, rr = 100 + (k % 3 - 1) * 6, p = [150 + Math.cos(rad(ang)) * rr, 146 + Math.sin(rad(ang)) * rr];
+          s += feuilleA(p[0], p[1], ang + 90 + (k % 2 ? 40 : -40), k % 4 ? 22 : 16, 6.5, k % 3 ? c.feuillage : teinte(c.feuillage, k % 2 ? .3 : -.15));
         }
         [[210, 15, 0], [250, 9, 1], [300, 13, 0], [340, 8, 1], [30, 15, 0], [75, 9, 1], [120, 13, 0], [160, 8, 1]].forEach(function (q) {
           var p = [150 + Math.cos(rad(q[0])) * 100, 146 + Math.sin(rad(q[0])) * 100];
@@ -685,8 +714,8 @@ var LogoStyles = (function () {
           return g(x, y, ang, 1, g2);
         };
         for (var k = 0; k < 15; k++) { var ang = 16 + k * (148 / 14), p = [150 + Math.cos(rad(ang)) * 82, 126 + Math.sin(rad(ang)) * 82]; s += lavande(p[0], p[1], ang + 90); }
-        for (var j = 0; j < 11; j++) {
-          var a2 = 20 + j * 14, q = [150 + Math.cos(rad(a2)) * 86, 126 + Math.sin(rad(a2)) * 86];
+        for (var j = 0; j < 21; j++) {
+          var a2 = 18 + j * 7.2, q = [150 + Math.cos(rad(a2)) * (86 + (j % 2) * 6), 126 + Math.sin(rad(a2)) * (86 + (j % 2) * 6)];
           s += feuilleA(q[0], q[1], a2 + (j % 2 ? 30 : -30), 20, 5, c.feuillage);
           if (j % 2 === 0) s += fleurA(q[0], q[1], 6.5, c.fleurs, '#C9822E', j * 11);
         }
@@ -707,11 +736,33 @@ var LogoStyles = (function () {
   };
 
   /** Dessine le style avec les initiales, couleurs et texte donnes. */
-  function dessiner(style, a, b, couleurs, texte) {
+  /** Polices proposees pour les initiales (null = celle du style). */
+  var POLICES = [
+    { id: '', nom: 'Police du logo' },
+    { id: 'bodoni', nom: 'Bodoni', famille: 'Bodoni Moda, serif' },
+    { id: 'cormorant', nom: 'Cormorant', famille: 'Cormorant Garamond, serif', graisse: 500 },
+    { id: 'playfair', nom: 'Playfair', famille: 'Playfair Display, serif' },
+    { id: 'playfair-italique', nom: 'Playfair italique', famille: 'Playfair Display, serif', italique: true },
+    { id: 'cinzel', nom: 'Cinzel', famille: 'Cinzel, serif' },
+    { id: 'italiana', nom: 'Italiana', famille: 'Italiana, serif' },
+    { id: 'baskerville', nom: 'Baskerville', famille: 'Libre Baskerville, serif' },
+    { id: 'marcellus', nom: 'Marcellus', famille: 'Marcellus, serif' },
+    { id: 'josefin', nom: 'Josefin', famille: 'Josefin Sans, sans-serif', graisse: 300 },
+    { id: 'great-vibes', nom: 'Great Vibes', famille: 'Great Vibes, cursive' },
+    { id: 'pinyon', nom: 'Pinyon Script', famille: 'Pinyon Script, cursive' },
+    { id: 'parisienne', nom: 'Parisienne', famille: 'Parisienne, cursive' },
+    { id: 'allura', nom: 'Allura', famille: 'Allura, cursive' },
+  ];
+
+  /** Dessine le style avec les initiales, couleurs, texte et police donnes. */
+  function dessiner(style, a, b, couleurs, texte, policeId) {
     var c = {};
     for (var k in style.couleurs) c[k] = (couleurs && couleurs[k]) || style.couleurs[k];
-    return style.dessin(echappe(a || ' '), echappe(b || ' '), c, echappe(texte || ''));
+    policeChoisie = null;
+    for (var i = 0; i < POLICES.length; i++) if (policeId && POLICES[i].id === policeId) policeChoisie = POLICES[i];
+    try { return style.dessin(echappe(a || ' '), echappe(b || ' '), c, echappe(texte || '')); }
+    finally { policeChoisie = null; }
   }
 
-  return { FAMILLES: FAMILLES, LIBELLES: LIBELLES, dessiner: dessiner };
+  return { FAMILLES: FAMILLES, LIBELLES: LIBELLES, POLICES: POLICES, dessiner: dessiner };
 })();
