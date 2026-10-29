@@ -94,3 +94,18 @@
 .btn--principal { border-radius: 0; padding-inline: 38px; }
 .btn--carte { border-radius: 0; }
 .compte__l { letter-spacing: .16em; }
+
+/* Ornements : coins, motif au-dessus des prenoms, separateurs, cartes et
+   semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
+:root { --orn-coin: 118px; --orn-coin-pc: 170px; --orn-coin-marge: 0px; --orn-haut: 230px; }
+.orn--coin { display: block; background-image: url("orn/coin.svg"); }
+.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+.orn--sep { display: block; background-image: url("orn/sep.svg"); }
+.orn--event { display: block; background-image: url("orn/event.svg"); }
+.decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.85; }
+.filet--haut, .filet--invitation { display: none; }
+.event::after { content: none; }
+/* Les nouveaux ornements remplacent l'ancienne arche de cercles. */
+.ecran--accueil::before { content: none; }
+/* Le brin decoratif deborde du coin de la carte : on ne la rogne plus. */
+.event { overflow: visible; }

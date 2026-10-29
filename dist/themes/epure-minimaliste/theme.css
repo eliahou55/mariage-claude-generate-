@@ -131,3 +131,13 @@
 
 .mazal { margin-top: 58px; font-size: 22px; letter-spacing: .14em; }
 .son { border-radius: 0; }
+
+/* Ornements : coins, motif au-dessus des prenoms, separateurs, cartes et
+   semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
+:root { --orn-coin: 96px; --orn-coin-pc: 140px; --orn-coin-marge: 6px; --orn-haut: 150px; --orn-event: 46px; }
+.orn--coin { display: block; background-image: url("orn/coin.svg"); }
+.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+.orn--sep { display: block; background-image: url("orn/sep.svg"); }
+.orn--event { display: block; background-image: url("orn/event.svg"); }
+.decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }
+.filet--haut, .filet--invitation { display: none; }

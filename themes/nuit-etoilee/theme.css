@@ -114,3 +114,14 @@
 @media (prefers-reduced-motion: reduce) {
   .decor__layer--2, .decor__layer--3 { animation: none; opacity: .8; }
 }
+
+/* Ornements : coins, motif au-dessus des prenoms, separateurs, cartes et
+   semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
+:root { --orn-coin: 110px; --orn-coin-pc: 160px; --orn-coin-marge: 4px; --orn-haut: 260px; }
+.orn--coin { display: block; background-image: url("orn/coin.svg"); }
+.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+.orn--sep { display: block; background-image: url("orn/sep.svg"); }
+.orn--event { display: block; background-image: url("orn/event.svg"); }
+.decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.9; }
+.filet--haut, .filet--invitation { display: none; }
+.orn--bas { background-image: url("orn/sep.svg"); aspect-ratio: 8 / 1; width: min(var(--orn-sep, 220px), 72%); transform: none; }

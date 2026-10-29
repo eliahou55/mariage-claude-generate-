@@ -112,3 +112,13 @@
     background: none;
   }
 }
+
+/* Ornements : coins, motif au-dessus des prenoms, separateurs, cartes et
+   semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
+:root { --orn-coin: 104px; --orn-coin-pc: 150px; --orn-coin-marge: 4px; --orn-event: 40px; --orn-event-haut: 4px; --orn-event-droite: 4px; }
+.orn--coin { display: block; background-image: url("orn/coin.svg"); }
+.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+.orn--sep { display: block; background-image: url("orn/sep.svg"); }
+.orn--event { display: block; background-image: url("orn/event.svg"); }
+.decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.7; }
+.filet--haut, .filet--invitation { display: none; }

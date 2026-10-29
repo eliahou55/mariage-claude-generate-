@@ -524,7 +524,7 @@ function page({ donnees, theme, base, titre, bandeau = '' }) {
 <style>:root{--accent:${accent};--accent-ink:${encre};--accent-soft:${encreDouce};--accent-on:${surAccent};}</style>
 </head>
 <body class="theme-${theme.slug}">
-<div class="decor decor--page" aria-hidden="true"><span class="decor__layer decor__layer--1"></span><span class="decor__layer decor__layer--2"></span><span class="decor__layer decor__layer--3"></span></div>
+<div class="decor decor--page" aria-hidden="true"><span class="decor__layer decor__layer--1"></span><span class="decor__layer decor__layer--2"></span><span class="decor__layer decor__layer--3"></span><span class="decor__layer decor__layer--4"></span></div>
 ${bandeau}
 <main id="app" class="app" data-base="${base}"></main>
 <script type="application/json" id="invitation-data">${jsonSur(payload)}</script>

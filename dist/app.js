@@ -101,6 +101,19 @@
     return n;
   }
 
+  /** Ornement decoratif (fleurs, feuillages, etoiles...) : span vide,
+   *  masque par defaut ; chaque theme active et dessine ceux qu'il veut
+   *  (themes/<slug>/orn/*.svg). */
+  function orn(mod) {
+    var n = el('span', 'orn orn--' + mod);
+    n.setAttribute('aria-hidden', 'true');
+    return n;
+  }
+  /** Les 4 coins decoratifs d'un ecran. */
+  function coins(parent) {
+    ['hg', 'hd', 'bg', 'bd'].forEach(function (c) { parent.appendChild(orn('coin orn--' + c)); });
+  }
+
   /** Bloc de texte hebreu, correctement aligne a droite. */
   function he(tag, cls, txt) {
     var n = el(tag, cls, txt);
@@ -216,10 +229,12 @@
     var sec = el('section', 'ecran ecran--accueil');
     sec.id = 'accueil';
 
+    coins(sec);
     var inner = el('div', 'accueil__inner');
     sec.appendChild(inner);
 
     inner.appendChild(he('p', 'bsd', 'בס״ד'));          // בס״ד
+    inner.appendChild(orn('haut'));
     inner.appendChild(el('span', 'filet filet--haut'));
 
     inner.appendChild(construireNomsCouple('h1', 'noms'));
@@ -236,6 +251,7 @@
     btn.type = 'button';
     btn.id = 'ouvrir';
     inner.appendChild(btn);
+    inner.appendChild(orn('bas'));
 
     return sec;
   }
@@ -276,6 +292,7 @@
     sec.id = 'invitation';
     sec.hidden = true;
 
+    coins(sec);
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
 
@@ -291,13 +308,18 @@
     /* 2. Phrase d'invitation + prenoms */
     inner.appendChild(el('p', 'phrase', 'ont la joie de vous convier au mariage de leurs enfants'));
     inner.appendChild(construireNomsCouple('p', 'invitation__noms'));
+    inner.appendChild(orn('sep'));
     inner.appendChild(el('span', 'filet filet--invitation'));
 
     /* 3. Une carte par groupe (cf. D.groupes), dans l'ordre fourni par les
      *    donnees. Un groupe de plusieurs evenements -> une seule carte. */
     var groupes = (D.groupes && D.groupes.length) ? D.groupes : D.evenements.map(function (e) { return [e]; });
     var liste = el('div', 'evenements');
-    groupes.forEach(function (groupe) { liste.appendChild(carteGroupe(groupe)); });
+    groupes.forEach(function (groupe) {
+      var carte = carteGroupe(groupe);
+      carte.insertBefore(orn('event'), carte.firstChild);
+      liste.appendChild(carte);
+    });
     inner.appendChild(liste);
 
     /* 4. Confirmation de presence (fictive : rien n'est envoye nulle part) */
@@ -305,8 +327,10 @@
     if (rsvp) inner.appendChild(rsvp);
 
     /* 5. Pied de page */
+    inner.appendChild(orn('sep'));
     inner.appendChild(el('span', 'filet filet--invitation'));
     inner.appendChild(he('p', 'mazal', 'מזל טוב'));   // מזל טוב
+    inner.appendChild(orn('bas'));
 
     return sec;
   }

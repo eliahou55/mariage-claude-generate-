@@ -108,3 +108,14 @@
 .btn--principal { border-radius: 40px 8px 44px 10px / 8px 40px 10px 42px; }
 .btn--carte { border-radius: 30px 6px 34px 8px / 6px 30px 8px 32px; border-width: 1.4px; }
 .mazal { font-family: var(--font-he); }
+
+/* Ornements : coins, motif au-dessus des prenoms, separateurs, cartes et
+   semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
+:root { --orn-coin: 112px; --orn-coin-pc: 160px; --orn-coin-marge: 14px; --orn-haut: 220px; }
+.orn--coin { display: block; background-image: url("orn/coin.svg"); }
+.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+.orn--sep { display: block; background-image: url("orn/sep.svg"); }
+.orn--event { display: block; background-image: url("orn/event.svg"); }
+.decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }
+.filet--haut, .filet--invitation { display: none; }
+.orn--bas { transform: none; }

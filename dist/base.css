@@ -104,6 +104,58 @@ img { max-width: 100%; height: auto; display: block; }
 .ecran { position: relative; }
 
 /* ------------------------------------------------------------------ *
+ * Ornements (spans vides crees par app.js) : masques par defaut, chaque
+ * theme active ceux qu'il veut avec ses dessins (themes/<slug>/orn/).
+ * Le coin est dessine pour le haut-gauche ; les 3 autres sont symetriques.
+ * ------------------------------------------------------------------ */
+
+.orn {
+  display: none;
+  pointer-events: none;
+  background: no-repeat center / contain;
+}
+.orn--coin {
+  position: absolute;
+  z-index: 0;
+  width: var(--orn-coin, 120px);
+  height: var(--orn-coin, 120px);
+}
+.orn--hg { top: var(--orn-coin-marge, 6px); left: var(--orn-coin-marge, 6px); }
+.orn--hd { top: var(--orn-coin-marge, 6px); right: var(--orn-coin-marge, 6px); transform: scaleX(-1); }
+.orn--bg { bottom: var(--orn-coin-marge, 6px); left: var(--orn-coin-marge, 6px); transform: scaleY(-1); }
+.orn--bd { bottom: var(--orn-coin-marge, 6px); right: var(--orn-coin-marge, 6px); transform: scale(-1, -1); }
+@media (min-width: 560px) {
+  .orn--coin { width: var(--orn-coin-pc, var(--orn-coin, 150px)); height: var(--orn-coin-pc, var(--orn-coin, 150px)); }
+}
+.accueil__inner, .invitation__inner { position: relative; z-index: 1; }
+
+.orn--haut, .orn--bas {
+  width: min(var(--orn-haut, 210px), 78%);
+  aspect-ratio: 3 / 1;
+  margin: 0 auto 4px;
+  flex: none;
+}
+.orn--bas { margin: 22px auto 0; transform: scaleY(-1); }
+.orn--sep {
+  width: min(var(--orn-sep, 220px), 72%);
+  aspect-ratio: 8 / 1;
+  margin: 20px auto 0;
+}
+.event { position: relative; }
+/* Deborde un peu au-dessus de la carte, comme un brin pose sur son coin :
+   ne touche pas le titre hebreu aligne a droite. */
+.orn--event {
+  position: absolute;
+  top: var(--orn-event-haut, -16px);
+  right: var(--orn-event-droite, -8px);
+  width: var(--orn-event, 54px);
+  height: var(--orn-event, 54px);
+  z-index: 0;
+  opacity: .9;
+}
+.event > :not(.orn) { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------------------ *
  * Accueil
  * ------------------------------------------------------------------ */
 
