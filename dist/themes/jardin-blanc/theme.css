@@ -113,7 +113,7 @@
 .event { overflow: visible; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "Cormorant", Georgia, serif;
   --font-corps: "Spectral", Georgia, serif;
@@ -121,9 +121,7 @@
   --oui: #6E8267;
   --oui-style: normal;
   --oui-graisse: 400;
-  --btn-fond: #FFFFFF;
-  --btn-encre: #4F5E49;
-  --btn-bord: #879A80;
+  --btn-contour: #6E8267;
   --btn-carte: #5F6F58;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun

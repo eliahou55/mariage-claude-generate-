@@ -101,7 +101,7 @@
 .invitation__inner { padding: 92px 18px 120px; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "IM Fell English", Georgia, serif;
   --font-corps: "EB Garamond", Georgia, serif;
@@ -109,9 +109,7 @@
   --oui: #2B4A72;
   --oui-style: italic;
   --oui-graisse: 400;
-  --btn-fond: #2B4A72;
-  --btn-encre: #FAFAF2;
-  --btn-bord: #2B4A72;
+  --btn-contour: #2B4A72;
   --btn-carte: #2B4A72;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun

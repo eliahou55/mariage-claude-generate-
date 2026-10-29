@@ -287,6 +287,7 @@
     coins(sec);
     var inner = el('div', 'invitation__inner');
     sec.appendChild(inner);
+    inner.appendChild(orn('haut'));
 
     /* 0. Verset d'ouverture, en texte courbe */
     var arcHaut = texteCourbe(VERSETS.aniLedodi);
@@ -382,7 +383,8 @@
     // Une phrase, puis date (mise en avant), lieu et adresse a la ligne.
     var texte = el('div', 'event__texte');
     ajouteSi(texte, PHRASES[ev.cle] || '', 'p', 'event__phrase');
-    ajouteSi(texte, dateEtHeure(ev), 'p', 'event__date-phare');
+    ajouteSi(texte, ev.dateFr, 'p', 'event__date-phare');
+    if (ev.heure) ajouteSi(texte, 'à ' + ev.heure, 'p', 'event__heure-phare');
     ajouteSi(texte, ev.dateHe, 'p', 'event__date-he', true);
     if (ev.lieu) ajouteSi(texte, prepositionLieu(ev.lieu) + ev.lieu, 'p', 'event__lieu');
     ajouteSi(texte, ev.adresse, 'p', 'event__adresse');

@@ -336,16 +336,16 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn:active { transform: scale(.97); }
 
-/* Couleurs du bouton principal ("Voir l'invitation", "Envoyer") : chaque
-   theme fixe --btn-fond / --btn-encre / --btn-bord dans sa palette, au lieu
-   du dore commun qui ne va pas a tous. */
+/* Bouton principal ("Voir l'invitation", "Envoyer") : en contour seulement,
+   dans la couleur choisie par chaque theme (--btn-contour). */
 .btn--principal {
-  background: var(--btn-fond, var(--accent));
-  color: var(--btn-encre, var(--accent-on));
-  border-color: var(--btn-bord, var(--btn-fond, var(--accent)));
+  background: transparent;
+  color: var(--btn-contour, var(--accent-ink));
+  border: 1.5px solid var(--btn-contour, var(--accent-ink));
   font-weight: 500;
   padding-inline: 28px;
 }
+.btn--principal:hover { background: color-mix(in srgb, var(--btn-contour, var(--accent-ink)) 10%, transparent); }
 
 /* Itineraire / Waze : petits, cote a cote, centres. */
 .btn--carte {
@@ -536,7 +536,8 @@ img { max-width: 100%; height: auto; display: block; }
    centre, comme les cartes Mairie et Houppa -- icone au-dessus du titre,
    hebreu centre lui aussi. */
 .event:not(.event--recit) { text-align: center; }
-.event:not(.event--recit) .event__head { flex-direction: column; gap: 10px; }
+.event:not(.event--recit) .event__head { flex-direction: column; align-items: center; gap: 10px; }
+.event:not(.event--recit) .event__titre { text-align: center; }
 .event:not(.event--recit) .event__titres { align-items: center; }
 .event:not(.event--recit) .event__titre-he,
 .event:not(.event--recit) .event__date-he { text-align: center; }
@@ -545,12 +546,23 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: 70%;
   background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
 }
-.event__texte { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 0 16px; }
+/* Henne, Chabbat, Reception seule : carte aeree, avec du volume. */
+.event:not(.event--recit) { padding: 34px 22px 28px; }
+.event:not(.event--recit) .event__titre { font-size: 26px; }
+.event:not(.event--recit) .event__filet { margin: 16px auto 20px; }
+.event__texte { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 0 24px; }
 .event__texte p { margin: 0; }
-.event__phrase { max-width: 26em; font-size: 14px; font-style: italic; line-height: 1.6; color: var(--muted); }
-.event__texte .event__date-he { margin-bottom: 4px; }
-.event__texte .event__lieu { font-size: 15px; }
-.event__texte .event__adresse { margin: 0; }
+.event__phrase { max-width: 24em; margin-bottom: 8px !important; font-size: 15px; font-style: italic; line-height: 1.7; color: var(--muted); }
+.event__texte .event__date-phare { margin: 4px 0 0; font-size: clamp(18px, 5vw, 21px); }
+.event__heure-phare {
+  font-family: var(--font-titre);
+  font-size: clamp(16px, 4.4vw, 18px);
+  letter-spacing: .04em;
+  color: var(--oui, var(--accent-ink));
+}
+.event__texte .event__date-he { margin: 2px 0 10px; font-size: 14px; }
+.event__texte .event__lieu { font-size: 16px; line-height: 1.5; }
+.event__texte .event__adresse { font-size: 13.5px; }
 .recit {
   display: flex;
   flex-direction: column;

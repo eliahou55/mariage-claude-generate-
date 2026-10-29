@@ -456,7 +456,7 @@ THEMES['nuit-etoilee'] = () => {
     return s;
   };
   const haut = svg(240, 80,
-    croissant(120, 42, 22, or, -35) + etoile(126, 40, 7, { fill: orC }) +
+    point(120, 40, 2.2, orC) + point(112, 46, 1.3, or) + point(128, 46, 1.3, or) +
     arc(1) + arc(-1) +
     etincelle(92, 22, 3, orC) + etincelle(150, 18, 3, orC) + point(104, 12, 1, bleu) + point(140, 66, 1, bleu));
   const sep = sepFilets(240, 30, or, etincelle(120, 15, 8, or) + etincelle(104, 15, 3, orC) + etincelle(136, 15, 3, orC) + point(94, 15, 1.2, or) + point(146, 15, 1.2, or), 0.8, 30);
@@ -604,8 +604,32 @@ THEMES['esquisse-illustree'] = () => {
     `<path d="M14 16C34 8 50 22 70 14S100 10 106 15" fill="none" stroke="${e}" stroke-width="1" stroke-linecap="round"/>` +
     `<path d="M226 16C206 8 190 22 170 14S140 10 134 15" fill="none" stroke="${e}" stroke-width="1" stroke-linecap="round"/>` +
     coeur(120, 15, 7, { stroke: e, sw: 1.1 })));
-  const event = svg(64, 64, enc(flute(30, 52, -14, 40, { stroke: e, sw: 1, bulles: true }) + flute(42, 52, 14, 40, { stroke: e, sw: 1, bulles: true }) +
+  const st = `fill="none" stroke="${e}" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"`;
+  const etinc = (x, y) => `<path d="M${x} ${y - 4}v8M${x - 4} ${y}h8" stroke="${eC}" stroke-width=".9" stroke-linecap="round"/>`;
+  // Reception : deux flutes qui trinquent
+  const eventReception = svg(64, 64, enc(flute(30, 52, -14, 40, { stroke: e, sw: 1, bulles: true }) + flute(42, 52, 14, 40, { stroke: e, sw: 1, bulles: true }) +
     `<path d="M36 6v6M33 9h6M46 10l3-3M26 10l-3-3" stroke="${e}" stroke-width=".9" stroke-linecap="round"/>`));
+  // Henne : main de Fatma (hamsa) avec son oeil
+  const eventHenne = svg(64, 64, enc(g(34, 32, 0,
+    `<path d="M-9 16Q-16 14-17 4Q-17.5-2-14-2Q-11-2-9 3L-9-12Q-9-16-6-16Q-3-16-3-12L-3-15Q-3-19 0-19Q3-19 3-15L3-12Q3-16 6-16Q9-16 9-12L9 3Q11-2 14-2Q17.5-2 17 4Q16 14 9 16Q0 20-9 16Z" ${st}/>` +
+    `<path d="M-5 6Q0 2 5 6Q0 10-5 6Z" ${st}/>` + point(0, 6, 1.4, e) +
+    [[-6, 12], [0, 13.5], [6, 12]].map(([x, y]) => point(x, y, 0.8, e)).join('')) + etinc(54, 10) + etinc(12, 50)));
+  // Mairie : petit edifice a fronton et drapeau
+  const eventMairie = svg(64, 64, enc(g(32, 36, 0,
+    `<path d="M-17-6L0-15L17-6Z" ${st}/><path d="M-16-3H16M-14-3V12M-7-3V12M0-3V12M7-3V12M14-3V12M-18 12H18M-20 15.5H20" ${st}/>` +
+    `<path d="M0-15V-24" ${st}/><path d="M0-24Q4-26 8-23Q4-20 0-21" ${st}/>` + point(0, -9, 1.2, e)) + etinc(54, 12)));
+  // Houppa : dais tendu sur quatre perches
+  const eventHouppa = svg(64, 64, enc(g(32, 34, 0,
+    `<path d="M-20-12Q0-22 20-12" ${st}/><path d="M-20-12Q-15-6-10-12Q-5-6 0-12Q5-6 10-12Q15-6 20-12" ${st}/>` +
+    `<path d="M-18-11V18M18-11V18M-9-9V14M9-9V14" ${st}/><path d="M-22 18H22" ${st}/>` +
+    point(-20, -12, 1.3, e) + point(20, -12, 1.3, e) + coeur(0, 4, 4, { stroke: e, sw: 1 })) + etinc(54, 8)));
+  // Chabbat 'Hatan : les deux bougeoirs du chabbat
+  const bougeoir = (x) => `<path d="M${x - 6} 22H${x + 6}L${x + 3} 18H${x - 3}Z" ${st}/><path d="M${x} 18V8M${x - 5} 8H${x + 5}" ${st}/>` +
+    `<path d="M${x - 2.5} 8V-6H${x + 2.5}V8" ${st}/><path d="M${x} -8Q${x - 3} -12 ${x} -17Q${x + 3} -12 ${x} -8Z" ${st}/>`;
+  const eventChabbat = svg(64, 64, enc(g(32, 34, 0, bougeoir(-9) + bougeoir(9) +
+    `<path d="M-15-14l-3-2M15-14l3-2M0-18v-4" stroke="${eC}" stroke-width=".9" stroke-linecap="round"/>`)));
+  // Carte qui regroupe plusieurs evenements : les deux alliances
+  const event = svg(64, 64, enc(anneaux(32, 38, 0.95)));
   const rnd = alea(88);
   const doodles = [
     (x, y) => coeur(x, y, 7, { stroke: eC, sw: 0.9, a: rnd() * 30 - 15 }),
@@ -617,7 +641,11 @@ THEMES['esquisse-illustree'] = () => {
   const fond = svg(420, 420, enc(semis(420, 15, 92, rnd, (x, y, i) => `<g opacity=".55">${doodles[i % doodles.length](x, y)}</g>`)), filtre);
   // Le filtre doit etre dans chaque SVG qui l'utilise.
   const avecFiltre = (s) => s.replace(/(<svg[^>]*>)/, `$1<defs>${filtre}</defs>`);
-  return { coin: avecFiltre(coin), haut: avecFiltre(haut), hautArche: avecFiltre(hautArche), sep: avecFiltre(sep), event: avecFiltre(event), fond };
+  return {
+    coin: avecFiltre(coin), haut: avecFiltre(haut), hautArche: avecFiltre(hautArche), sep: avecFiltre(sep), event: avecFiltre(event), fond,
+    'event-henne': avecFiltre(eventHenne), 'event-mairie': avecFiltre(eventMairie), 'event-houppa': avecFiltre(eventHouppa),
+    'event-chabbat': avecFiltre(eventChabbat), 'event-reception': avecFiltre(eventReception),
+  };
 };
 
 /* ---------- Diner aux chandelles : bougies, volutes dorees, roses sombres ---------- */
@@ -646,7 +674,9 @@ THEMES['diner-chandelles'] = () => {
     point(96, 40, 1.2, orC) + point(144, 40, 1.2, orC) + etincelle(120, 30, 3.5, orC));
   const sep = sepFilets(240, 30, or,
     flute(114, 27, -16, 24, { stroke: or, sw: 0.9, bulles: true }) + flute(126, 27, 16, 24, { stroke: or, sw: 0.9, bulles: true }) + etincelle(120, 3, 3, orC), 0.8, 28);
-  const event = svg(64, 64, bougie(44, 58, 22, 6, cire, 'he', 'fe') + volute(28, 50, 6, 1.2, 0, -1, { stroke: or, sw: 0.9 }), defs('e'));
+  const event = svg(64, 64,
+    feuille(46, 18, 160, 16, 6, fo) + feuille(46, 18, 100, 16, 6, fo) + rose(46, 18, 10, rs, 20) + rose(30, 12, 6, rs, 60) +
+    volute(26, 32, 6, 1.2, 0, -1, { stroke: or, sw: 0.9 }) + point(56, 36, 1.2, orC));
   const rnd = alea(99);
   const fond = svg(420, 420, semis(420, 18, 80, rnd, (x, y, i) =>
     `<circle cx="${r2(x)}" cy="${r2(y)}" r="${r2(4 + rnd() * 9)}" fill="url(#b)" opacity="${r2(0.35 + rnd() * 0.4)}"/>` + (i % 3 === 0 ? etincelle(x + 12, y - 10, 2.5, orC, 0.6) : '')),

@@ -123,7 +123,7 @@
 .orn--bas { transform: none; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "EB Garamond", Georgia, serif;
   --font-corps: "EB Garamond", Georgia, serif;
@@ -131,11 +131,19 @@
   --oui: #23324F;
   --oui-style: normal;
   --oui-graisse: 600;
-  --btn-fond: #23324F;
-  --btn-encre: #FAF4E6;
-  --btn-bord: #23324F;
+  --btn-contour: #23324F;
   --btn-carte: #23324F;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun
    (html:root l'emporte sur la couleur d'accent injectee par la page). */
 html:root { --accent-ink: var(--oui); }
+
+/* Un petit dessin adapte a chaque evenement (coin haut-droit des cartes) :
+   main de Fatma pour le henne, edifice pour la mairie, dais pour la
+   houppa, bougeoirs pour le chabbat, flutes pour la reception, alliances
+   pour une carte qui en regroupe plusieurs. */
+.event--henne > .orn--event { background-image: url("orn/event-henne.svg"); }
+.event--mairie > .orn--event { background-image: url("orn/event-mairie.svg"); }
+.event--houppa > .orn--event { background-image: url("orn/event-houppa.svg"); }
+.event--chabbat > .orn--event { background-image: url("orn/event-chabbat.svg"); }
+.event--reception > .orn--event { background-image: url("orn/event-reception.svg"); }

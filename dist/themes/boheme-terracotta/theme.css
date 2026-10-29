@@ -135,7 +135,7 @@
 @media (min-width: 560px) { .ecran--accueil .orn--hg, .ecran--accueil .orn--hd { display: none; } }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "DM Serif Display", Georgia, serif;
   --font-corps: "Work Sans", system-ui, sans-serif;
@@ -143,11 +143,14 @@
   --oui: #C46A45;
   --oui-style: normal;
   --oui-graisse: 400;
-  --btn-fond: #C46A45;
-  --btn-encre: #FFF6EC;
-  --btn-bord: #C46A45;
+  --btn-contour: #C46A45;
   --btn-carte: #9B4A2C;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun
    (html:root l'emporte sur la couleur d'accent injectee par la page). */
 html:root { --accent-ink: var(--oui); }
+
+/* Carte de confirmation en arche : le titre commence sous la courbe pour
+   ne pas deborder du cadre arrondi. */
+.rsvp { padding-top: 78px; }
+.rsvp__titre { font-size: 22px; }

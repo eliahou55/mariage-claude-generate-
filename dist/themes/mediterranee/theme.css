@@ -74,8 +74,7 @@
 
 .event {
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
   background: rgba(255, 255, 255, .45);
   position: relative;
   overflow: hidden;
@@ -116,7 +115,7 @@
 .decor__layer--3 { background: none; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "Playfair Display", Georgia, serif;
   --font-corps: "Crimson Pro", Georgia, serif;
@@ -124,9 +123,7 @@
   --oui: #5E6A34;
   --oui-style: normal;
   --oui-graisse: 600;
-  --btn-fond: #5E6A34;
-  --btn-encre: #F7F3E4;
-  --btn-bord: #5E6A34;
+  --btn-contour: #5E6A34;
   --btn-carte: #5E6A34;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun

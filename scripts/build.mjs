@@ -39,7 +39,7 @@ const THEMES = [
     fonts: 'family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel+Decorative:wght@400;700&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
-    nom: 'Méditerranée (olivier & citrons)', slug: 'mediterranee', sombre: false, surface: '#F7F3E4',
+    nom: 'Méditerranée', alias: ['Méditerranée (olivier & citrons)'], slug: 'mediterranee', sombre: false, surface: '#F7F3E4',
     fonts: 'family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@500;600&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
@@ -356,7 +356,8 @@ async function lireClasseur() {
 
   /* ---- Site ---- */
   const nomTheme = site.txt('Thème');
-  const theme = THEMES.find((t) => t.nom === nomTheme);
+  // alias : anciens noms encore presents dans des classeurs existants
+  const theme = THEMES.find((t) => t.nom === nomTheme || (t.alias || []).includes(nomTheme));
   if (!theme) {
     throw new Error(
       `Feuille "Site" : thème "${nomTheme}" inconnu.\n  Thèmes valides : ${THEMES.map((t) => t.nom).join(' | ')}`,

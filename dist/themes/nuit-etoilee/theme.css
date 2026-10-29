@@ -131,7 +131,7 @@
 .orn--coin { display: none; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "Cinzel", Georgia, serif;
   --font-corps: "Cormorant Garamond", Georgia, serif;
@@ -139,9 +139,7 @@
   --oui: #E8CF8E;
   --oui-style: normal;
   --oui-graisse: 400;
-  --btn-fond: transparent;
-  --btn-encre: #E8CF8E;
-  --btn-bord: #D4B26A;
+  --btn-contour: #D4B26A;
   --btn-carte: #E8CF8E;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun

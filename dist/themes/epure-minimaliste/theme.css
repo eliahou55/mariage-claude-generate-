@@ -91,10 +91,9 @@
   border-radius: 0;
 }
 .btn--principal {
-  border: 1px solid var(--btn-bord);
+  border: 1px solid var(--btn-contour);
   padding-inline: 40px;
 }
-.btn--principal:hover { background: var(--btn-encre); color: var(--surface); }
 
 .phrase { font-style: normal; font-size: 12.5px; letter-spacing: .06em; margin-top: 38px; }
 .invitation__noms { font-weight: 200; letter-spacing: .2em; text-transform: uppercase; font-size: clamp(22px, 7.5vw, 30px); }
@@ -143,7 +142,7 @@
 .filet--haut, .filet--invitation { display: none; }
 
 /* Identite typographique et couleurs propres au theme : titres, texte,
-   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+   police decorative ("Oui", "&"), contour du bouton principal, Itineraire/Waze. */
 :root {
   --font-titre: "Jost", system-ui, sans-serif;
   --font-corps: "Jost", system-ui, sans-serif;
@@ -151,9 +150,7 @@
   --oui: #2E2A25;
   --oui-style: italic;
   --oui-graisse: 300;
-  --btn-fond: transparent;
-  --btn-encre: #2E2A25;
-  --btn-bord: #2E2A25;
+  --btn-contour: #2E2A25;
   --btn-carte: #2E2A25;
 }
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun

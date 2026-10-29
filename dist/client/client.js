@@ -29,7 +29,7 @@ var ClientInvitation = (function () {
     { nom: 'Marbre & Or', slug: 'marbre-or' },
     { nom: 'Botanique sauge', slug: 'botanique-sauge' },
     { nom: 'Nuit étoilée', slug: 'nuit-etoilee' },
-    { nom: 'Méditerranée (olivier & citrons)', slug: 'mediterranee' },
+    { nom: 'Méditerranée', slug: 'mediterranee' },
     { nom: 'Rosé poudré', slug: 'rose-poudre' },
     { nom: 'Jardin blanc', slug: 'jardin-blanc' },
     { nom: 'Esquisse illustrée', slug: 'esquisse-illustree' },
