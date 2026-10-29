@@ -1,36 +1,42 @@
 /**
- * Generateur de logo (version d'essai) : deux initiales, galerie des 10
- * styles a faire defiler (doigt, souris, fleches, points), couleurs du logo
- * affiche modifiables. Le choix est garde dans ce navigateur
- * (CLE_LOGO) pour une future integration a l'invitation.
+ * Generateur de logo (version d'essai) : deux familles (Logo au trait /
+ * Logo colore) choisies par la barre d'onglets, deux initiales et une
+ * ligne de texte facultative, galerie de 10 logos par famille a faire
+ * defiler (doigt, souris, fleches, points), couleurs du logo affiche
+ * modifiables. Le choix est garde dans ce navigateur (CLE_LOGO) pour une
+ * future integration a l'invitation.
  */
 (function () {
   'use strict';
 
   var CLE_LOGO = 'invitation-client:logo';
-  var STYLES = LogoStyles.STYLES;
+  var FAMILLES = LogoStyles.FAMILLES;
 
-  var etat = lireEtat();
   var piste = document.getElementById('piste');
   var points = document.getElementById('points');
   var nomStyle = document.getElementById('nom-style');
   var zoneCouleurs = document.getElementById('couleurs');
   var champ1 = document.getElementById('lettre-1');
   var champ2 = document.getElementById('lettre-2');
+  var champTexte = document.getElementById('texte-logo');
   var confirmation = document.getElementById('confirmation');
+  var onglets = document.querySelectorAll('.logo-onglet');
+
+  var etat = lireEtat();
+  function styles() { return FAMILLES[etat.famille]; }
 
   function lireEtat() {
     var e = null;
     try { e = JSON.parse(window.localStorage.getItem(CLE_LOGO) || 'null'); } catch (err) { /* ignore */ }
     e = e || {};
-    if (!e.lettres) {
-      // Par defaut : initiales des prenoms deja saisis dans le formulaire.
-      var b = ClientInvitation.lireBrouillon();
-      var i1 = (b.couple && b.couple.marie && b.couple.marie.prenom || 'A').trim().charAt(0);
-      var i2 = (b.couple && b.couple.mariee && b.couple.mariee.prenom || 'B').trim().charAt(0);
-      e.lettres = [(i1 || 'A').toUpperCase(), (i2 || 'B').toUpperCase()];
-    }
-    e.index = Math.max(0, Math.min(STYLES.length - 1, e.index || 0));
+    var b = ClientInvitation.lireBrouillon();
+    var p1 = (b.couple && b.couple.marie && b.couple.marie.prenom || '').trim();
+    var p2 = (b.couple && b.couple.mariee && b.couple.mariee.prenom || '').trim();
+    if (!e.lettres) e.lettres = [(p1.charAt(0) || 'A').toUpperCase(), (p2.charAt(0) || 'B').toUpperCase()];
+    // Par defaut, les prenoms deja saisis dans le formulaire sous le logo.
+    if (e.texte == null) e.texte = p1 && p2 ? p1 + ' & ' + p2 : '';
+    if (!FAMILLES[e.famille]) e.famille = 'trait';
+    e.index = e.index && typeof e.index === 'object' ? e.index : { trait: 0, couleur: 0 };
     e.couleurs = e.couleurs || {};
     return e;
   }
@@ -39,16 +45,23 @@
     try { window.localStorage.setItem(CLE_LOGO, JSON.stringify(etat)); } catch (err) { /* ignore */ }
   }
 
+  function indexCourant() { return Math.max(0, Math.min(styles().length - 1, etat.index[etat.famille] || 0)); }
+
   /* --- Galerie --- */
+  function dessin(style) {
+    return LogoStyles.dessiner(style, etat.lettres[0], etat.lettres[1], etat.couleurs[style.id], etat.texte);
+  }
+
   function rendreGalerie() {
     piste.innerHTML = '';
     points.innerHTML = '';
-    STYLES.forEach(function (style, i) {
+    piste.classList.toggle('logo-galerie__piste--couleur', etat.famille === 'couleur');
+    styles().forEach(function (style, i) {
       var diapo = document.createElement('div');
       diapo.className = 'logo-diapo';
       diapo.setAttribute('role', 'group');
-      diapo.setAttribute('aria-label', 'Logo ' + (i + 1) + ' sur ' + STYLES.length + ' : ' + style.nom);
-      diapo.innerHTML = LogoStyles.dessiner(style, etat.lettres[0], etat.lettres[1], etat.couleurs[style.id]);
+      diapo.setAttribute('aria-label', 'Logo ' + (i + 1) + ' sur ' + styles().length + ' : ' + style.nom);
+      diapo.innerHTML = dessin(style);
       piste.appendChild(diapo);
 
       var pt = document.createElement('button');
@@ -60,23 +73,22 @@
     });
   }
 
-  function redessiner(i) {
-    var style = STYLES[i];
-    piste.children[i].innerHTML = LogoStyles.dessiner(style, etat.lettres[0], etat.lettres[1], etat.couleurs[style.id]);
-  }
+  function redessiner(i) { piste.children[i].innerHTML = dessin(styles()[i]); }
+  function toutRedessiner() { styles().forEach(function (s, i) { redessiner(i); }); }
 
   function allerA(i, instantane) {
-    i = (i + STYLES.length) % STYLES.length;
+    var n = styles().length;
+    i = (i + n) % n;
     piste.scrollTo({ left: i * piste.clientWidth, behavior: instantane ? 'auto' : 'smooth' });
-    majIndex(i);
+    majIndex(i, true);
   }
 
-  function majIndex(i) {
-    i = Math.max(0, Math.min(STYLES.length - 1, i || 0));
-    if (i === etat.index && nomStyle.textContent) return;
-    etat.index = i;
+  function majIndex(i, force) {
+    i = Math.max(0, Math.min(styles().length - 1, i || 0));
+    if (!force && i === indexCourant()) return;
+    etat.index[etat.famille] = i;
     ecrireEtat();
-    nomStyle.textContent = STYLES[i].nom + ' · ' + (i + 1) + ' / ' + STYLES.length;
+    nomStyle.textContent = styles()[i].nom + ' · ' + (i + 1) + ' / ' + styles().length;
     Array.prototype.forEach.call(points.children, function (p, k) {
       p.classList.toggle('logo-galerie__point--actif', k === i);
       p.setAttribute('aria-selected', k === i ? 'true' : 'false');
@@ -93,104 +105,96 @@
       if (piste.clientWidth) majIndex(Math.round(piste.scrollLeft / piste.clientWidth));
     }, 60);
   });
-  document.getElementById('prec').addEventListener('click', function () { allerA(etat.index - 1); });
-  document.getElementById('suiv').addEventListener('click', function () { allerA(etat.index + 1); });
+  document.getElementById('prec').addEventListener('click', function () { allerA(indexCourant() - 1); });
+  document.getElementById('suiv').addEventListener('click', function () { allerA(indexCourant() + 1); });
   piste.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowLeft') { allerA(etat.index - 1); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { allerA(etat.index + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { allerA(indexCourant() - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { allerA(indexCourant() + 1); e.preventDefault(); }
   });
-  window.addEventListener('resize', function () { allerA(etat.index, true); });
+  window.addEventListener('resize', function () { allerA(indexCourant(), true); });
+
+  /* --- Barre d'onglets : Logo / Logo colore --- */
+  function choisirFamille(famille) {
+    etat.famille = famille;
+    ecrireEtat();
+    Array.prototype.forEach.call(onglets, function (o) {
+      var actif = o.getAttribute('data-famille') === famille;
+      o.classList.toggle('logo-onglet--actif', actif);
+      o.setAttribute('aria-selected', actif ? 'true' : 'false');
+    });
+    rendreGalerie();
+    allerA(indexCourant(), true);
+  }
+  Array.prototype.forEach.call(onglets, function (o) {
+    o.addEventListener('click', function () { choisirFamille(o.getAttribute('data-famille')); });
+  });
 
   /* --- Couleurs du logo affiche --- */
   function rendreCouleurs() {
-    var style = STYLES[etat.index];
+    var style = styles()[indexCourant()];
     var perso = etat.couleurs[style.id] || {};
     zoneCouleurs.innerHTML = '';
     Object.keys(style.couleurs).forEach(function (cle) {
-      var origine = style.couleurs[cle];
-      var valeur = perso[cle] || origine;
       var ligne = document.createElement('div');
       ligne.className = 'logo-couleur';
-
       var id = 'couleur-' + cle;
-      var label = document.createElement('label');
-      label.setAttribute('for', id);
-      label.textContent = LogoStyles.LIBELLES[cle] || cle;
-
       var input = document.createElement('input');
       input.type = 'color';
       input.id = id;
-      input.value = valeur === 'none' ? (origine === 'none' ? '#FFFFFF' : origine) : valeur;
+      input.value = perso[cle] || style.couleurs[cle];
+      var label = document.createElement('label');
+      label.setAttribute('for', id);
+      label.textContent = LogoStyles.LIBELLES[cle] || cle;
       ligne.appendChild(input);
       ligne.appendChild(label);
-
-      var aucun = null;
-      if (cle === 'fond') {
-        var lab = document.createElement('label');
-        lab.className = 'logo-couleur__aucun';
-        aucun = document.createElement('input');
-        aucun.type = 'checkbox';
-        aucun.checked = valeur === 'none';
-        input.disabled = aucun.checked;
-        lab.appendChild(aucun);
-        lab.appendChild(document.createTextNode(' Sans fond'));
-        ligne.appendChild(lab);
-        aucun.addEventListener('change', function () {
-          input.disabled = aucun.checked;
-          appliquer(cle, aucun.checked ? 'none' : input.value);
-        });
-      }
-
       input.addEventListener('input', function () { appliquer(cle, input.value); });
       zoneCouleurs.appendChild(ligne);
     });
   }
 
   function appliquer(cle, valeur) {
-    var style = STYLES[etat.index];
+    var style = styles()[indexCourant()];
     etat.couleurs[style.id] = etat.couleurs[style.id] || {};
     etat.couleurs[style.id][cle] = valeur;
     ecrireEtat();
-    redessiner(etat.index);
+    redessiner(indexCourant());
     confirmation.hidden = true;
   }
 
   document.getElementById('reinit-couleurs').addEventListener('click', function () {
-    delete etat.couleurs[STYLES[etat.index].id];
+    delete etat.couleurs[styles()[indexCourant()].id];
     ecrireEtat();
-    redessiner(etat.index);
+    redessiner(indexCourant());
     rendreCouleurs();
   });
 
-  /* --- Initiales --- */
-  function majLettres() {
+  /* --- Initiales et texte --- */
+  function majTexte() {
     etat.lettres = [champ1.value.trim().toUpperCase(), champ2.value.trim().toUpperCase()];
+    etat.texte = champTexte.value.trim();
     ecrireEtat();
-    STYLES.forEach(function (s, i) { redessiner(i); });
+    toutRedessiner();
     confirmation.hidden = true;
   }
   champ1.value = etat.lettres[0];
   champ2.value = etat.lettres[1];
-  champ1.addEventListener('input', function () { majLettres(); if (champ1.value) champ2.focus(); });
-  champ2.addEventListener('input', majLettres);
+  champTexte.value = etat.texte;
+  champ1.addEventListener('input', function () { majTexte(); if (champ1.value) champ2.focus(); });
+  champ2.addEventListener('input', majTexte);
+  champTexte.addEventListener('input', majTexte);
 
   /* --- Choix final (garde dans ce navigateur pour plus tard) --- */
   document.getElementById('choisir').addEventListener('click', function () {
-    var style = STYLES[etat.index];
-    etat.choisi = { style: style.id, lettres: etat.lettres.slice(), couleurs: etat.couleurs[style.id] || {} };
+    var style = styles()[indexCourant()];
+    etat.choisi = { famille: etat.famille, style: style.id, lettres: etat.lettres.slice(), texte: etat.texte, couleurs: etat.couleurs[style.id] || {} };
     ecrireEtat();
     confirmation.textContent = '« ' + style.nom + ' » est enregistré comme votre logo (dans ce navigateur).';
     confirmation.hidden = false;
   });
 
-  rendreGalerie();
-  var depart = etat.index;
-  etat.index = -1;
-  majIndex(depart);
-  allerA(depart, true);
+  choisirFamille(etat.famille);
+  majIndex(indexCourant(), true);
 
   // Les polices des logos arrivent apres le premier rendu : on redessine.
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { STYLES.forEach(function (s, i) { redessiner(i); }); });
-  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(toutRedessiner);
 })();

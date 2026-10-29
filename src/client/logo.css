@@ -2,6 +2,30 @@
    logo.css -- generateur de logo (version d'essai, logo.html).
    ===================================================================== */
 
+/* Barre d'onglets en haut : Logo (au trait) / Logo colore */
+.logo-onglets {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 26px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--bg);
+}
+.logo-onglet {
+  flex: 1;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: 500 14px/1 var(--font-corps);
+  color: var(--muted);
+  cursor: pointer;
+}
+.logo-onglet--actif { background: var(--surface); color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+
+.logo-texte { margin: -10px 0 24px; }
+
 .logo-lettres {
   display: flex;
   align-items: flex-end;
@@ -37,6 +61,13 @@
   background:
     radial-gradient(circle at 50% 45%, #FFFFFF, transparent 70%),
     var(--bg);
+}
+/* Logos colores : sur un papier legerement texture, comme les exemples. */
+.logo-galerie__piste--couleur {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, .9), transparent 72%),
+    repeating-linear-gradient(35deg, rgba(0, 0, 0, .012) 0 2px, transparent 2px 5px),
+    #EFEDE8;
 }
 .logo-galerie__piste::-webkit-scrollbar { display: none; }
 .logo-galerie__piste:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
@@ -97,9 +128,7 @@
   background: var(--surface);
   cursor: pointer;
 }
-.logo-couleur input[type="color"]:disabled { opacity: .35; cursor: default; }
 .logo-couleur > label { font-size: 15px; }
-.logo-couleur__aucun { margin-left: auto; font-size: 13.5px; color: var(--muted); cursor: pointer; }
 
 .logo-actions { margin-top: 8px; }
 .logo-confirmation { text-align: center; color: var(--accent-ink); }

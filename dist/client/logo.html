@@ -19,10 +19,15 @@
   </header>
 
   <main>
+    <div class="logo-onglets" role="tablist" aria-label="Type de logo">
+      <button type="button" class="logo-onglet logo-onglet--actif" role="tab" data-famille="trait" aria-selected="true">Logo</button>
+      <button type="button" class="logo-onglet" role="tab" data-famille="couleur" aria-selected="false">Logo coloré</button>
+    </div>
+
     <h1 class="titre">Votre logo de mariage</h1>
     <p class="chapo">
-      Entrez vos deux initiales, faites défiler les 10 styles comme une galerie photo, puis ajustez
-      les couleurs de celui qui vous plaît.
+      Entrez vos deux initiales, faites défiler les 10 logos comme une galerie photo, puis ajustez
+      les couleurs de celui qui vous plaît. En haut, passez des logos au trait aux logos colorés.
     </p>
 
     <section class="logo-lettres" aria-label="Vos initiales">
@@ -36,6 +41,10 @@
         <input id="lettre-2" type="text" maxlength="1" autocomplete="off" autocapitalize="characters">
       </div>
     </section>
+    <div class="champ logo-texte">
+      <label for="texte-logo">Texte sous le logo (facultatif)</label>
+      <input id="texte-logo" type="text" maxlength="40" placeholder="Ex. Ilan &amp; Yaël" autocomplete="off">
+    </div>
 
     <section class="logo-galerie" aria-label="Les 10 styles de logo" aria-roledescription="carrousel">
       <div class="logo-galerie__piste" id="piste" tabindex="0"></div>
