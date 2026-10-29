@@ -544,12 +544,24 @@ function bandeauApercu(theme, donnees) {
   return `<div class="apercu-bar"><a class="apercu-bar__back" href="../index.html">&#8592; Thèmes</a><span class="apercu-bar__name">${echappe(theme.nom)}</span><span class="apercu-bar__dot" id="apercu-bar-dot" style="background:${donnees.site.couleurHex}"></span></div>`;
 }
 
+/** Vignette de la liste des themes : un apercu du theme lui-meme (son
+ *  motif d'ornement sur sa couleur de fond, ou l'image de toile de Jouy),
+ *  au lieu d'une simple pastille de couleur. */
+function vignette(t) {
+  if (existsSync(path.join(PROJECT, 'themes', t.slug, 'fond.jpg'))) {
+    return `background:${t.surface} url(../themes/${t.slug}/fond.jpg) center/cover`;
+  }
+  // Coin decore du theme (le plus fourni de ses ornements), en grand
+  // dans le coin haut-gauche de la vignette, plus son semis de fond.
+  return `background:url(../themes/${t.slug}/orn/coin.svg) -6px -6px/118% auto no-repeat,url(../themes/${t.slug}/orn/fond.svg) 0 0/90px repeat,${t.surface}`;
+}
+
 function pageIndexApercus(donnees) {
   const cartes = THEMES.map((t) => {
     const encre = accentLisible(donnees.site.couleurHex, t.surface, 4.5);
     const actif = t.slug === donnees.site.themeSlug;
     return `  <a class="carte${actif ? ' carte--actif' : ''}" href="${t.slug}/index.html">
-    <span class="carte__swatch" style="background:${t.surface};border-color:${encre}"><span style="background:${encre}"></span></span>
+    <span class="carte__swatch" style="${vignette(t)}" aria-hidden="true"></span>
     <span class="carte__texte"><strong>${echappe(t.nom)}</strong></span>
     ${actif ? '<span class="carte__badge">Choisi dans l\u2019Excel</span>' : ''}
   </a>`;
@@ -577,8 +589,7 @@ p.sous{margin:0 0 26px;color:#9fa6b2;font-size:14px}
 .carte{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:72px;border:1px solid #2b3040;border-radius:14px;background:#1b1f27;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s;position:relative}
 .carte:hover,.carte:focus-visible{border-color:#6b738c;transform:translateY(-2px)}
 .carte--actif{border-color:#c9a44c}
-.carte__swatch{width:44px;height:44px;border-radius:50%;border:2px solid;display:grid;place-items:center;flex:none}
-.carte__swatch span{width:16px;height:16px;border-radius:50%;display:block}
+.carte__swatch{width:64px;height:64px;border-radius:12px;flex:none;border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
 .carte__texte{display:flex;flex-direction:column;gap:2px;min-width:0}
 .carte__texte strong{font-weight:500;font-size:15px}
 .carte__badge{position:absolute;top:-9px;right:12px;background:#c9a44c;color:#1a1a1a;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:500}
