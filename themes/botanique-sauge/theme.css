@@ -125,3 +125,41 @@ html:root { --accent-ink: var(--oui); }
 /* Cartes plus transparentes, bordures plus discretes. */
 .event { background: rgba(255, 255, 255, .3); border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
 .rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
+
+/* Cartes en fondu : fond qui s'efface vers le bas, bordure presente en
+   haut et qui disparait progressivement en bas. */
+.event {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 100%);
+  border-color: transparent;
+}
+.event::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 0; right: 0; width: auto; height: auto;
+  border: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+  border-radius: inherit;
+  background: none;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+  mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+}
+
+/* Meme fondu pour la carte de confirmation de presence. */
+.rsvp { position: relative; border-color: transparent; background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 100%); }
+.rsvp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 0; right: 0; width: auto; height: auto;
+  border: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+  border-radius: inherit;
+  background: none;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+  mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+}

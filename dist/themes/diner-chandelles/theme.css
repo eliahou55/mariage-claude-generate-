@@ -149,3 +149,37 @@ html:root { --accent-ink: var(--oui); }
 /* Cartes plus transparentes, bordures plus discretes. */
 .event { background: linear-gradient(180deg, rgba(255, 186, 94, .035), rgba(255, 255, 255, .01)); border-color: rgba(244, 232, 218, .1); }
 .rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
+
+/* Bordure des cartes presente en haut, qui disparait en fondu vers le bas. */
+.event { border-color: transparent; }
+.event::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 0; right: 0; width: auto; height: auto;
+  border: 1px solid rgba(244, 232, 218, .14);
+  border-radius: inherit;
+  background: none;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+  mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+}
+
+/* Meme fondu pour la carte de confirmation de presence. */
+.rsvp { position: relative; border-color: transparent; }
+.rsvp::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  top: 0; right: 0; width: auto; height: auto;
+  border: 1px solid rgba(244, 232, 218, .14);
+  border-radius: inherit;
+  background: none;
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+  mask: linear-gradient(to bottom, #000 0%, #000 25%, transparent 92%);
+}
