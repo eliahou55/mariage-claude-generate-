@@ -94,6 +94,7 @@
   document.getElementById('bouton-exemple').addEventListener('click', function () {
     try {
       var donnees = ClientInvitation.construireDonnees(ClientInvitation.exempleBrouillon());
+      donnees.exemple = true;   // la galerie ne recopie pas ce choix de musique dans le brouillon
       window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(donnees));
       window.location.href = '../apercu/index.html';
     } catch (e) {

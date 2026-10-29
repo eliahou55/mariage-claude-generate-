@@ -135,6 +135,23 @@
       selectMusique.appendChild(opt);
     });
     selectMusique.value = brouillon.site.musique || ClientInvitation.MUSIQUE_DEFAUT;
+
+    // Lecteur pour ecouter avant de choisir, synchronise dans les deux
+    // sens avec la liste deroulante.
+    var zone = document.getElementById('lecteur-musique');
+    if (!zone || typeof LecteurMusique === 'undefined') return;
+    var lecteur = LecteurMusique.creer({
+      conteneur: zone,
+      base: 'musique/',
+      pistes: ClientInvitation.MUSIQUES,
+      actuelle: selectMusique.value,
+      auChangement: function (fichier) {
+        selectMusique.value = fichier;
+        sauvegarder();
+      },
+    });
+    selectMusique.addEventListener('change', function () { lecteur.definir(selectMusique.value); });
+    form.addEventListener('submit', function () { lecteur.arreter(); });
   }
 
   function majApercuVerset() {

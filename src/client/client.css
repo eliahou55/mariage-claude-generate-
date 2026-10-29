@@ -616,3 +616,16 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 @media (prefers-reduced-motion: reduce) {
   * { transition-duration: .001ms !important; }
 }
+
+/* Lecteur de musique du formulaire (lecteur-musique.css), aux couleurs
+   claires de l'espace client. */
+.lecteur-formulaire { margin: 10px 0 6px; }
+.lecteur-formulaire .lecteur {
+  --lecteur-fond: var(--bg);
+  --lecteur-bord: var(--rule);
+  --lecteur-texte: var(--ink);
+  --lecteur-doux: var(--muted);
+  --lecteur-accent: var(--accent);
+  --lecteur-sur-accent: #FFFFFF;
+  --lecteur-piste: rgba(42, 39, 34, .16);
+}

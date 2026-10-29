@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:wght@400;600&display=swap">
+<link rel="stylesheet" href="../client/lecteur-musique.css">
 <style>
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;padding:28px 18px 56px;background:#14161a;color:#efeae1;font:400 16px/1.5 Jost,system-ui,sans-serif;-webkit-text-size-adjust:100%}
@@ -26,12 +27,20 @@ p.sous{margin:0 0 26px;color:#9fa6b2;font-size:14px}
 .carte__badge{position:absolute;top:-9px;right:12px;background:#c9a44c;color:#1a1a1a;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:500}
 footer{margin-top:30px;color:#767d8c;font-size:13px;line-height:1.7}
 code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
+.musique{margin:0 0 28px}
+h2{font:600 20px/1.2 "Cormorant Garamond",Georgia,serif;margin:0 0 4px;letter-spacing:.01em}
+.musique>p{margin:0 0 12px;color:#9fa6b2;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <h1>Ilan &amp; Yaël</h1>
 <p class="sous">Les 12 thèmes, avec les données réelles de l’Excel et la couleur « Or ».</p>
+<section class="musique" id="choix-musique" hidden>
+<h2>Musique de fond</h2>
+<p>Écoutez et choisissez la musique : celle affichée ici jouera dans le thème que vous ouvrirez ensuite.</p>
+<div id="lecteur-musique"></div>
+</section>
 <div class="grille">
   <a class="carte carte--actif" href="marbre-or/index.html">
     <span class="carte__swatch" style="background:#FBF8F2;border-color:#816931"><span style="background:#816931"></span></span>
@@ -97,6 +106,8 @@ code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
 <footer id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</footer>
 </div>
 <script src="../stockage.js"></script>
+<script src="../client/client.js"></script>
+<script src="../client/lecteur-musique.js"></script>
 <script>
 /* Si une invitation a ete configuree dans ce navigateur (espace client),
  * cette page (par ailleurs figee, generee depuis l'Excel) s'adapte : noms
@@ -121,7 +132,35 @@ code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, puis choisissez celui qui vous plaît.';
+    if (sous) sous.textContent = 'Choisissez votre musique, puis comparez les 12 thèmes avec vos vraies informations et choisissez celui qui vous plaît.';
+
+    // Lecteur de musique (avant les themes) : la piste affichee devient
+    // celle de l'invitation (D.site.musique), donc celle qui jouera dans
+    // le theme ouvert ensuite. Synchronise aussi le brouillon du
+    // formulaire -- sauf pour "Voir un exemple", qui ne doit jamais
+    // toucher a la saisie en cours du visiteur.
+    var zoneMusique = document.getElementById('choix-musique');
+    if (zoneMusique && D.site && typeof LecteurMusique !== 'undefined' && typeof ClientInvitation !== 'undefined') {
+      var actuelle = String(D.site.musique || '').split('/').pop() || ClientInvitation.MUSIQUE_DEFAUT;
+      zoneMusique.hidden = false;
+      LecteurMusique.creer({
+        conteneur: document.getElementById('lecteur-musique'),
+        base: '../client/musique/',
+        pistes: ClientInvitation.MUSIQUES,
+        actuelle: actuelle,
+        auChangement: function (fichier) {
+          D.site.musique = 'client/musique/' + fichier;
+          try {
+            window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D));
+            if (!D.exemple && window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) {
+              var b = ClientInvitation.lireBrouillon();
+              b.site.musique = fichier;
+              ClientInvitation.ecrireBrouillon(b);
+            }
+          } catch (e) { /* ignore */ }
+        },
+      });
+    }
     var pied = document.getElementById('pied-apercus');
     if (pied) {
       pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '

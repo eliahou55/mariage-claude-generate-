@@ -1,0 +1,136 @@
+/* =====================================================================
+   lecteur-musique.css -- mini-lecteur facon Spotify (lecteur-musique.js).
+   Couleurs reglables par variables, pour s'accorder a la page hote :
+   galerie sombre des themes ou formulaire clair de l'espace client.
+   ===================================================================== */
+
+.lecteur {
+  --lecteur-fond: #1b1f27;
+  --lecteur-bord: #2b3040;
+  --lecteur-texte: #efeae1;
+  --lecteur-doux: #8d94a3;
+  --lecteur-accent: #c9a44c;
+  --lecteur-sur-accent: #1a1a1a;
+  --lecteur-piste: #3a4052;
+
+  padding: 16px 18px 14px;
+  border: 1px solid var(--lecteur-bord);
+  border-radius: 14px;
+  background: var(--lecteur-fond);
+  color: var(--lecteur-texte);
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lecteur__titre {
+  margin: 0;
+  font-weight: 500;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lecteur__compteur {
+  margin: 2px 0 10px;
+  font-size: 12px;
+  color: var(--lecteur-doux);
+}
+
+.lecteur__commandes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin-bottom: 10px;
+}
+
+.lecteur__bouton {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lecteur-doux);
+  cursor: pointer;
+  transition: color .15s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.lecteur__bouton:hover,
+.lecteur__bouton:focus-visible { color: var(--lecteur-texte); }
+.lecteur__bouton:active { transform: scale(.92); }
+
+.lecteur__bouton--lecture {
+  width: 50px;
+  height: 50px;
+  background: var(--lecteur-accent);
+  color: var(--lecteur-sur-accent);
+}
+.lecteur__bouton--lecture:hover,
+.lecteur__bouton--lecture:focus-visible { color: var(--lecteur-sur-accent); transform: scale(1.05); }
+
+.lecteur__ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lecteur__temps {
+  flex: none;
+  min-width: 34px;
+  font-size: 11px;
+  color: var(--lecteur-doux);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Zone cliquable haute (doigt), trait visible fin au centre. */
+.lecteur__barre {
+  position: relative;
+  flex: 1;
+  height: 18px;
+  cursor: pointer;
+  touch-action: none;
+}
+.lecteur__barre::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: var(--lecteur-piste);
+}
+.lecteur__rempli {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: var(--lecteur-accent);
+}
+.lecteur__poignee {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--lecteur-texte);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.lecteur__barre:hover .lecteur__poignee,
+.lecteur__barre:focus-visible .lecteur__poignee,
+.lecteur--glisse .lecteur__poignee { opacity: 1; }
+@media (hover: none) { .lecteur__poignee { opacity: 1; } }
+.lecteur__barre:focus-visible { outline: none; }
+.lecteur__barre:focus-visible::before { box-shadow: 0 0 0 2px var(--lecteur-accent); }
