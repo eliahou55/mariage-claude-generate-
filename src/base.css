@@ -212,7 +212,7 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  gap: .3em;
+  gap: .45em;
   width: 100%;
 }
 .noms__lien {
@@ -234,7 +234,8 @@ img { max-width: 100%; height: auto; display: block; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1 1 0;
+  flex: 0 1 auto;
+  max-width: 44%;
   min-width: 0;
   font-size: calc(.92em * var(--noms-echelle, 1));
   text-align: center;
@@ -428,7 +429,7 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  gap: .3em;
+  gap: .45em;
 }
 .invitation__noms .noms__lien { font-size: .5em; color: var(--oui, var(--accent-ink)); margin: 0; align-self: center; flex: none; }
 
