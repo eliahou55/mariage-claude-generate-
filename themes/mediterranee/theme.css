@@ -114,3 +114,21 @@
 
 /* Plus aucun citron : seuls les oliviers restent. */
 .decor__layer--3 { background: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "Playfair Display", Georgia, serif;
+  --font-corps: "Crimson Pro", Georgia, serif;
+  --font-deco: "Dancing Script", cursive;
+  --oui: #5E6A34;
+  --oui-style: normal;
+  --oui-graisse: 600;
+  --btn-fond: #5E6A34;
+  --btn-encre: #F7F3E4;
+  --btn-bord: #5E6A34;
+  --btn-carte: #5E6A34;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

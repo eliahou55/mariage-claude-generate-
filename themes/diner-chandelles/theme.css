@@ -129,3 +129,21 @@
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }
 .filet--haut, .filet--invitation { display: none; }
 .orn--bas { background-image: url("orn/sep.svg"); aspect-ratio: 8 / 1; width: min(var(--orn-sep, 220px), 72%); transform: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "Bodoni Moda", Georgia, serif;
+  --font-corps: "Libre Caslon Text", Georgia, serif;
+  --font-deco: "Italianno", cursive;
+  --oui: #E3C383;
+  --oui-style: normal;
+  --oui-graisse: 400;
+  --btn-fond: #6D1F2F;
+  --btn-encre: #F4E8DA;
+  --btn-bord: #D8B46A;
+  --btn-carte: #E3C383;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

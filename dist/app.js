@@ -211,20 +211,6 @@
     return wrap;
   }
 
-  /** Petites icones au trait (24x24, currentColor) : une par type d'evenement. */
-  var ICONES = {
-    henne:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><circle cx="12" cy="7.3" r="2.5"/><circle cx="16.6" cy="10.2" r="2.5"/><circle cx="14.8" cy="15.4" r="2.5"/><circle cx="9.2" cy="15.4" r="2.5"/><circle cx="7.4" cy="10.2" r="2.5"/><circle cx="12" cy="11.3" r="1.6" fill="currentColor" stroke="none"/></svg>',
-    mairie:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 12 4l8 6"/><path d="M5 10v9M9.4 10v9M12 10v9M14.6 10v9M19 10v9"/><path d="M3 19h18"/></svg>',
-    chabbat:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20v-8M15 20v-8"/><path d="M9 20H6M18 20h-3"/><ellipse cx="9" cy="9.1" rx="1.3" ry="1.9" fill="currentColor" stroke="none"/><ellipse cx="15" cy="9.1" rx="1.3" ry="1.9" fill="currentColor" stroke="none"/></svg>',
-    houppa:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V9M19 20V9"/><path d="M3 9c2.2-2.7 15.8-2.7 18 0"/><path d="M3 9c2.2 1.6 15.8 1.6 18 0"/></svg>',
-    reception:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10l-1.3 7.1a3.7 3.7 0 0 1-3.7 3.1V17"/><path d="M12 17v3M9 20h6"/></svg>',
-  };
-
   /* ---------------------------------------------------------------- *
    * Page d'accueil
    * ---------------------------------------------------------------- */
@@ -336,7 +322,6 @@
     inner.appendChild(orn('sep'));
     inner.appendChild(el('span', 'filet filet--invitation'));
     inner.appendChild(he('p', 'mazal', 'מזל טוב'));   // מזל טוב
-    inner.appendChild(orn('bas'));
 
     return sec;
   }
@@ -385,30 +370,54 @@
    *  Henne/Chabbat/Reception -- reutilise tel quel par carteMultiple. */
   function remplirContenuSimple(container, ev) {
     var head = el('header', 'event__head');
-    var icone = el('span', 'event__icon');
-    icone.setAttribute('aria-hidden', 'true');
-    icone.innerHTML = ICONES[ev.cle] || '';
-    head.appendChild(icone);
     var titres = el('div', 'event__titres');
     titres.appendChild(el('h2', 'event__titre', ev.titre));
-    if (ev.titreHe) titres.appendChild(he('p', 'event__titre-he', ev.titreHe));
+    // Pas de traduction hebraique sous "Henne" (demande client).
+    if (ev.titreHe && ev.cle !== 'henne') titres.appendChild(he('p', 'event__titre-he', ev.titreHe));
     head.appendChild(titres);
     container.appendChild(head);
 
     container.appendChild(el('span', 'event__filet'));
 
-    var quand = el('div', 'event__quand');
-    ajouteSi(quand, ev.dateFr, 'p', 'event__date');
-    ajouteSi(quand, ev.dateHe, 'p', 'event__date-he', true);
-    ajouteSi(quand, ev.heure, 'p', 'event__heure');   // absent pour Chabbat 'Hatan
-    container.appendChild(quand);
-
-    var ou = el('div', 'event__ou');
-    ajouteSi(ou, ev.lieu, 'p', 'event__lieu');
-    ajouteSi(ou, ev.adresse, 'p', 'event__adresse');
-    container.appendChild(ou);
+    // Une phrase, puis date (mise en avant), lieu et adresse a la ligne.
+    var texte = el('div', 'event__texte');
+    ajouteSi(texte, PHRASES[ev.cle] || '', 'p', 'event__phrase');
+    ajouteSi(texte, dateEtHeure(ev), 'p', 'event__date-phare');
+    ajouteSi(texte, ev.dateHe, 'p', 'event__date-he', true);
+    if (ev.lieu) ajouteSi(texte, prepositionLieu(ev.lieu) + ev.lieu, 'p', 'event__lieu');
+    ajouteSi(texte, ev.adresse, 'p', 'event__adresse');
+    container.appendChild(texte);
 
     ajouteActions(container, ev);
+  }
+
+  /** Phrase d'annonce de chaque evenement (cartes simples). */
+  var PHRASES = {
+    henne: 'Nous aurons la joie de vous recevoir pour la soirée du henné',
+    chabbat: "Nous serons heureux de vous accueillir pour le Chabbat 'Hatan",
+    reception: 'Nous vous attendons pour la réception, qui se tiendra',
+    mairie: 'Le mariage civil sera célébré',
+    houppa: 'La cérémonie religieuse sera célébrée',
+  };
+
+  /** "Dimanche 20 juin 2027 à 19h00" (ou la date seule, sans heure). */
+  function dateEtHeure(ev) {
+    if (!ev.dateFr) return '';
+    return ev.heure ? ev.dateFr + ' à ' + ev.heure : ev.dateFr;
+  }
+
+  /** "à la Salle...", "au Domaine...", "à l'Hôtel...", "aux Jardins..." :
+   *  la bonne preposition devant un nom de lieu, d'apres son premier mot. */
+  var LIEUX_FEMININS = /^(salle|synagogue|mairie|maison|villa|ferme|terrasse|p[ée]niche|propri[ée]t[ée]|bastide|demeure|r[ée]sidence|grange|tente|cour|plage|galerie|brasserie|guinguette|chapelle|communaut[ée]|yeshiva|orangerie|bergerie|abbaye)/i;
+  var LIEUX_MASCULINS = /^(domaine|ch[âa]teau|restaurant|moulin|manoir|pavillon|club|palais|jardin|mas|clos|parc|centre|cercle|salon|loft|golf|lac|bateau|temple|g[îi]te|cabaret|studio|caf[ée]|yacht)/i;
+  function prepositionLieu(lieu) {
+    var l = String(lieu).trim();
+    if (/^(la|le|l['’])s?/i.test(l)) return 'à ';            // "La Salle..." deja articule
+    if (/^less/i.test(l)) return '';                           // "Les Jardins de..." : tel quel
+    if (LIEUX_FEMININS.test(l)) return 'à la ';
+    if (LIEUX_MASCULINS.test(l)) return 'au ';
+    if (/^[aeiouyhâàéèêëîïôûü]/i.test(l)) return "à l'";
+    return 'à ';
   }
 
   /** Henne, Chabbat 'Hatan, Reception (seuls) : carte sobre. */
@@ -449,10 +458,9 @@
     recit.appendChild(el('p', 'recit__oui', 'Oui'));
 
     var det = el('div', 'recit__details');
-    if (ev.lieu) ligneSi(det, 'à la ' + ev.lieu);
+    ligneSi(det, dateEtHeure(ev), 'recit__date-phare');
+    if (ev.lieu) ligneSi(det, prepositionLieu(ev.lieu) + ev.lieu);
     ligneSi(det, ev.adresse);
-    if (ev.dateFr) ligneSi(det, 'le ' + ev.dateFr);
-    if (ev.heure) ligneSi(det, 'à ' + ev.heure);
     recit.appendChild(det);
 
     art.appendChild(recit);
@@ -490,10 +498,9 @@
     recit.appendChild(el('p', 'recit__intro', 'Et seraient honorés de votre présence à la cérémonie religieuse qui sera célébrée le'));
 
     var det = el('div', 'recit__details');
-    ligneSi(det, ev.dateFr);
-    ligneSi(det, ev.dateHe, null, true);
-    if (ev.heure) ligneSi(det, 'À ' + ev.heure);
-    if (ev.lieu) ligneSi(det, 'au ' + ev.lieu + ',');
+    ligneSi(det, dateEtHeure(ev), 'recit__date-phare');
+    ligneSi(det, ev.dateHe, 'recit__date-he', true);
+    if (ev.lieu) ligneSi(det, prepositionLieu(ev.lieu) + ev.lieu);
     ligneSi(det, ev.adresse);
     recit.appendChild(det);
 
@@ -514,7 +521,7 @@
       var memeLieu = reception.lieu && reception.lieu === ev.lieu;
       var phrase = "La cérémonie sera suivie d'une réception";
       if (reception.heure) phrase += ' à ' + reception.heure;
-      if (reception.lieu && !memeLieu) phrase += ', au ' + reception.lieu;
+      if (reception.lieu && !memeLieu) phrase += ', ' + prepositionLieu(reception.lieu) + reception.lieu;
       phrase += '.';
       ligneSi(recit, phrase, 'recit__suite');
       if (reception.adresse && reception.adresse !== ev.adresse) {

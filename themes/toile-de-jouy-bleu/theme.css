@@ -99,3 +99,21 @@
    celle du bas, et reste a distance des montants. */
 .ecran--accueil { padding: 96px 34px 96px; }
 .invitation__inner { padding: 92px 18px 120px; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "IM Fell English", Georgia, serif;
+  --font-corps: "EB Garamond", Georgia, serif;
+  --font-deco: "IM Fell English", Georgia, serif;
+  --oui: #2B4A72;
+  --oui-style: italic;
+  --oui-graisse: 400;
+  --btn-fond: #2B4A72;
+  --btn-encre: #FAFAF2;
+  --btn-bord: #2B4A72;
+  --btn-carte: #2B4A72;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

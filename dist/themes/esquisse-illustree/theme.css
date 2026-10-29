@@ -121,3 +121,21 @@
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }
 .filet--haut, .filet--invitation { display: none; }
 .orn--bas { transform: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "EB Garamond", Georgia, serif;
+  --font-corps: "EB Garamond", Georgia, serif;
+  --font-deco: "Caveat", "Segoe Script", cursive;
+  --oui: #23324F;
+  --oui-style: normal;
+  --oui-graisse: 600;
+  --btn-fond: #23324F;
+  --btn-encre: #FAF4E6;
+  --btn-bord: #23324F;
+  --btn-carte: #23324F;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

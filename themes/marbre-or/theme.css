@@ -124,3 +124,21 @@
 .orn--event { display: block; background-image: url("orn/event.svg"); }
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.7; }
 .filet--haut, .filet--invitation { display: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "Cormorant Garamond", Georgia, serif;
+  --font-corps: "Raleway", system-ui, sans-serif;
+  --font-deco: "Pinyon Script", cursive;
+  --oui: #9C7B2E;
+  --oui-style: normal;
+  --oui-graisse: 400;
+  --btn-fond: #2B2722;
+  --btn-encre: #E9D7A6;
+  --btn-bord: #2B2722;
+  --btn-carte: #8A6D2B;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

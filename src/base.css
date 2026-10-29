@@ -215,7 +215,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .noms__lien {
   font-size: .48em;
-  color: var(--accent-ink);
+  font-family: var(--font-deco, inherit);
+  color: var(--oui, var(--accent-ink));
   line-height: 1;
   margin: 0;
   align-self: center;
@@ -320,13 +321,13 @@ img { max-width: 100%; height: auto; display: block; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 12px 26px;
+  min-height: 40px;
+  padding: 10px 24px;
   border-radius: 999px;
   border: 1px solid transparent;
   font-family: var(--font-corps);
-  font-size: 14px;
-  letter-spacing: .09em;
+  font-size: 12.5px;
+  letter-spacing: .12em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -335,24 +336,30 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn:active { transform: scale(.97); }
 
+/* Couleurs du bouton principal ("Voir l'invitation", "Envoyer") : chaque
+   theme fixe --btn-fond / --btn-encre / --btn-bord dans sa palette, au lieu
+   du dore commun qui ne va pas a tous. */
 .btn--principal {
-  background: var(--accent);
-  color: var(--accent-on);
-  border-color: var(--accent);
+  background: var(--btn-fond, var(--accent));
+  color: var(--btn-encre, var(--accent-on));
+  border-color: var(--btn-bord, var(--btn-fond, var(--accent)));
   font-weight: 500;
-  padding-inline: 32px;
+  padding-inline: 28px;
 }
 
+/* Itineraire / Waze : petits, cote a cote, centres. */
 .btn--carte {
-  flex: 1 1 0;
+  flex: none;
   min-width: 0;
+  min-height: 32px;
+  padding: 6px 16px;
   background: transparent;
-  color: var(--accent-ink);
-  border-color: var(--accent-soft);
-  font-size: 12.5px;
-  padding-inline: 12px;
+  color: var(--btn-carte, var(--accent-ink));
+  border-color: color-mix(in srgb, var(--btn-carte, var(--accent-ink)) 45%, transparent);
+  font-size: 10.5px;
+  letter-spacing: .14em;
 }
-.btn--carte:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.btn--carte:hover { background: color-mix(in srgb, var(--btn-carte, var(--accent)) 10%, transparent); }
 
 /* ------------------------------------------------------------------ *
  * Invitation
@@ -421,7 +428,7 @@ img { max-width: 100%; height: auto; display: block; }
   justify-content: center;
   gap: .3em;
 }
-.invitation__noms .noms__lien { font-size: .5em; color: var(--accent-ink); margin: 0; align-self: center; flex: none; }
+.invitation__noms .noms__lien { font-size: .5em; color: var(--oui, var(--accent-ink)); margin: 0; align-self: center; flex: none; }
 
 /* Reutilise l'ornement .filet de chaque theme (deja dessine pour l'accueil)
    pour encadrer la liste d'evenements et le pied de page. */
@@ -538,7 +545,12 @@ img { max-width: 100%; height: auto; display: block; }
   max-width: 70%;
   background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
 }
-.event:not(.event--recit) .event__actions { justify-content: center; }
+.event__texte { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 0 16px; }
+.event__texte p { margin: 0; }
+.event__phrase { max-width: 26em; font-size: 14px; font-style: italic; line-height: 1.6; color: var(--muted); }
+.event__texte .event__date-he { margin-bottom: 4px; }
+.event__texte .event__lieu { font-size: 15px; }
+.event__texte .event__adresse { margin: 0; }
 .recit {
   display: flex;
   flex-direction: column;
@@ -561,7 +573,7 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.2;
   color: var(--ink);
 }
-.recit__esperluette { margin: 0 10px; color: var(--accent-ink); font-style: italic; }
+.recit__esperluette { margin: 0 10px; color: var(--oui, var(--accent-ink)); font-family: var(--font-deco, var(--font-titre)); font-style: italic; }
 .recit__se-diront {
   margin: 0;
   font-size: 14px;
@@ -570,11 +582,12 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .recit__oui {
   margin: 2px 0;
-  font-family: var(--font-titre);
+  font-family: var(--font-deco, var(--font-titre));
   font-size: clamp(42px, 16vw, 60px);
-  font-weight: 600;
-  line-height: 1;
-  color: var(--accent-ink);
+  font-weight: var(--oui-graisse, 600);
+  font-style: var(--oui-style, normal);
+  line-height: 1.1;
+  color: var(--oui, var(--accent-ink));
 }
 
 .recit__intro {
@@ -616,6 +629,19 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.5;
   color: var(--ink);
 }
+/* Date et heure en evidence : une seule ligne, aeree, un peu plus grande
+   que le texte autour. */
+.recit__details .recit__date-phare,
+.event__date-phare {
+  margin: 10px 0 2px;
+  font-family: var(--font-titre);
+  font-size: clamp(16px, 4.6vw, 19px);
+  letter-spacing: .04em;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--oui, var(--accent-ink));
+}
+.recit__details .recit__date-he { margin-bottom: 8px; font-family: var(--font-he); font-size: 14px; color: var(--muted); }
 
 .recit__memoire {
   margin-top: 8px;
@@ -637,8 +663,9 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .recit__memoire-nom {
   margin: 0;
-  font-family: var(--font-he);
-  font-size: 14.5px;
+  font-family: var(--font-corps);
+  font-style: italic;
+  font-size: 14px;
   color: var(--ink);
 }
 
@@ -668,7 +695,7 @@ img { max-width: 100%; height: auto; display: block; }
   fill: var(--accent-ink);
 }
 
-.event__actions { display: flex; gap: 8px; }
+.event__actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
 
 /* ------------------------------------------------------------------ *
  * Confirmation de presence (RSVP) -- fictif, rien n'est envoye.
@@ -729,6 +756,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .rsvp__section legend {
   width: 100%;
+  text-align: center;
   padding: 0 0 2px;
   font-size: 13.5px;
   font-weight: 600;

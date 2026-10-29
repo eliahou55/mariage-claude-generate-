@@ -28,27 +28,27 @@ const DIST = path.join(PROJECT, 'dist');
 const THEMES = [
   {
     nom: 'Marbre & Or', slug: 'marbre-or', sombre: false, surface: '#FBF8F2',
-    fonts: 'family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Frank+Ruhl+Libre:wght@400;500;700&family=Jost:wght@300;400;500',
+    fonts: 'family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:ital,wght@0,300;0,400;0,500;1,300&family=Pinyon+Script&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Botanique sauge', slug: 'botanique-sauge', sombre: false, surface: '#F6F4EC',
-    fonts: 'family=Marcellus&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Frank+Ruhl+Libre:wght@400;500;700',
+    fonts: 'family=Marcellus&family=Lora:ital,wght@0,400;0,500;1,400&family=Parisienne&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Nuit étoilée', slug: 'nuit-etoilee', sombre: true, surface: '#101B33',
-    fonts: 'family=Cinzel:wght@400;500;600&family=Lato:ital,wght@0,300;0,400;1,300&family=Frank+Ruhl+Libre:wght@300;400;500',
+    fonts: 'family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cinzel+Decorative:wght@400;700&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Méditerranée (olivier & citrons)', slug: 'mediterranee', sombre: false, surface: '#F7F3E4',
-    fonts: 'family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Karla:wght@300;400;600&family=Frank+Ruhl+Libre:wght@400;500;700',
+    fonts: 'family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=Dancing+Script:wght@500;600&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Rosé poudré', slug: 'rose-poudre', sombre: false, surface: '#FDF6F4',
-    fonts: 'family=Italiana&family=Lato:ital,wght@0,300;0,400;1,300&family=Frank+Ruhl+Libre:wght@300;400;500',
+    fonts: 'family=Italiana&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&family=Great+Vibes&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Jardin blanc', slug: 'jardin-blanc', sombre: false, surface: '#FFFFFF',
-    fonts: 'family=Cormorant:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@200;300;400;500&family=Frank+Ruhl+Libre:wght@300;400;500',
+    fonts: 'family=Cormorant:ital,wght@0,300;0,400;0,600;1,300&family=Spectral:ital,wght@0,300;0,400;1,300&family=Alex+Brush&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Esquisse illustrée', slug: 'esquisse-illustree', sombre: false, surface: '#FAF4E6',
@@ -56,23 +56,23 @@ const THEMES = [
   },
   {
     nom: 'Dîner aux chandelles', slug: 'diner-chandelles', sombre: true, surface: '#2A0E16',
-    fonts: 'family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Lato:wght@300;400&family=Frank+Ruhl+Libre:wght@300;400;500',
+    fonts: 'family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Italianno&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Épuré minimaliste', slug: 'epure-minimaliste', sombre: false, surface: '#FAF8F5',
-    fonts: 'family=Jost:wght@200;300;400;500&family=Frank+Ruhl+Libre:wght@300;400;500',
+    fonts: 'family=Jost:wght@200;300;400;500&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Bohème terracotta', slug: 'boheme-terracotta', sombre: false, surface: '#FBF2E7',
-    fonts: 'family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;600&family=Frank+Ruhl+Libre:wght@400;500;700',
+    fonts: 'family=DM+Serif+Display:ital@0;1&family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Satisfy&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert', sombre: false, surface: '#FAF7EB',
-    fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
+    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
   {
     nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu', sombre: false, surface: '#FAFAF2',
-    fonts: 'family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400;500;700',
+    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
 ];
 

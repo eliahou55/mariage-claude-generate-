@@ -91,12 +91,10 @@
   border-radius: 0;
 }
 .btn--principal {
-  background: transparent;
-  color: var(--accent-ink);
-  border: 1px solid var(--accent-ink);
+  border: 1px solid var(--btn-bord);
   padding-inline: 40px;
 }
-.btn--principal:hover { background: var(--accent); color: var(--accent-on); }
+.btn--principal:hover { background: var(--btn-encre); color: var(--surface); }
 
 .phrase { font-style: normal; font-size: 12.5px; letter-spacing: .06em; margin-top: 38px; }
 .invitation__noms { font-weight: 200; letter-spacing: .2em; text-transform: uppercase; font-size: clamp(22px, 7.5vw, 30px); }
@@ -143,3 +141,21 @@
 .orn--event { display: block; background-image: url("orn/event.svg"); }
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }
 .filet--haut, .filet--invitation { display: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "Jost", system-ui, sans-serif;
+  --font-corps: "Jost", system-ui, sans-serif;
+  --font-deco: "Cormorant Garamond", Georgia, serif;
+  --oui: #2E2A25;
+  --oui-style: italic;
+  --oui-graisse: 300;
+  --btn-fond: transparent;
+  --btn-encre: #2E2A25;
+  --btn-bord: #2E2A25;
+  --btn-carte: #2E2A25;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }

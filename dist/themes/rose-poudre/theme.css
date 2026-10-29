@@ -127,3 +127,21 @@
 /* Le brin decoratif deborde du coin de la carte : on ne la rogne plus. */
 .event { overflow: visible; }
 .event::after { content: none; }
+
+/* Identite typographique et couleurs propres au theme : titres, texte,
+   police decorative ("Oui", "&"), bouton principal, Itineraire/Waze. */
+:root {
+  --font-titre: "Italiana", Georgia, serif;
+  --font-corps: "Josefin Sans", system-ui, sans-serif;
+  --font-deco: "Great Vibes", cursive;
+  --oui: #B87478;
+  --oui-style: normal;
+  --oui-graisse: 400;
+  --btn-fond: #F4D3D0;
+  --btn-encre: #6E4448;
+  --btn-bord: #D9A2A1;
+  --btn-carte: #A2676B;
+}
+/* Titres, prenoms, dates : couleur du theme plutot que le dore commun
+   (html:root l'emporte sur la couleur d'accent injectee par la page). */
+html:root { --accent-ink: var(--oui); }
