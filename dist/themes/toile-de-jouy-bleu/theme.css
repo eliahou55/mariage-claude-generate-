@@ -64,3 +64,38 @@
 .compte__cell { background: none; border-radius: 0; }
 .compte__cell + .compte__cell { border-left: 1px solid var(--rule); }
 
+
+/* Cadre orientalisant a double arche : la carte entiere est decoupee en
+   arc mauresque brise, pointe en haut, retourne en bas (masque CSS), et
+   un double filet en suit le contour. Tout le texte reste a l'interieur.
+   Dessins : scripts/ornements.mjs -> orn/cadre-*.svg, orn/trait-*.svg. */
+:root { --arche-h: 150px; }
+.app {
+  -webkit-mask:
+    url("orn/cadre-haut.svg") top / 100% var(--arche-h) no-repeat,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--arche-h) + 2px) no-repeat,
+    url("orn/cadre-bas.svg") bottom / 100% var(--arche-h) no-repeat;
+  mask:
+    url("orn/cadre-haut.svg") top / 100% var(--arche-h) no-repeat,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--arche-h) + 2px) no-repeat,
+    url("orn/cadre-bas.svg") bottom / 100% var(--arche-h) no-repeat;
+  box-shadow: none;
+}
+.app::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    url("orn/trait-haut.svg") top / 100% var(--arche-h) no-repeat,
+    url("orn/trait-bas.svg") bottom / 100% var(--arche-h) no-repeat,
+    linear-gradient(#2B4A72, #2B4A72) 2% 50% / 1.4px calc(100% - 2 * var(--arche-h) + 2px) no-repeat,
+    linear-gradient(#2B4A72, #2B4A72) 98% 50% / 1.4px calc(100% - 2 * var(--arche-h) + 2px) no-repeat,
+    linear-gradient(#B89A4E, #B89A4E) 3.5% 50% / 1px calc(100% - 2 * var(--arche-h) + 2px) no-repeat,
+    linear-gradient(#B89A4E, #B89A4E) 96.5% 50% / 1px calc(100% - 2 * var(--arche-h) + 2px) no-repeat;
+}
+/* Le texte commence sous les epaules de l'arche et s'arrete au-dessus de
+   celle du bas, et reste a distance des montants. */
+.ecran--accueil { padding: 96px 34px 96px; }
+.invitation__inner { padding: 92px 18px 120px; }

@@ -135,7 +135,7 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 0 auto 4px;
   flex: none;
 }
-.orn--bas { margin: 22px auto 0; transform: scaleY(-1); }
+.orn--bas { margin: 22px auto 0; }
 .orn--sep {
   width: min(var(--orn-sep, 220px), 72%);
   aspect-ratio: 8 / 1;
@@ -524,6 +524,21 @@ img { max-width: 100%; height: auto; display: block; }
 /* Cartes "recit" (Mairie, Houppa) : texte centre, pas d'icone,
    phrases d'annonce + informations espacees pour donner du volume. */
 .event--recit { text-align: center; }
+
+/* Cartes Henne, Chabbat, Reception (et fusions libres) : tout le texte
+   centre, comme les cartes Mairie et Houppa -- icone au-dessus du titre,
+   hebreu centre lui aussi. */
+.event:not(.event--recit) { text-align: center; }
+.event:not(.event--recit) .event__head { flex-direction: column; gap: 10px; }
+.event:not(.event--recit) .event__titres { align-items: center; }
+.event:not(.event--recit) .event__titre-he,
+.event:not(.event--recit) .event__date-he { text-align: center; }
+.event:not(.event--recit) .event__filet {
+  margin-inline: auto;
+  max-width: 70%;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+}
+.event:not(.event--recit) .event__actions { justify-content: center; }
 .recit {
   display: flex;
   flex-direction: column;

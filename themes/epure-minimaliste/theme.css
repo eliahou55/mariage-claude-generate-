@@ -136,7 +136,9 @@
    semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
 :root { --orn-coin: 96px; --orn-coin-pc: 140px; --orn-coin-marge: 6px; --orn-haut: 150px; --orn-event: 46px; }
 .orn--coin { display: block; background-image: url("orn/coin.svg"); }
-.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+/* En haut la guirlande en arche, en bas la meme en creux. */
+.orn--haut { display: block; background-image: url("orn/haut.svg"); }
+.orn--bas { display: block; background-image: url("orn/bas.svg"); }
 .orn--sep { display: block; background-image: url("orn/sep.svg"); }
 .orn--event { display: block; background-image: url("orn/event.svg"); }
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.8; }

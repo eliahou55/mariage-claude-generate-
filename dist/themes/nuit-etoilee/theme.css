@@ -119,9 +119,13 @@
    semis de fond (dessins generes par scripts/ornements.mjs -> orn/). */
 :root { --orn-coin: 110px; --orn-coin-pc: 160px; --orn-coin-marge: 4px; --orn-haut: 260px; }
 .orn--coin { display: block; background-image: url("orn/coin.svg"); }
-.orn--haut, .orn--bas { display: block; background-image: url("orn/haut.svg"); }
+/* En haut la guirlande en arche, en bas la meme en creux. */
+.orn--haut { display: block; background-image: url("orn/haut.svg"); }
+.orn--bas { display: block; background-image: url("orn/bas.svg"); }
 .orn--sep { display: block; background-image: url("orn/sep.svg"); }
 .orn--event { display: block; background-image: url("orn/event.svg"); }
 .decor__layer--4 { background: url("orn/fond.svg") 0 0 / 420px repeat; opacity: 0.9; }
 .filet--haut, .filet--invitation { display: none; }
 .orn--bas { background-image: url("orn/sep.svg"); aspect-ratio: 8 / 1; width: min(var(--orn-sep, 220px), 72%); transform: none; }
+/* Pas de constellations dans les coins. */
+.orn--coin { display: none; }
