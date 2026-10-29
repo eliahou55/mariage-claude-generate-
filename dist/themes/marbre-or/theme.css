@@ -140,3 +140,7 @@
 /* Titres, prenoms, dates : couleur du theme plutot que le dore commun
    (html:root l'emporte sur la couleur d'accent injectee par la page). */
 html:root { --accent-ink: var(--oui); }
+
+/* Cartes plus transparentes, bordures plus discretes. */
+.event { border-top-color: color-mix(in srgb, var(--accent-soft) 60%, transparent); border-bottom-color: color-mix(in srgb, var(--rule) 55%, transparent); }
+.rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }

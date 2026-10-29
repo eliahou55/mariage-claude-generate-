@@ -450,7 +450,7 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 18px 18px 16px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 55%, transparent);
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 36%, transparent);
 }
 
 .event__head {
@@ -728,7 +728,7 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
   padding: 28px 20px 26px;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
-  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 55%, transparent);
+  background: color-mix(in srgb, color-mix(in srgb, var(--accent) 4%, var(--surface)) 36%, transparent);
 }
 .rsvp__titre {
   margin: 0;

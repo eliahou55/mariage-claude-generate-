@@ -147,3 +147,7 @@ html:root { --accent-ink: var(--oui); }
 .event--houppa > .orn--event { background-image: url("orn/event-houppa.svg"); }
 .event--chabbat > .orn--event { background-image: url("orn/event-chabbat.svg"); }
 .event--reception > .orn--event { background-image: url("orn/event-reception.svg"); }
+
+/* Cartes plus transparentes, bordures plus discretes. */
+.event { background: rgba(255, 253, 245, .32); border-color: color-mix(in srgb, var(--accent-soft) 55%, transparent); border-width: 1.2px; }
+.rsvp { border-color: color-mix(in srgb, var(--rule) 55%, transparent); }
