@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publication — Sasson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="espace.css">
+</head>
+<body class="site">
+<div id="entete-site" data-base="" data-etape="4"></div>
+<div class="page page--large">
+  <main class="publication">
+    <p class="etiquette-fine">Dernière étape</p>
+    <h1 class="titre">Publier votre invitation</h1>
+
+    <div class="publication__grille">
+      <!-- Recapitulatif -->
+      <section class="recap" aria-labelledby="recap-titre">
+        <h2 class="soustitre" id="recap-titre">Votre invitation</h2>
+        <p class="recap__noms" id="recap-noms">—</p>
+        <dl class="recap__liste">
+          <div><dt>Thème</dt><dd id="recap-theme">—</dd></div>
+          <div><dt>Événements</dt><dd id="recap-evenements">—</dd></div>
+          <div><dt>Musique</dt><dd id="recap-musique">—</dd></div>
+        </dl>
+        <p class="recap__liens"><a href="../apercu/index.html">Changer de thème</a> · <a href="formulaire.html">Modifier mes informations</a></p>
+        <div class="recap__prix"><span>Paiement unique · tout compris</span><strong>19,99 €</strong></div>
+        <ul class="recap__inclus">
+          <li>Votre lien à partager, à vie</li>
+          <li>Les réponses de vos invités, en direct</li>
+          <li>Tableau de bord et export pour le traiteur</li>
+          <li>Modifications illimitées</li>
+        </ul>
+      </section>
+
+      <!-- Etat : exemple / compte / paiement / deja publiee -->
+      <section class="publication__action" aria-live="polite">
+        <div id="etat-chargement" class="etat"><p class="note">Chargement…</p></div>
+
+        <div id="etat-vide" class="etat" hidden>
+          <h2 class="soustitre">Rien à publier pour l'instant</h2>
+          <p class="chapo">Composez d'abord votre invitation : c'est gratuit, et vous ne payez qu'ici, une fois qu'elle vous plaît.</p>
+          <a class="btn btn--principal" href="configurateur.html">Créer mon invitation</a>
+        </div>
+
+        <div id="etat-exemple" class="etat" hidden>
+          <h2 class="soustitre">Ceci est un exemple</h2>
+          <p class="chapo">Vous regardez le mariage fictif de démonstration. Créez la vôtre avec vos prénoms, vos dates et vos lieux.</p>
+          <a class="btn btn--principal" href="configurateur.html">Créer mon invitation</a>
+        </div>
+
+        <div id="etat-compte" class="etat" hidden>
+          <h2 class="soustitre">Créez votre espace</h2>
+          <p class="chapo">Votre invitation y sera enregistrée, avec votre tableau de bord et les réponses de vos invités.</p>
+          <div class="etat__boutons">
+            <button type="button" class="btn btn--principal" data-ouvrir="inscription">Créer mon compte</button>
+            <button type="button" class="btn btn--secondaire" data-ouvrir="connexion">J'ai déjà un compte</button>
+          </div>
+        </div>
+
+        <div id="etat-paiement" class="etat" hidden>
+          <h2 class="soustitre">Paiement sécurisé</h2>
+          <p class="note">Apple Pay, Google Pay ou carte bancaire. Votre invitation est publiée dès le paiement validé.</p>
+          <div id="paiement" class="paiement"></div>
+        </div>
+
+        <div id="etat-publiee" class="etat" hidden>
+          <h2 class="soustitre">Votre invitation est en ligne</h2>
+          <p class="chapo">Enregistrez vos dernières modifications : elles apparaîtront aussitôt sur votre lien.</p>
+          <div class="etat__boutons">
+            <button type="button" class="btn btn--principal" id="btn-mettre-a-jour">Enregistrer les modifications</button>
+            <a class="btn btn--secondaire" href="espace.html">Mon espace</a>
+          </div>
+        </div>
+
+        <p class="message-erreur" id="erreur" hidden></p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="../stockage.js"></script>
+<script src="../sasson-firebase.js"></script>
+<script src="calendrier-hebreu.js"></script>
+<script src="client.js"></script>
+<script src="entete.js"></script>
+<script src="publication.js"></script>
+</body>
+</html>

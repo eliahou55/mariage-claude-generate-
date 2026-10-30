@@ -547,7 +547,98 @@ ${bandeau}
 function bandeauApercu(theme, donnees) {
   // id sur la pastille : app.js la recolore si une invitation client
   // (localStorage) est presente, pour refleter sa propre couleur.
-  return `<div class="apercu-bar"><a class="apercu-bar__back" href="../index.html">&#8592; Thèmes</a><span class="apercu-bar__name">${echappe(theme.nom)}</span><span class="apercu-bar__dot" id="apercu-bar-dot" style="background:${donnees.site.couleurHex}"></span></div>`;
+  return `<div class="apercu-bar"><a class="apercu-bar__back" href="../index.html">&#8592; Thèmes</a><span class="apercu-bar__name">${echappe(theme.nom)}</span><span class="apercu-bar__dot" id="apercu-bar-dot" style="background:${donnees.site.couleurHex}"></span><a class="apercu-bar__choisir" id="apercu-choisir" href="../../client/publication.html" hidden>Choisir ce thème</a></div>`;
+}
+
+/** Invitation publiee (dist/i/index.html, servie pour /i/<adresse>) :
+ *  coquille qui lit l'invitation dans Firestore, charge le theme choisi
+ *  puis app.js. Les reponses des invites partent dans l'espace des maries. */
+function pagePublique() {
+  const polices = Object.fromEntries(THEMES.map((t) => [t.slug, t.fonts]));
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no, address=no, date=no, email=no">
+<meta name="robots" content="noindex">
+<title>Invitation de mariage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="${POLICES_LOGO.replace(/&/g, '&amp;')}">
+<link rel="stylesheet" href="/base.css">
+<style>
+.chargement-public { min-height: 100vh; display: grid; place-items: center; padding: 30px; text-align: center; font: 300 15px/1.6 system-ui, sans-serif; color: #6E695F; background: #F7F4EE; }
+.chargement-public strong { display: block; margin-bottom: 8px; font: 400 26px/1.2 Georgia, serif; color: #171614; }
+</style>
+</head>
+<body>
+<div class="chargement-public" id="chargement-public"><p>Chargement de l'invitation…</p></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/stockage.js"></script>
+<script src="/sasson-firebase.js"></script>
+<script>
+(function () {
+  var POLICES = ${jsonSur(polices)};
+  var attente = document.getElementById('chargement-public');
+  function introuvable() {
+    attente.innerHTML = '<p><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
+  }
+  // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
+  var slug = decodeURIComponent(location.pathname.replace(/^\\/i\\/?/, '').replace(/\\/.*$/, '').replace(/index\\.html$/, ''))
+    || (/[?&]s=([^&]+)/.exec(location.search) || [])[1] || '';
+  if (!slug || typeof SassonFB === 'undefined' || !SassonFB) { introuvable(); return; }
+
+  function chargerScript(src) {
+    return new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.body.appendChild(s); });
+  }
+  function chargerCss(href) {
+    return new Promise(function (ok) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; l.onload = ok; l.onerror = ok; document.head.appendChild(l); });
+  }
+
+  SassonFB.lireParSlug(slug).then(function (inv) {
+    if (!inv || !inv.donnees) { introuvable(); return; }
+    var D = inv.donnees;
+    var theme = (D.site && D.site.themeSlug) || 'marbre-or';
+    // Musique importee : pas encore envoyee sur le serveur -> musique par defaut.
+    if (D.site && D.site.musique === 'perso') D.site.musique = 'client/musique/bereshit-olam.mp3';
+    var noms = [D.couple.marie.prenom, D.couple.mariee.prenom].join(' & ');
+    document.title = noms + ' — Invitation';
+
+    window.SASSON_PUBLIC = true;
+    window.SassonReponse = function (reponse) { return SassonFB.envoyerReponse(inv.id, reponse); };
+
+    var polices = POLICES[theme];
+    return Promise.all([
+      polices ? chargerCss('https://fonts.googleapis.com/css2?' + polices + '&display=swap') : null,
+      chargerCss('/themes/' + theme + '/theme.css'),
+    ]).then(function () {
+      document.body.className = 'theme-' + theme;
+      attente.remove();
+      var decor = document.createElement('div');
+      decor.className = 'decor decor--page';
+      decor.setAttribute('aria-hidden', 'true');
+      decor.innerHTML = '<span class="decor__layer decor__layer--1"></span><span class="decor__layer decor__layer--2"></span><span class="decor__layer decor__layer--3"></span><span class="decor__layer decor__layer--4"></span>';
+      var app = document.createElement('main');
+      app.id = 'app'; app.className = 'app'; app.setAttribute('data-base', '/');
+      var data = document.createElement('script');
+      data.type = 'application/json'; data.id = 'invitation-data';
+      data.textContent = JSON.stringify(D).replace(/</g, '\\\\u003c');
+      document.body.insertBefore(data, document.body.firstChild);
+      document.body.insertBefore(app, document.body.firstChild);
+      document.body.insertBefore(decor, document.body.firstChild);
+      return chargerScript('/versets.js')
+        .then(function () { return chargerScript('/client/logo-styles.js'); })
+        .then(function () { return chargerScript('/app.js'); });
+    });
+  }).catch(introuvable);
+})();
+</script>
+</body>
+</html>
+`;
 }
 
 /** Vignette de la liste des themes : un apercu du theme lui-meme (son
@@ -643,7 +734,11 @@ ${cartes}
 </div>
 </main>
 </div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="../stockage.js"></script>
+<script src="../sasson-firebase.js"></script>
 <script src="../client/client.js"></script>
 <script src="../client/entete.js"></script>
 <script src="../client/lecteur-musique.js"></script>
@@ -779,6 +874,7 @@ async function main() {
   await fs.copyFile(path.join(PROJECT, 'src', 'versets.js'), path.join(DIST, 'versets.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'stockage.js'), path.join(DIST, 'stockage.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'musique-perso.js'), path.join(DIST, 'musique-perso.js'));
+  await fs.copyFile(path.join(PROJECT, 'src', 'sasson-firebase.js'), path.join(DIST, 'sasson-firebase.js'));
   await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
 
   // data/invitation.json
@@ -808,6 +904,8 @@ async function main() {
     );
   }
   await fs.writeFile(path.join(DIST, 'apercu', 'index.html'), pageIndexApercus(donnees), 'utf8');
+  await fs.mkdir(path.join(DIST, 'i'), { recursive: true });
+  await fs.writeFile(path.join(DIST, 'i', 'index.html'), pagePublique(), 'utf8');
 
   /* ---- Rapport ---- */
   console.log(`\n  Invitation ${donnees.id} — ${marie.prenom} & ${mariee.prenom}`);

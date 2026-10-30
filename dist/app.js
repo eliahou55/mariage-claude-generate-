@@ -15,6 +15,9 @@
 
   var origineLocale = false;
   function lireDonnees() {
+    // Invitation publiee (/i/<adresse>, client/../i/index.html) : les
+    // donnees viennent du compte des maries, jamais du navigateur de l'invite.
+    if (window.SASSON_PUBLIC) { origineLocale = true; return JSON.parse(noeudData.textContent); }
     try {
       var brut = window.localStorage && window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
       if (brut) { origineLocale = true; return JSON.parse(brut); }
@@ -89,6 +92,31 @@
     var pastille = document.getElementById('apercu-bar-dot');
     if (pastille) pastille.style.background = accent;
   }
+
+  /* Barre d'apercu : "Choisir ce theme" enregistre le theme affiche dans
+   * l'invitation du client et passe a la publication (etape 4). Pour le
+   * mariage d'exemple, invite a creer sa propre invitation. */
+  (function () {
+    var bouton = document.getElementById('apercu-choisir');
+    var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
+    if (!bouton || !m || !origineLocale || window.SASSON_PUBLIC) return;
+    bouton.hidden = false;
+    if (D.exemple) {
+      bouton.textContent = 'Créer la mienne';
+      bouton.href = BASE + 'client/configurateur.html';
+      return;
+    }
+    bouton.addEventListener('click', function () {
+      var nomTheme = (document.querySelector('.apercu-bar__name') || {}).textContent || '';
+      try {
+        D.site.themeSlug = m[1];
+        if (nomTheme) D.site.theme = nomTheme;
+        window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D));
+        var b = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_BROUILLON) || 'null');
+        if (b && b.site) { b.site.themeSlug = m[1]; window.localStorage.setItem(CLE_STOCKAGE_BROUILLON, JSON.stringify(b)); }
+      } catch (e) { /* ignore */ }
+    });
+  })();
 
   /* ---------------------------------------------------------------- *
    * Petits utilitaires DOM
@@ -679,12 +707,33 @@
     merci.hidden = true;
     section.appendChild(merci);
 
-    // Fictif : aucune donnee n'est transmise nulle part, juste un retour visuel.
+    var erreurRsvp = el('p', 'rsvp__erreur', '');
+    erreurRsvp.hidden = true;
+    form.appendChild(erreurRsvp);
+
+    // Invitation publiee : la reponse est enregistree dans l'espace des
+    // maries (window.SassonReponse, defini par i/index.html). Sur un
+    // apercu, simple retour visuel.
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.reportValidity()) return;
-      form.hidden = true;
-      merci.hidden = false;
+      var nombre = function (inp) { return Math.max(1, parseInt(inp.value, 10) || 1); };
+      var reponse = {
+        prenom: prenom.input.value.trim(),
+        nom: nom.input.value.trim(),
+        mairie: mairie ? { present: caseMairie.input.checked, nombre: caseMairie.input.checked ? nombre(nbMairie.input) : 0 } : null,
+        houppa: { present: ouiHouppa.input.checked, nombre: ouiHouppa.input.checked ? nombre(nbHouppa.input) : 0 },
+        mot: mot.input.value.trim(),
+      };
+      var fini = function () { form.hidden = true; merci.hidden = false; };
+      if (typeof window.SassonReponse !== 'function') { fini(); return; }
+      envoyer.disabled = true;
+      erreurRsvp.hidden = true;
+      window.SassonReponse(reponse).then(fini, function () {
+        envoyer.disabled = false;
+        erreurRsvp.textContent = 'Votre réponse n\'a pas pu être envoyée. Vérifiez votre connexion et réessayez.';
+        erreurRsvp.hidden = false;
+      });
     });
 
     return section;

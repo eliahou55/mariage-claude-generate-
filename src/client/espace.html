@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon espace — Sasson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="espace.css">
+</head>
+<body class="site">
+<div id="entete-site" data-base=""></div>
+
+<main class="espace site-largeur">
+  <div id="vue-chargement" class="espace__vide"><p class="note">Chargement de votre espace…</p></div>
+
+  <div id="vue-connexion" class="espace__vide" hidden>
+    <p class="etiquette-fine">Mon espace</p>
+    <h1 class="titre">Connectez-vous</h1>
+    <p class="chapo">Retrouvez votre invitation, votre tableau de bord et les réponses de vos invités.</p>
+    <div class="etat__boutons">
+      <button type="button" class="btn btn--principal" data-ouvrir="connexion">Se connecter</button>
+      <button type="button" class="btn btn--secondaire" data-ouvrir="inscription">Créer un compte</button>
+    </div>
+  </div>
+
+  <div id="vue-aucune" class="espace__vide" hidden>
+    <p class="etiquette-fine">Mon espace</p>
+    <h1 class="titre">Aucune invitation pour l'instant</h1>
+    <p class="chapo">Composez votre invitation gratuitement ; elle sera enregistrée ici au moment de la publier.</p>
+    <a class="btn btn--principal" href="configurateur.html">Créer mon invitation</a>
+  </div>
+
+  <div id="vue-tableau" hidden>
+    <p class="espace__bandeau" id="bandeau" hidden></p>
+    <div class="espace__choix" id="choix-invitation" hidden></div>
+
+    <header class="espace__entete">
+      <div>
+        <p class="etiquette-fine" id="inv-statut">—</p>
+        <h1 class="espace__noms" id="inv-noms">—</h1>
+        <p class="espace__infos" id="inv-infos">—</p>
+      </div>
+      <div class="espace__actions">
+        <button type="button" class="btn btn--secondaire btn--petit" id="btn-modifier">Modifier</button>
+        <a class="btn btn--secondaire btn--petit" id="btn-voir" target="_blank" rel="noopener">Voir l'invitation</a>
+      </div>
+    </header>
+
+    <section class="espace__bloc espace__publier" id="bloc-publier" hidden>
+      <div>
+        <h2 class="soustitre">Votre invitation n'est pas encore en ligne</h2>
+        <p class="note">Publiez-la pour obtenir votre lien à partager et recevoir les réponses de vos invités.</p>
+      </div>
+      <button type="button" class="btn btn--principal" id="btn-publier">Publier · 19,99 €</button>
+    </section>
+
+    <section class="espace__bloc espace__lien" id="bloc-lien" hidden>
+      <span class="espace__lien-titre">Votre lien</span>
+      <input type="text" id="lien-public" readonly aria-label="Lien de votre invitation">
+      <button type="button" class="btn btn--principal btn--petit" id="btn-copier">Copier</button>
+      <a class="btn btn--secondaire btn--petit" id="btn-whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+    </section>
+
+    <section class="espace__chiffres" aria-label="Tableau de bord">
+      <div><strong id="ch-reponses">0</strong><span>réponses</span></div>
+      <div><strong id="ch-houppa">0</strong><span id="ch-houppa-libelle">personnes à la houppa</span></div>
+      <div id="ch-mairie-bloc" hidden><strong id="ch-mairie">0</strong><span>personnes à la mairie</span></div>
+      <div><strong id="ch-absents">0</strong><span>absents</span></div>
+    </section>
+
+    <section class="espace__bloc" aria-labelledby="titre-reponses">
+      <div class="reponses__barre">
+        <h2 class="soustitre" id="titre-reponses">Réponses des invités</h2>
+        <input type="search" id="recherche" placeholder="Rechercher un nom…" aria-label="Rechercher">
+        <button type="button" class="btn btn--secondaire btn--petit" id="btn-export">Exporter (Excel)</button>
+      </div>
+      <div class="reponses__table-zone">
+        <table class="reponses">
+          <thead><tr><th>Invité</th><th id="th-mairie">Mairie</th><th id="th-houppa">Houppa</th><th>Mot</th><th>Reçue le</th><th></th></tr></thead>
+          <tbody id="reponses-corps"></tbody>
+        </table>
+        <p class="note reponses__vide" id="reponses-vide">Aucune réponse pour l'instant. Partagez votre lien : les réponses apparaîtront ici en direct.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../stockage.js"></script>
+<script src="../sasson-firebase.js"></script>
+<script src="calendrier-hebreu.js"></script>
+<script src="client.js"></script>
+<script src="entete.js"></script>
+<script src="espace.js"></script>
+</body>
+</html>

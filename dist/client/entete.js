@@ -23,7 +23,7 @@ var SiteEntete = (function () {
     { n: 1, nom: 'Événements', lien: 'configurateur.html' },
     { n: 2, nom: 'Informations', lien: 'formulaire.html' },
     { n: 3, nom: 'Thème & musique', lien: '../apercu/index.html' },
-    { n: 4, nom: 'Publication · 19,99 €', lien: null, bientot: true },
+    { n: 4, nom: 'Publication · 19,99 €', lien: 'publication.html' },
   ];
 
   function el(tag, cls, html) {
@@ -33,16 +33,27 @@ var SiteEntete = (function () {
     return n;
   }
 
-  /* ---------------- Compte (factice) ---------------- */
+  /* ---------------- Compte (Firebase Auth, src/sasson-firebase.js) ---------------- */
 
-  function lireCompte() {
-    try { return JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_COMPTE) || 'null'); } catch (e) { return null; }
+  var FB = typeof SassonFB !== 'undefined' ? SassonFB : null;
+  var compte = null;            // { uid, prenom, email } ou null
+  var compteConnu = !FB;        // vrai une fois l'etat de connexion recu
+  var abonnes = [];
+
+  /** Appelle cb(compte) maintenant (si connu) et a chaque changement. */
+  function surCompte(cb) {
+    abonnes.push(cb);
+    if (compteConnu) cb(compte);
   }
-  function ecrireCompte(c) {
-    try {
-      if (c) window.localStorage.setItem(CLE_STOCKAGE_COMPTE, JSON.stringify(c));
-      else window.localStorage.removeItem(CLE_STOCKAGE_COMPTE);
-    } catch (e) { /* ignore */ }
+  function lireCompte() { return compte; }
+
+  if (FB) {
+    FB.surUtilisateur(function (u) {
+      compte = u ? { uid: u.uid, email: u.email || '', prenom: u.displayName || (u.email || '').split('@')[0] } : null;
+      compteConnu = true;
+      rendreCompte();
+      abonnes.forEach(function (cb) { cb(compte); });
+    });
   }
 
   /** "Voir un exemple" : mariage fictif complet, sans toucher au brouillon. */
@@ -78,14 +89,19 @@ var SiteEntete = (function () {
       '    <button type="button" role="tab" data-onglet="connexion">Se connecter</button>' +
       '    <button type="button" role="tab" data-onglet="inscription">Créer un compte</button>' +
       '  </div>' +
+      '  <button type="button" class="modale__google" data-google>' +
+      '    <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 7l7.4 5.7c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>' +
+      '    Continuer avec Google</button>' +
+      '  <p class="modale__ou"><span>ou</span></p>' +
       '  <form class="modale__form" novalidate>' +
       '    <div class="champ" data-seul="inscription"><label for="m-prenom">Prénom</label><input id="m-prenom" type="text" autocomplete="given-name"></div>' +
       '    <div class="champ"><label for="m-email">Adresse e-mail</label><input id="m-email" type="email" autocomplete="email" required></div>' +
       '    <div class="champ"><label for="m-mdp">Mot de passe</label><input id="m-mdp" type="password" autocomplete="current-password" required minlength="6"></div>' +
       '    <p class="modale__erreur" hidden></p>' +
+      '    <p class="modale__info" hidden></p>' +
       '    <button type="submit" class="btn btn--principal modale__valider">Se connecter</button>' +
-      '    <p class="modale__note">Version de démonstration : aucun compte n\'est réellement créé et rien n\'est envoyé. ' +
-      'Vous pourrez bientôt retrouver votre invitation, vos réponses et votre tableau de bord depuis votre espace.</p>' +
+      '    <button type="button" class="modale__oubli" data-seul="connexion" data-oubli>Mot de passe oublié ?</button>' +
+      '    <p class="modale__note">Votre espace : votre invitation, le tableau de bord et les réponses de vos invités.</p>' +
       '  </form>' +
       '</div>';
     document.body.appendChild(modale);
@@ -104,7 +120,26 @@ var SiteEntete = (function () {
       modale.querySelector('.modale__valider').textContent = o === 'connexion' ? 'Se connecter' : 'Créer mon compte';
       modale.querySelector('#m-mdp').setAttribute('autocomplete', o === 'connexion' ? 'current-password' : 'new-password');
       modale.querySelector('.modale__erreur').hidden = true;
+      modale.querySelector('.modale__info').hidden = true;
     }
+    function erreur(msg) { var e = modale.querySelector('.modale__erreur'); e.textContent = msg; e.hidden = false; modale.querySelector('.modale__info').hidden = true; }
+    function occupe(oui) { modale.querySelectorAll('button, input').forEach(function (b) { b.disabled = oui; }); }
+    function reussi() { occupe(false); fermer(); }
+
+    modale.querySelector('[data-google]').addEventListener('click', function () {
+      if (!FB) { erreur('Connexion indisponible pour le moment.'); return; }
+      occupe(true);
+      FB.google().then(reussi, function (e) { occupe(false); erreur(FB.messageErreur(e)); });
+    });
+    modale.querySelector('[data-oubli]').addEventListener('click', function () {
+      var email = form.querySelector('#m-email').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { erreur('Indiquez d\'abord votre adresse e-mail ci-dessus.'); return; }
+      FB.motDePasseOublie(email).then(function () {
+        var i = modale.querySelector('.modale__info');
+        i.textContent = 'Un e-mail pour choisir un nouveau mot de passe vient de vous être envoyé.';
+        i.hidden = false; modale.querySelector('.modale__erreur').hidden = true;
+      }, function (e) { erreur(FB.messageErreur(e)); });
+    });
     modale.querySelectorAll('[data-onglet]').forEach(function (b) {
       b.addEventListener('click', function () { choisirOnglet(b.getAttribute('data-onglet')); });
     });
@@ -116,16 +151,17 @@ var SiteEntete = (function () {
       var email = form.querySelector('#m-email').value.trim();
       var mdp = form.querySelector('#m-mdp').value;
       var prenom = form.querySelector('#m-prenom').value.trim();
-      var err = modale.querySelector('.modale__erreur');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = 'Merci de saisir une adresse e-mail valide.'; err.hidden = false; return; }
-      if (mdp.length < 6) { err.textContent = 'Le mot de passe doit faire au moins 6 caractères.'; err.hidden = false; return; }
-      if (onglet === 'inscription' && !prenom) { err.textContent = 'Merci d\'indiquer votre prénom.'; err.hidden = false; return; }
-      var existant = lireCompte();
-      if (onglet === 'connexion' && existant && existant.email === email) prenom = existant.prenom;
-      if (!prenom) prenom = email.split('@')[0].replace(/[._-]+/g, ' ').replace(/^\w/, function (c) { return c.toUpperCase(); });
-      ecrireCompte({ prenom: prenom, email: email, depuis: new Date().toISOString() });
-      fermer();
-      rendreCompte();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { erreur('Merci de saisir une adresse e-mail valide.'); return; }
+      if (mdp.length < 6) { erreur('Le mot de passe doit faire au moins 6 caractères.'); return; }
+      if (onglet === 'inscription' && !prenom) { erreur('Merci d\'indiquer votre prénom.'); return; }
+      if (!FB) { erreur('Connexion indisponible pour le moment.'); return; }
+      occupe(true);
+      var action = onglet === 'inscription' ? FB.inscrire(prenom, email, mdp) : FB.connecter(email, mdp);
+      action.then(function (u) {
+        // displayName vient d'etre fixe : on rafraichit l'en-tete.
+        if (onglet === 'inscription' && compte) { compte.prenom = prenom; rendreCompte(); }
+        reussi();
+      }, function (e) { occupe(false); erreur(FB.messageErreur(e)); });
     });
 
     modale.choisirOnglet = choisirOnglet;
@@ -153,6 +189,7 @@ var SiteEntete = (function () {
     if (!zoneCompte) return;
     var c = lireCompte();
     zoneCompte.innerHTML = '';
+    if (!compteConnu) return;   // evite le clignotement "Se connecter" -> prenom
     if (!c) {
       var bCo = el('button', 'site-entete__lien-btn', 'Se connecter');
       bCo.type = 'button';
@@ -172,10 +209,9 @@ var SiteEntete = (function () {
     menu.hidden = true;
     menu.innerHTML =
       '<p class="site-compte__email">' + c.email.replace(/</g, '&lt;') + '</p>' +
-      '<a href="' + BASE + (aUnBrouillon() ? 'formulaire.html' : 'configurateur.html') + '">' + (aUnBrouillon() ? 'Reprendre mon invitation' : 'Créer mon invitation') + '</a>' +
+      '<a href="' + BASE + 'espace.html">Mon espace · tableau de bord</a>' +
+      '<a href="' + BASE + (aUnBrouillon() ? 'formulaire.html' : 'configurateur.html') + '">' + (aUnBrouillon() ? 'Reprendre ma saisie' : 'Créer une invitation') + '</a>' +
       '<a href="' + BASE + 'logo.html">Mon logo</a>' +
-      '<span class="site-compte__bientot">Tableau de bord <em>bientôt</em></span>' +
-      '<span class="site-compte__bientot">Réponses des invités <em>bientôt</em></span>' +
       '<button type="button" data-deconnexion>Se déconnecter</button>';
     bouton.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -183,7 +219,9 @@ var SiteEntete = (function () {
       bouton.setAttribute('aria-expanded', menu.hidden ? 'false' : 'true');
     });
     document.addEventListener('click', function () { menu.hidden = true; bouton.setAttribute('aria-expanded', 'false'); });
-    menu.querySelector('[data-deconnexion]').addEventListener('click', function () { ecrireCompte(null); rendreCompte(); });
+    menu.querySelector('[data-deconnexion]').addEventListener('click', function () {
+      if (FB) FB.deconnecter().then(function () { if (/espace\.html/.test(location.pathname)) location.href = BASE + 'index.html'; });
+    });
     var wrap = el('div', 'site-compte');
     wrap.appendChild(bouton);
     wrap.appendChild(menu);
@@ -238,5 +276,5 @@ var SiteEntete = (function () {
   }
 
   construireEntete();
-  return { ouvrir: ouvrir, voirExemple: voirExemple, lireCompte: lireCompte };
+  return { ouvrir: ouvrir, voirExemple: voirExemple, lireCompte: lireCompte, surCompte: surCompte };
 })();

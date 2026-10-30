@@ -1,0 +1,50 @@
+rules_version = '2';
+// Regles de securite Firestore de Sasson.
+// A copier dans la console Firebase : Firestore Database -> Regles -> Publier.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function connecte() { return request.auth != null; }
+
+    match /invitations/{id} {
+      function proprietaire() { return connecte() && resource.data.ownerUid == request.auth.uid; }
+
+      // Lecture : les maries, ou n'importe qui si l'invitation est publiee
+      // (c'est la page que voient les invites).
+      allow read: if proprietaire() || resource.data.statut == 'publiee';
+
+      // Creation : toujours en brouillon, pour soi-meme, sans paiement.
+      allow create: if connecte()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.statut == 'brouillon'
+        && !('slug' in request.resource.data)
+        && !('payeLe' in request.resource.data);
+
+      // Mise a jour par les maries : contenu seulement. Statut, adresse
+      // publique, paiement et proprietaire ne changent que cote serveur
+      // (fonctions Netlify, avec le compte de service).
+      allow update: if proprietaire()
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.statut == resource.data.statut
+        && request.resource.data.get('slug', null) == resource.data.get('slug', null)
+        && request.resource.data.get('payeLe', null) == resource.data.get('payeLe', null);
+
+      allow delete: if proprietaire() && resource.data.statut == 'brouillon';
+
+      match /reponses/{rid} {
+        function invitation() { return get(/databases/$(database)/documents/invitations/$(id)).data; }
+
+        // Les invites (sans compte) repondent a une invitation publiee.
+        allow create: if invitation().statut == 'publiee'
+          && request.resource.data.keys().hasOnly(['prenom', 'nom', 'mairie', 'houppa', 'mot', 'creeLe'])
+          && request.resource.data.prenom is string && request.resource.data.prenom.size() > 0 && request.resource.data.prenom.size() < 80
+          && request.resource.data.nom is string && request.resource.data.nom.size() > 0 && request.resource.data.nom.size() < 80
+          && (!('mot' in request.resource.data) || (request.resource.data.mot is string && request.resource.data.mot.size() < 2000))
+          && request.resource.data.creeLe == request.time;
+
+        // Seuls les maries lisent et suppriment les reponses.
+        allow read, delete: if connecte() && invitation().ownerUid == request.auth.uid;
+      }
+    }
+  }
+}

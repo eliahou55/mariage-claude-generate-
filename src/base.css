@@ -900,6 +900,12 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
 .apercu-bar__back { color: #cfd4de; text-decoration: none; padding: 6px 4px; }
 .apercu-bar__name { font-weight: 500; letter-spacing: .04em; }
 .apercu-bar__dot { width: 10px; height: 10px; border-radius: 50%; margin-left: auto; }
+.apercu-bar__choisir {
+  padding: 8px 14px; background: #F7F4EE; color: #171614; text-decoration: none;
+  font: 500 10.5px/1 system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+}
+.apercu-bar__choisir[hidden] { display: none; }
+.rsvp__erreur { margin: 0; color: #9B3B30; font-size: 14px; text-align: center; }
 /* Decalage sous la barre d'apercu : padding du body (une marge sur .app
    "traversait" le body et allongeait la page de 44 px). */
 body:has(.apercu-bar) { padding-top: 44px; }

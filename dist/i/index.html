@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no, address=no, date=no, email=no">
+<meta name="robots" content="noindex">
+<title>Invitation de mariage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&amp;family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&amp;family=Josefin+Sans:wght@200;300&amp;family=Italiana&amp;family=Pinyon+Script&amp;family=Libre+Baskerville&amp;family=Marcellus&amp;family=Parisienne&amp;family=Allura&amp;display=swap">
+<link rel="stylesheet" href="/base.css">
+<style>
+.chargement-public { min-height: 100vh; display: grid; place-items: center; padding: 30px; text-align: center; font: 300 15px/1.6 system-ui, sans-serif; color: #6E695F; background: #F7F4EE; }
+.chargement-public strong { display: block; margin-bottom: 8px; font: 400 26px/1.2 Georgia, serif; color: #171614; }
+</style>
+</head>
+<body>
+<div class="chargement-public" id="chargement-public"><p>Chargement de l'invitation…</p></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/stockage.js"></script>
+<script src="/sasson-firebase.js"></script>
+<script>
+(function () {
+  var POLICES = {"marbre-or":"family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400\u0026family=Raleway:ital,wght@0,300;0,400;0,500;1,300\u0026family=Pinyon+Script\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","botanique-sauge":"family=Marcellus\u0026family=Lora:ital,wght@0,400;0,500;1,400\u0026family=Parisienne\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","nuit-etoilee":"family=Cinzel:wght@400;500;600\u0026family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400\u0026family=Cinzel+Decorative:wght@400;700\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","mediterranee":"family=Playfair+Display:ital,wght@0,400;0,600;1,400\u0026family=Crimson+Pro:ital,wght@0,400;0,500;1,400\u0026family=Dancing+Script:wght@500;600\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","rose-poudre":"family=Italiana\u0026family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300\u0026family=Great+Vibes\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","jardin-blanc":"family=Cormorant:ital,wght@0,300;0,400;0,600;1,300\u0026family=Spectral:ital,wght@0,300;0,400;1,300\u0026family=Alex+Brush\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","esquisse-illustree":"family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Caveat:wght@400;600\u0026family=David+Libre:wght@400;500;700","diner-chandelles":"family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400\u0026family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400\u0026family=Italianno\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","epure-minimaliste":"family=Jost:wght@200;300;400;500\u0026family=Cormorant+Garamond:ital,wght@1,300;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","boheme-terracotta":"family=DM+Serif+Display:ital@0;1\u0026family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300\u0026family=Satisfy\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","toile-de-jouy-vert":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","toile-de-jouy-bleu":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700"};
+  var attente = document.getElementById('chargement-public');
+  function introuvable() {
+    attente.innerHTML = '<p><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
+  }
+  // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
+  var slug = decodeURIComponent(location.pathname.replace(/^\/i\/?/, '').replace(/\/.*$/, '').replace(/index\.html$/, ''))
+    || (/[?&]s=([^&]+)/.exec(location.search) || [])[1] || '';
+  if (!slug || typeof SassonFB === 'undefined' || !SassonFB) { introuvable(); return; }
+
+  function chargerScript(src) {
+    return new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.body.appendChild(s); });
+  }
+  function chargerCss(href) {
+    return new Promise(function (ok) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; l.onload = ok; l.onerror = ok; document.head.appendChild(l); });
+  }
+
+  SassonFB.lireParSlug(slug).then(function (inv) {
+    if (!inv || !inv.donnees) { introuvable(); return; }
+    var D = inv.donnees;
+    var theme = (D.site && D.site.themeSlug) || 'marbre-or';
+    // Musique importee : pas encore envoyee sur le serveur -> musique par defaut.
+    if (D.site && D.site.musique === 'perso') D.site.musique = 'client/musique/bereshit-olam.mp3';
+    var noms = [D.couple.marie.prenom, D.couple.mariee.prenom].join(' & ');
+    document.title = noms + ' — Invitation';
+
+    window.SASSON_PUBLIC = true;
+    window.SassonReponse = function (reponse) { return SassonFB.envoyerReponse(inv.id, reponse); };
+
+    var polices = POLICES[theme];
+    return Promise.all([
+      polices ? chargerCss('https://fonts.googleapis.com/css2?' + polices + '&display=swap') : null,
+      chargerCss('/themes/' + theme + '/theme.css'),
+    ]).then(function () {
+      document.body.className = 'theme-' + theme;
+      attente.remove();
+      var decor = document.createElement('div');
+      decor.className = 'decor decor--page';
+      decor.setAttribute('aria-hidden', 'true');
+      decor.innerHTML = '<span class="decor__layer decor__layer--1"></span><span class="decor__layer decor__layer--2"></span><span class="decor__layer decor__layer--3"></span><span class="decor__layer decor__layer--4"></span>';
+      var app = document.createElement('main');
+      app.id = 'app'; app.className = 'app'; app.setAttribute('data-base', '/');
+      var data = document.createElement('script');
+      data.type = 'application/json'; data.id = 'invitation-data';
+      data.textContent = JSON.stringify(D).replace(/</g, '\\u003c');
+      document.body.insertBefore(data, document.body.firstChild);
+      document.body.insertBefore(app, document.body.firstChild);
+      document.body.insertBefore(decor, document.body.firstChild);
+      return chargerScript('/versets.js')
+        .then(function () { return chargerScript('/client/logo-styles.js'); })
+        .then(function () { return chargerScript('/app.js'); });
+    });
+  }).catch(introuvable);
+})();
+</script>
+</body>
+</html>

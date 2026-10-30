@@ -17,3 +17,15 @@
   to = "/client/"
   status = 302
   force = true
+
+# Invitation publiee : /i/<adresse> sert la meme page, qui lit l'adresse
+# dans l'URL et charge l'invitation depuis Firestore.
+[[redirects]]
+  from = "/i/*"
+  to = "/i/index.html"
+  status = 200
+
+# Fonctions serveur (paiement Stripe) : netlify/functions/
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

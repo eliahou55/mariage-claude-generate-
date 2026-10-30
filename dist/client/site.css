@@ -509,3 +509,17 @@ body.site .lecteur__poignee { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px
 /* Un titre de musique long (une seule ligne) ne doit jamais elargir sa
    colonne au-dela de l'ecran (grilles du formulaire, etape 3). */
 body.site #form-invitation > *, body.site .lecteur-formulaire, body.site .lecteur { min-width: 0; max-width: 100%; }
+
+/* ---------------- Fenetre de connexion : Google, mot de passe oublie ---------------- */
+.modale__google {
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 50px;
+  border: 1px solid var(--rule); background: var(--surface); cursor: pointer;
+  font: 500 14px/1 var(--font-corps); color: var(--ink);
+}
+.modale__google:hover { border-color: var(--ink); }
+.modale__ou { display: flex; align-items: center; gap: 12px; margin: 18px 0; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.modale__ou::before, .modale__ou::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.modale__oubli { border: 0; background: none; padding: 2px 0; font-size: 13px; color: var(--muted); text-decoration: underline; cursor: pointer; align-self: center; }
+.modale__oubli[hidden] { display: none; }
+.modale__info { margin: 0; color: #3D6B35; font-size: 13.5px; }
+

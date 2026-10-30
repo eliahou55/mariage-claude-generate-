@@ -14,3 +14,5 @@ var CLE_STOCKAGE_DONNEES = 'invitation-client:donnees';
 var CLE_STOCKAGE_LOGO = 'invitation-client:logo';
 // Compte FACTICE (connexion / inscription de demonstration, src/client/entete.js).
 var CLE_STOCKAGE_COMPTE = 'invitation-client:compte';
+// Invitation enregistree dans le compte (Firestore) pour cette saisie.
+var CLE_STOCKAGE_INVITATION = 'invitation-client:id';
