@@ -312,19 +312,27 @@ body.site .page > .entete, body.site .page > .progression { display: none; }
 .ac-hero__telephones .iphone:nth-child(2) { --l: 284px; z-index: 3; }
 .ac-hero__telephones .iphone:nth-child(3) { --l: 236px; transform: translateX(60%) translateY(36px); z-index: 2; }
 
-/* Comparaison sur-mesure / nous */
-.ac-compare { border-block: 1px solid var(--rule); background: var(--surface); }
-.ac-compare__grille { display: grid; grid-template-columns: 1fr 1fr; }
-.ac-compare__col { padding: 64px 56px; }
-.ac-compare__col + .ac-compare__col { border-left: 1px solid var(--rule); background: #171614; color: #F7F4EE; }
-.ac-compare__nom { margin: 0 0 6px; font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--muted); }
-.ac-compare__col + .ac-compare__col .ac-compare__nom { color: #CDB28A; }
-.ac-compare__prix { margin: 0 0 30px; font-family: var(--font-titre); font-size: clamp(40px, 4.4vw, 58px); font-weight: 300; line-height: 1; }
-.ac-compare__liste { list-style: none; margin: 0; padding: 0; }
-.ac-compare__liste li { display: flex; justify-content: space-between; gap: 20px; padding: 14px 0; border-top: 1px solid var(--rule); font-size: 15px; }
-.ac-compare__col + .ac-compare__col .ac-compare__liste li { border-top-color: rgba(247, 244, 238, .14); }
-.ac-compare__liste span:first-child { color: var(--muted); }
-.ac-compare__col + .ac-compare__col .ac-compare__liste span:first-child { color: #A9A295; }
+/* Comparaison sur-mesure / nous : tableau aligne, une ligne par critere
+   (la colonne de droite, en noir, est la notre). */
+.ac-compare { padding: 30px 0 110px; }
+.ac-cmp { border-top: 1px solid var(--rule); }
+.ac-cmp__ligne { display: grid; grid-template-columns: minmax(110px, .8fr) 1fr 1fr; }
+.ac-cmp__ligne > span { padding: 22px 26px; border-bottom: 1px solid var(--rule); font-size: 16px; display: flex; align-items: center; }
+.ac-cmp__ligne > span:first-child { padding-left: 0; font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); }
+.ac-cmp__ligne > span:nth-child(2) { color: var(--muted); }
+.ac-cmp__nous { background: #171614; color: #F7F4EE; border-bottom-color: rgba(247, 244, 238, .12) !important; }
+.ac-cmp__ligne--tete > span { padding-top: 34px; padding-bottom: 14px; font-size: 11px !important; letter-spacing: .32em; text-transform: uppercase; border-bottom: 0 !important; }
+.ac-cmp__ligne--tete .ac-cmp__nous { color: #CDB28A; }
+.ac-cmp__ligne--prix > span:not(:first-child) { font-family: var(--font-titre); font-weight: 300; font-size: clamp(28px, 3.6vw, 48px); line-height: 1; padding-block: 18px 26px; }
+.ac-cmp__ligne--prix > span:nth-child(2) { text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: var(--accent); }
+@media (max-width: 640px) {
+  .ac-compare { padding: 10px 0 70px; }
+  .ac-cmp__ligne { grid-template-columns: 82px 1fr 1fr; }
+  .ac-cmp__ligne > span { padding: 14px 10px; font-size: 13.5px; line-height: 1.35; }
+  .ac-cmp__ligne > span:first-child { font-size: 9px; letter-spacing: .14em; }
+  .ac-cmp__ligne--tete > span { font-size: 9.5px !important; letter-spacing: .2em; padding-top: 18px; }
+  .ac-cmp__ligne--prix > span:not(:first-child) { font-size: 24px; }
+}
 
 /* Themes dans des telephones */
 .ac-themes__piste {
@@ -418,9 +426,6 @@ body.site .page > .entete, body.site .page > .progression { display: none; }
   .ac-hero__telephones { height: 520px; }
   .ac-hero__telephones .iphone:nth-child(2) { --l: 236px; }
   .ac-hero__telephones .iphone:nth-child(1), .ac-hero__telephones .iphone:nth-child(3) { --l: 196px; }
-  .ac-compare__grille { grid-template-columns: 1fr; }
-  .ac-compare__col { padding: 48px 26px; }
-  .ac-compare__col + .ac-compare__col { border-left: 0; }
 }
 @media (max-width: 560px) {
   .ac-hero__titre { font-size: 48px; }
@@ -470,3 +475,34 @@ body.site .page > .entete, body.site .page > .progression { display: none; }
   .site-entete__marque { font-size: 18px; letter-spacing: .2em; }
   .site-entete__compte .btn--petit { padding-inline: 12px; letter-spacing: .14em; }
 }
+
+/* Lecteur de musique aux couleurs du site : disque noir, filets fins. */
+body.site .lecteur {
+  --lecteur-fond: var(--surface);
+  --lecteur-bord: var(--rule);
+  --lecteur-texte: var(--ink);
+  --lecteur-doux: var(--muted);
+  --lecteur-accent: var(--ink);
+  --lecteur-sur-accent: #F7F4EE;
+  --lecteur-piste: rgba(23, 22, 20, .12);
+  border-radius: 2px;
+  padding: 22px 22px 16px;
+}
+body.site .lecteur__titre { font-family: var(--font-titre); font-size: 19px; font-weight: 500; }
+body.site .lecteur__compteur { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 14px; }
+body.site .lecteur__bouton--lecture { width: 46px; height: 46px; }
+body.site .lecteur__bouton--lecture svg { width: 17px; height: 17px; }
+body.site .lecteur__barre::before, body.site .lecteur__rempli { height: 2px; margin-top: -1px; border-radius: 0; }
+body.site .lecteur__poignee { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; }
+
+/* Import d'une musique personnelle (formulaire) */
+.import-musique { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0 4px; }
+.import-musique__bouton {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 8px 18px;
+  border: 1px solid var(--ink); color: var(--ink); cursor: pointer;
+  font-size: 10.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+}
+.import-musique__bouton:hover { background: var(--ink); color: #F7F4EE; }
+.import-musique__etat { font-size: 13px; color: var(--muted); }
+.import-musique__retirer { border: 0; background: none; padding: 4px 0; font-size: 12.5px; color: #9B3B30; text-decoration: underline; cursor: pointer; }
+.iphone__capture { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; pointer-events: none; -webkit-user-drag: none; }

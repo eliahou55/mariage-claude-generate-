@@ -101,7 +101,7 @@ var LecteurMusique = (function () {
     function charger(i, jouer) {
       index = (i + pistes.length) % pistes.length;
       var p = pistes[index];
-      audio.src = opts.base + p.fichier;
+      audio.src = p.url || opts.base + p.fichier;   // url : musique importee
       titre.textContent = p.nom;
       compteur.textContent = 'Musique ' + (index + 1) + ' / ' + pistes.length;
       tActuel.textContent = '0:00';
@@ -185,6 +185,7 @@ var LecteurMusique = (function () {
         }
       },
       arreter: function () { audio.pause(); },
+      detruire: function () { audio.pause(); audio.removeAttribute('src'); if (racine.parentNode) racine.parentNode.removeChild(racine); },
     };
   }
 

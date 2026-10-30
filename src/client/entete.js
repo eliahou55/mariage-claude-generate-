@@ -202,7 +202,7 @@ var SiteEntete = (function () {
       '    <a href="' + accueil + '#comment">Comment ça marche</a>' +
       '    <a href="' + accueil + '#offre">Tarif</a>' +
       '    <a href="' + accueil + '#faq">Questions</a>' +
-      '    <button type="button" class="site-entete__lien-btn" data-exemple>Voir un exemple</button>' +
+      '    <button type="button" class="site-entete__lien-btn" data-exemple>Essayer des exemples</button>' +
       '  </nav>' +
       '  <div class="site-entete__compte"></div>' +
       '  <button type="button" class="site-entete__burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>' +

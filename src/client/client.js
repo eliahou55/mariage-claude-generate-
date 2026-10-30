@@ -506,7 +506,8 @@ var ClientInvitation = (function () {
         // BASE + musique (meme mecanisme que medias/<id>_musique.mp3 cote
         // Excel). Aucun choix -> MUSIQUE_DEFAUT (Bereshit Olam) : il y a
         // toujours une musique, jamais de silence par defaut.
-        musique: 'client/musique/' + (brouillon.site.musique || MUSIQUE_DEFAUT),
+        // 'perso' = fichier importe par les maries (musique-perso.js).
+        musique: brouillon.site.musique === 'perso' ? 'perso' : 'client/musique/' + (brouillon.site.musique || MUSIQUE_DEFAUT),
         // Logo : 'aucun', le logo choisi dans le generateur ('perso'), ou
         // null = logo automatique du theme (initiales des maries).
         logo: logoDuBrouillon(brouillon),

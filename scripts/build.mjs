@@ -537,6 +537,7 @@ ${bandeau}
 <script src="${base}stockage.js"></script>
 <script src="${base}versets.js"></script>
 <script src="${base}client/logo-styles.js"></script>
+<script src="${base}musique-perso.js"></script>
 <script src="${base}app.js"></script>
 </body>
 </html>
@@ -645,6 +646,7 @@ ${cartes}
 <script src="../client/client.js"></script>
 <script src="../client/entete.js"></script>
 <script src="../client/lecteur-musique.js"></script>
+<script src="../musique-perso.js"></script>
 <script>
 /* Si une invitation a ete configuree dans ce navigateur (espace client),
  * cette page (par ailleurs figee, generee depuis l'Excel) s'adapte : noms
@@ -684,13 +686,16 @@ ${cartes}
     if (zoneMusique && D.site && typeof LecteurMusique !== 'undefined' && typeof ClientInvitation !== 'undefined') {
       var actuelle = String(D.site.musique || '').split('/').pop() || ClientInvitation.MUSIQUE_DEFAUT;
       zoneMusique.hidden = false;
-      LecteurMusique.creer({
+      var creerLecteur = function (perso) {
+       var pistes = ClientInvitation.MUSIQUES.slice();
+       if (perso) pistes.unshift({ fichier: 'perso', nom: 'Ma musique — ' + perso.nom, url: perso.url });
+       LecteurMusique.creer({
         conteneur: document.getElementById('lecteur-musique'),
         base: '../client/musique/',
-        pistes: ClientInvitation.MUSIQUES,
+        pistes: pistes,
         actuelle: actuelle,
         auChangement: function (fichier) {
-          D.site.musique = 'client/musique/' + fichier;
+          D.site.musique = fichier === 'perso' ? 'perso' : 'client/musique/' + fichier;
           try {
             window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D));
             if (!D.exemple && window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) {
@@ -700,7 +705,10 @@ ${cartes}
             }
           } catch (e) { /* ignore */ }
         },
-      });
+       });
+      };
+      if (typeof MusiquePerso !== 'undefined' && !D.exemple) MusiquePerso.lire().then(creerLecteur);
+      else creerLecteur(null);
     }
     var pied = document.getElementById('pied-apercus');
     if (pied) {
@@ -769,6 +777,7 @@ async function main() {
   await fs.copyFile(path.join(PROJECT, 'src', 'app.js'), path.join(DIST, 'app.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'versets.js'), path.join(DIST, 'versets.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'stockage.js'), path.join(DIST, 'stockage.js'));
+  await fs.copyFile(path.join(PROJECT, 'src', 'musique-perso.js'), path.join(DIST, 'musique-perso.js'));
   await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
 
   // data/invitation.json

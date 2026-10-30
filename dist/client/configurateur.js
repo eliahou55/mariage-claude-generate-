@@ -64,16 +64,6 @@
     });
   }
 
-  function deplacerGroupe(index, delta) {
-    var j = index + delta;
-    if (j < 0 || j >= brouillon.groupes.length) return;
-    var tmp = brouillon.groupes[index];
-    brouillon.groupes[index] = brouillon.groupes[j];
-    brouillon.groupes[j] = tmp;
-    sauvegarder();
-    rendreTout();
-  }
-
   function retirerCle(cle) {
     brouillon.groupes = brouillon.groupes
       .map(function (g) { return g.filter(function (c) { return c !== cle; }); })
@@ -137,22 +127,6 @@
       corps.appendChild(note);
     }
     li.appendChild(corps);
-
-    var fleches = document.createElement('div');
-    fleches.className = 'conf-item__fleches';
-    var haut = document.createElement('button');
-    haut.type = 'button'; haut.className = 'conf-item__fleche'; haut.textContent = '↑';
-    haut.disabled = index === 0;
-    haut.setAttribute('aria-label', 'Monter ' + titre.textContent);
-    haut.addEventListener('click', function () { deplacerGroupe(index, -1); });
-    var bas = document.createElement('button');
-    bas.type = 'button'; bas.className = 'conf-item__fleche'; bas.textContent = '↓';
-    bas.disabled = index === brouillon.groupes.length - 1;
-    bas.setAttribute('aria-label', 'Descendre ' + titre.textContent);
-    bas.addEventListener('click', function () { deplacerGroupe(index, 1); });
-    fleches.appendChild(haut);
-    fleches.appendChild(bas);
-    li.appendChild(fleches);
 
     var action = document.createElement('button');
     action.type = 'button';

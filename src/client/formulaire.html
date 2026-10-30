@@ -119,6 +119,12 @@
           <label for="f-musique">Musique de fond</label>
           <select id="f-musique"></select>
           <div class="lecteur-formulaire" id="lecteur-musique"></div>
+          <div class="import-musique">
+            <label class="import-musique__bouton" for="f-musique-fichier">Importer ma musique (MP3)</label>
+            <input type="file" id="f-musique-fichier" accept="audio/*,.mp3,.m4a" hidden>
+            <span class="import-musique__etat" id="musique-perso-etat">Votre morceau n'est pas dans la liste ? Importez-le.</span>
+            <button type="button" class="import-musique__retirer" id="musique-perso-retirer" hidden>Retirer</button>
+          </div>
           <span class="aide">Elle démarre quand vos invités cliquent sur « Voir l'invitation ». Si vous ne changez rien, « Bereshit Olam » joue par défaut.</span>
         </div>
 
@@ -162,6 +168,7 @@
 <script src="../stockage.js"></script>
 <script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
+<script src="../musique-perso.js"></script>
 <script src="entete.js"></script>
 <script src="logo-styles.js"></script>
 <script src="lecteur-musique.js"></script>

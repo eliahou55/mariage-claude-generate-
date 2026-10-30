@@ -39,6 +39,25 @@
     var slug = tel.getAttribute('data-theme');
     var ecran = document.createElement('div');
     ecran.className = 'iphone__ecran';
+
+    // Page vivante (iframe) seulement pour les 3 telephones du haut, sur un
+    // ordinateur. Ailleurs, une capture du theme : 15 pages chargees a la
+    // fois font planter Safari sur iPhone (rechargements, page impossible
+    // a ouvrir). Captures : scripts/captures-themes.cjs.
+    var vivant = tel.hasAttribute('data-immediat') && window.matchMedia &&
+      window.matchMedia('(min-width: 900px) and (hover: hover)').matches;
+    if (!vivant) {
+      var img = document.createElement('img');
+      img.className = 'iphone__capture';
+      img.src = BASE + 'apercus/' + slug + '.jpg';
+      img.alt = 'Aperçu du thème ' + (tel.getAttribute('data-nom') || slug);
+      img.loading = tel.hasAttribute('data-immediat') ? 'eager' : 'lazy';
+      img.decoding = 'async';
+      img.draggable = false;
+      ecran.appendChild(img);
+      tel.appendChild(ecran);
+      return;
+    }
     var iframe = document.createElement('iframe');
     iframe.src = BASE + '../apercu/' + slug + '/index.html';
     iframe.loading = tel.hasAttribute('data-immediat') ? 'eager' : 'lazy';

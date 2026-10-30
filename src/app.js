@@ -705,7 +705,19 @@
     audio.id = 'musique';
     audio.loop = true;
     audio.preload = 'auto';
-    audio.src = /^https?:/i.test(D.site.musique) ? D.site.musique : BASE + D.site.musique;
+    if (D.site.musique === 'perso') {
+      // Musique importee (gardee dans ce navigateur) ; a defaut, la
+      // musique par defaut. Chargee des l'ouverture de la page, avant le
+      // clic sur "Voir l'invitation" (lecture immediate sur iPhone).
+      var defaut = BASE + 'client/musique/bereshit-olam.mp3';
+      if (typeof MusiquePerso !== 'undefined') {
+        MusiquePerso.lire().then(function (m) { audio.src = m ? m.url : defaut; });
+      } else {
+        audio.src = defaut;
+      }
+    } else {
+      audio.src = /^https?:/i.test(D.site.musique) ? D.site.musique : BASE + D.site.musique;
+    }
     document.body.appendChild(audio);
 
     boutonSon = el('button', 'son');

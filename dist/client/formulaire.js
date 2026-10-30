@@ -124,35 +124,75 @@
   }
 
   /* --- Musique (liste proposee, celle par defaut deja selectionnee). --- */
+  /* --- Musique : liste proposee + musique importee (MP3), avec lecteur. --- */
+  var lecteurMusique = null;
   function rendreMusiques() {
     var selectMusique = document.getElementById('f-musique');
     if (!selectMusique) return;
-    selectMusique.innerHTML = '';
-    ClientInvitation.MUSIQUES.forEach(function (m) {
-      var opt = document.createElement('option');
-      opt.value = m.fichier;
-      opt.textContent = m.fichier === ClientInvitation.MUSIQUE_DEFAUT ? m.nom + ' (par défaut)' : m.nom;
-      selectMusique.appendChild(opt);
-    });
-    selectMusique.value = brouillon.site.musique || ClientInvitation.MUSIQUE_DEFAUT;
+    var lire = typeof MusiquePerso !== 'undefined' ? MusiquePerso.lire() : Promise.resolve(null);
+    lire.then(function (perso) {
+      var pistes = ClientInvitation.MUSIQUES.slice();
+      if (perso) pistes.unshift({ fichier: 'perso', nom: 'Ma musique — ' + perso.nom, url: perso.url });
+      selectMusique.innerHTML = '';
+      pistes.forEach(function (m) {
+        var opt = document.createElement('option');
+        opt.value = m.fichier;
+        opt.textContent = m.fichier === ClientInvitation.MUSIQUE_DEFAUT ? m.nom + ' (par défaut)' : m.nom;
+        selectMusique.appendChild(opt);
+      });
+      var voulu = brouillon.site.musique || ClientInvitation.MUSIQUE_DEFAUT;
+      if (voulu === 'perso' && !perso) voulu = ClientInvitation.MUSIQUE_DEFAUT;
+      selectMusique.value = voulu;
+      document.getElementById('musique-perso-etat').textContent = perso
+        ? 'Importée : « ' + perso.nom + ' »'
+        : 'Votre morceau n\'est pas dans la liste ? Importez-le.';
+      document.getElementById('musique-perso-retirer').hidden = !perso;
 
-    // Lecteur pour ecouter avant de choisir, synchronise dans les deux
-    // sens avec la liste deroulante.
-    var zone = document.getElementById('lecteur-musique');
-    if (!zone || typeof LecteurMusique === 'undefined') return;
-    var lecteur = LecteurMusique.creer({
-      conteneur: zone,
-      base: 'musique/',
-      pistes: ClientInvitation.MUSIQUES,
-      actuelle: selectMusique.value,
-      auChangement: function (fichier) {
-        selectMusique.value = fichier;
-        sauvegarder();
-      },
+      // Lecteur pour ecouter avant de choisir, synchronise dans les deux
+      // sens avec la liste deroulante (recree si la liste change).
+      var zone = document.getElementById('lecteur-musique');
+      if (!zone || typeof LecteurMusique === 'undefined') return;
+      if (lecteurMusique) lecteurMusique.detruire();
+      lecteurMusique = LecteurMusique.creer({
+        conteneur: zone,
+        base: 'musique/',
+        pistes: pistes,
+        actuelle: selectMusique.value,
+        auChangement: function (fichier) {
+          selectMusique.value = fichier;
+          sauvegarder();
+        },
+      });
     });
-    selectMusique.addEventListener('change', function () { lecteur.definir(selectMusique.value); });
-    form.addEventListener('submit', function () { lecteur.arreter(); });
   }
+  (function () {
+    var selectMusique = document.getElementById('f-musique');
+    var champ = document.getElementById('f-musique-fichier');
+    var etat = document.getElementById('musique-perso-etat');
+    if (!selectMusique || !champ) return;
+    selectMusique.addEventListener('change', function () { if (lecteurMusique) lecteurMusique.definir(selectMusique.value); });
+    form.addEventListener('submit', function () { if (lecteurMusique) lecteurMusique.arreter(); });
+    champ.addEventListener('change', function () {
+      var f = champ.files && champ.files[0];
+      if (!f) return;
+      etat.textContent = 'Import en cours…';
+      MusiquePerso.enregistrer(f).then(function () {
+        brouillon.site.musique = 'perso';
+        ClientInvitation.ecrireBrouillon(brouillon);
+        rendreMusiques();
+      }, function (err) {
+        etat.textContent = (err && err.message) || 'Import impossible.';
+      });
+      champ.value = '';
+    });
+    document.getElementById('musique-perso-retirer').addEventListener('click', function () {
+      MusiquePerso.supprimer().then(function () {
+        if (brouillon.site.musique === 'perso') brouillon.site.musique = '';
+        ClientInvitation.ecrireBrouillon(brouillon);
+        rendreMusiques();
+      });
+    });
+  })();
 
   function majApercuVerset() {
     var v = selectVerset.value === '__autre__' ? autreVersetInput.value : selectVerset.value;
