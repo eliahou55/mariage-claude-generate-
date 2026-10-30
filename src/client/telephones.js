@@ -18,6 +18,23 @@
     iframe.style.height = Math.ceil(h / k) + 'px';
   }
 
+  /* Cartes de theme (galerie) : ce ne sont PAS des liens, pour eviter
+   * l'apercu de lien d'iOS (page grise) quand le doigt reste pose pendant
+   * le defilement. Ouverture au toucher bref, sans glissement. */
+  Array.prototype.forEach.call(document.querySelectorAll('.ac-theme[data-lien]'), function (carte) {
+    var lien = BASE + carte.getAttribute('data-lien');
+    var depart = null;
+    carte.setAttribute('role', 'link');
+    carte.setAttribute('tabindex', '0');
+    carte.addEventListener('pointerdown', function (e) { depart = { x: e.clientX, y: e.clientY, t: Date.now() }; });
+    carte.addEventListener('click', function (e) {
+      if (depart && (Math.abs(e.clientX - depart.x) > 10 || Math.abs(e.clientY - depart.y) > 10 || Date.now() - depart.t > 600)) return;
+      window.location.href = lien;
+    });
+    carte.addEventListener('keydown', function (e) { if (e.key === 'Enter') window.location.href = lien; });
+    carte.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  });
+
   Array.prototype.forEach.call(document.querySelectorAll('.iphone[data-theme]'), function (tel) {
     var slug = tel.getAttribute('data-theme');
     var ecran = document.createElement('div');

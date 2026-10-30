@@ -16,11 +16,14 @@ var SiteEntete = (function () {
   var BASE = hote ? hote.getAttribute('data-base') || '' : '';
   var ETAPE = hote ? parseInt(hote.getAttribute('data-etape') || '0', 10) : 0;
 
+  /* Nom du site : a changer ici (et dans le titre des pages). */
+  var MARQUE = { nom: 'Sasson', he: 'ששון' };
+
   var ETAPES = [
     { n: 1, nom: 'Événements', lien: 'configurateur.html' },
     { n: 2, nom: 'Informations', lien: 'formulaire.html' },
     { n: 3, nom: 'Thème & musique', lien: '../apercu/index.html' },
-    { n: 4, nom: 'Publication', lien: null, bientot: true },
+    { n: 4, nom: 'Publication · 19,99 €', lien: null, bientot: true },
   ];
 
   function el(tag, cls, html) {
@@ -69,7 +72,7 @@ var SiteEntete = (function () {
       '<div class="modale__fond" data-fermer></div>' +
       '<div class="modale__boite">' +
       '  <button type="button" class="modale__fermer" data-fermer aria-label="Fermer">×</button>' +
-      '  <p class="modale__marque">בס״ד · Invitations</p>' +
+      '  <p class="modale__marque">' + MARQUE.nom + '</p>' +
       '  <h2 class="modale__titre" id="modale-titre">Bienvenue</h2>' +
       '  <div class="modale__onglets" role="tablist">' +
       '    <button type="button" role="tab" data-onglet="connexion">Se connecter</button>' +
@@ -193,11 +196,11 @@ var SiteEntete = (function () {
     var h = el('header', 'site-entete');
     h.innerHTML =
       '<div class="site-entete__barre">' +
-      '  <a class="site-entete__marque" href="' + accueil + '"><span class="site-entete__bsd">בס״ד</span> Invitations</a>' +
+      '  <a class="site-entete__marque" href="' + accueil + '">' + MARQUE.nom + '<span class="site-entete__he">' + MARQUE.he + '</span></a>' +
       '  <nav class="site-entete__nav" aria-label="Navigation principale">' +
-      '    <a href="' + accueil + '#comment">Comment ça marche</a>' +
       '    <a href="' + accueil + '#themes">Les thèmes</a>' +
-      '    <a href="' + accueil + '#fonctions">Fonctionnalités</a>' +
+      '    <a href="' + accueil + '#comment">Comment ça marche</a>' +
+      '    <a href="' + accueil + '#offre">Tarif</a>' +
       '    <a href="' + accueil + '#faq">Questions</a>' +
       '    <button type="button" class="site-entete__lien-btn" data-exemple>Voir un exemple</button>' +
       '  </nav>' +
