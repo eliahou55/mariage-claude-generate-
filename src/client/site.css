@@ -1,0 +1,402 @@
+/* =====================================================================
+   site.css -- en-tete commun, fenetre de connexion (factice), barre
+   d'etapes, page d'accueil et mise en page large sur ordinateur.
+   Charge APRES client.css sur toutes les pages du parcours client
+   (pas sur les pages de rendu d'un theme).
+   ===================================================================== */
+
+body.site { padding: 0; background: var(--bg); }
+body.modale-ouverte { overflow: hidden; }
+.site-largeur { width: min(1180px, 100% - 40px); margin-inline: auto; }
+
+/* ------------------------------------------------------------------ *
+ * En-tete
+ * ------------------------------------------------------------------ */
+.site-entete {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(243, 239, 230, .86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s, box-shadow .2s;
+}
+.site-entete--defile { border-bottom-color: var(--rule); box-shadow: 0 6px 24px rgba(42, 39, 34, .06); }
+.site-entete__barre {
+  width: min(1180px, 100% - 32px);
+  margin: 0 auto;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.site-entete__marque {
+  font-family: var(--font-titre);
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-entete__bsd { font-family: var(--font-he); font-size: 14px; font-weight: 400; color: var(--accent-ink); margin-right: 4px; }
+.site-entete__nav { display: flex; align-items: center; gap: 26px; margin-left: auto; }
+.site-entete__nav a, .site-entete__lien-btn {
+  font: 400 14.5px/1 var(--font-corps);
+  color: var(--ink);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.site-entete__nav a:hover, .site-entete__lien-btn:hover { color: var(--accent-ink); }
+.site-entete__compte { display: flex; align-items: center; gap: 16px; }
+.btn--petit { min-height: 40px; padding: 8px 20px; font-size: 13.5px; }
+.site-entete__burger { display: none; }
+
+.site-compte { position: relative; }
+.site-compte__bouton {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 12px 5px 5px;
+  border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--surface); cursor: pointer;
+  font: 500 14px/1 var(--font-corps); color: var(--ink);
+}
+.site-compte__avatar {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--accent); color: #2A2008; font-weight: 600;
+}
+.site-compte__menu {
+  position: absolute; right: 0; top: calc(100% + 8px);
+  min-width: 240px; padding: 10px;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(42, 39, 34, .14);
+  display: flex; flex-direction: column;
+}
+.site-compte__menu[hidden] { display: none; }
+.site-compte__email { margin: 4px 10px 8px; font-size: 12.5px; color: var(--muted); }
+.site-compte__menu a, .site-compte__menu button, .site-compte__bientot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px; border-radius: 8px; border: 0; background: none; text-align: left;
+  font: 400 14.5px/1.2 var(--font-corps); color: var(--ink); text-decoration: none; cursor: pointer;
+}
+.site-compte__menu a:hover, .site-compte__menu button:hover { background: var(--accent-bg); }
+.site-compte__bientot { color: var(--muted); cursor: default; }
+.site-compte__bientot em, .etapes-parcours em { font-style: normal; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.site-compte__menu button { color: #9B3B30; border-top: 1px solid var(--rule); border-radius: 0 0 8px 8px; margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .site-entete__barre { height: 60px; gap: 12px; }
+  .site-entete__burger {
+    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+    width: 42px; height: 42px; margin-left: 4px; padding: 0 10px;
+    border: 0; background: none; cursor: pointer;
+  }
+  .site-entete__burger span { display: block; height: 1.6px; background: var(--ink); border-radius: 2px; transition: transform .2s, opacity .2s; }
+  .site-entete--ouvert .site-entete__burger span:nth-child(1) { transform: translateY(6.6px) rotate(45deg); }
+  .site-entete--ouvert .site-entete__burger span:nth-child(2) { opacity: 0; }
+  .site-entete--ouvert .site-entete__burger span:nth-child(3) { transform: translateY(-6.6px) rotate(-45deg); }
+  .site-entete__nav {
+    position: absolute; left: 0; right: 0; top: 100%;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 6px 20px 16px; margin: 0;
+    background: var(--bg); border-bottom: 1px solid var(--rule);
+    box-shadow: 0 14px 30px rgba(42, 39, 34, .1);
+    display: none;
+  }
+  .site-entete--ouvert .site-entete__nav { display: flex; }
+  .site-entete__nav a, .site-entete__nav .site-entete__lien-btn { padding: 14px 0; border-bottom: 1px solid var(--rule); text-align: left; font-size: 16px; }
+  .site-entete__compte { margin-left: auto; gap: 10px; }
+  .site-entete__compte > .site-entete__lien-btn { display: none; }
+  .site-compte__nom { display: none; }
+  .site-compte__bouton { padding-right: 5px; }
+}
+@media (max-width: 380px) {
+  .site-entete__marque { font-size: 20px; }
+  .btn--petit { padding-inline: 14px; font-size: 13px; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Barre d'etapes du parcours
+ * ------------------------------------------------------------------ */
+.etapes-parcours { width: min(1080px, 100% - 32px); margin: 18px auto 0; }
+.etapes-parcours ol { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
+.etapes-parcours__etape { flex: 1; min-width: 0; }
+.etapes-parcours__etape > a, .etapes-parcours__etape > span {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px 12px; text-decoration: none; color: var(--muted);
+  border-bottom: 3px solid var(--rule);
+}
+.etapes-parcours__num {
+  flex: none; width: 26px; height: 26px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid var(--rule); font-size: 13px; font-weight: 500; background: var(--surface);
+}
+.etapes-parcours__nom { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.etapes-parcours__etape--fait > a { color: var(--ink); border-bottom-color: var(--accent); }
+.etapes-parcours__etape--fait .etapes-parcours__num { background: var(--accent); border-color: var(--accent); color: #2A2008; }
+.etapes-parcours__etape--actuel > span { color: var(--ink); border-bottom-color: var(--accent-ink); font-weight: 500; }
+.etapes-parcours__etape--actuel .etapes-parcours__num { border-color: var(--accent-ink); color: var(--accent-ink); }
+.etapes-parcours__etape--bientot > span { opacity: .6; }
+@media (max-width: 640px) {
+  .etapes-parcours ol { gap: 4px; }
+  .etapes-parcours__etape > a, .etapes-parcours__etape > span { flex-direction: column; gap: 5px; padding: 6px 2px 8px; text-align: center; }
+  .etapes-parcours__nom { font-size: 11px; white-space: normal; line-height: 1.2; }
+  .etapes-parcours em { display: block; font-size: 9px; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Pages du parcours : carte centree, plus large sur ordinateur
+ * ------------------------------------------------------------------ */
+body.site .page { max-width: var(--page-max, 760px); margin: 20px auto 60px; padding: 8px 22px 44px; }
+body.site .page--large { --page-max: 1080px; }
+@media (min-width: 620px) {
+  body.site .page { min-height: 0; border-radius: 22px; box-shadow: 0 24px 60px rgba(42, 39, 34, .1); padding: 26px 44px 44px; }
+}
+@media (max-width: 619px) {
+  body.site .page { margin: 10px 0 0; border-radius: 0; }
+}
+/* L'ancien en-tete interne des pages est remplace par l'en-tete commun. */
+body.site .page > .entete, body.site .page > .progression { display: none; }
+
+/* Formulaire : deux colonnes sur grand ecran */
+@media (min-width: 1000px) {
+  body.site #form-invitation { display: grid; grid-template-columns: 1fr 1fr; column-gap: 48px; align-items: start; }
+  body.site #form-invitation > .form-section { margin-bottom: 34px; }
+  /* Maries puis "Votre site" a gauche, familles a droite sur deux rangees. */
+  body.site #form-invitation > .form-section:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+  body.site #form-invitation > .form-section:nth-of-type(2) { grid-column: 2; grid-row: 1 / span 2; }
+  body.site #form-invitation > .form-section:nth-of-type(3) { grid-column: 1; grid-row: 2; }
+  body.site #form-invitation > #zone-evenements { grid-row: 3; }
+  body.site #form-invitation > .barre-actions { grid-row: 4; }
+  body.site #form-invitation > #zone-evenements,
+  body.site #form-invitation > .barre-actions { grid-column: 1 / -1; }
+  body.site #zone-evenements { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; align-items: start; }
+  body.site #zone-evenements > h2 { grid-column: 1 / -1; }
+}
+
+/* Generateur de logo : apercu a gauche (fixe), reglages a droite */
+@media (min-width: 1000px) {
+  body.site .logo-mise-en-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  body.site .logo-colonne-apercu { position: sticky; top: 90px; }
+  body.site .logo-colonne-apercu .logo-svg { width: min(360px, 100%); }
+}
+
+/* ------------------------------------------------------------------ *
+ * Fenetre connexion / inscription
+ * ------------------------------------------------------------------ */
+.modale { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; }
+.modale[hidden] { display: none; }
+.modale__fond { position: absolute; inset: 0; background: rgba(30, 26, 20, .45); backdrop-filter: blur(3px); }
+.modale__boite {
+  position: relative; width: min(430px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+  padding: 30px 28px 24px; background: var(--surface); border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .25);
+  animation: modale-entree .22s ease;
+}
+@keyframes modale-entree { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+.modale__fermer { position: absolute; top: 10px; right: 12px; width: 38px; height: 38px; border: 0; background: none; font-size: 26px; color: var(--muted); cursor: pointer; }
+.modale__marque { margin: 0; text-align: center; font-family: var(--font-titre); font-size: 15px; color: var(--accent-ink); }
+.modale__titre { margin: 4px 0 18px; text-align: center; font-family: var(--font-titre); font-weight: 500; font-size: 28px; }
+.modale__onglets { display: flex; padding: 4px; margin-bottom: 20px; border-radius: 999px; background: var(--bg); }
+.modale__onglets button { flex: 1; padding: 10px; border: 0; border-radius: 999px; background: none; font: 500 14px/1 var(--font-corps); color: var(--muted); cursor: pointer; }
+.modale__onglets button.actif { background: var(--surface); color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .08); }
+.modale__form { display: flex; flex-direction: column; gap: 14px; }
+.modale__form .champ[hidden] { display: none; }
+.modale__valider { width: 100%; margin-top: 4px; }
+.modale__erreur { margin: 0; color: #9B3B30; font-size: 13.5px; }
+.modale__note { margin: 4px 0 0; font-size: 12px; color: var(--muted); line-height: 1.55; text-align: center; }
+
+/* ------------------------------------------------------------------ *
+ * Telephone (maquette) avec un vrai theme affiche en direct
+ * ------------------------------------------------------------------ */
+.iphone {
+  --l: 260px;
+  position: relative;
+  width: var(--l);
+  aspect-ratio: 390 / 820;
+  padding: calc(var(--l) * .035);
+  border-radius: calc(var(--l) * .17);
+  background: linear-gradient(145deg, #2b2b2e, #0f0f11 60%, #26262a);
+  box-shadow:
+    0 0 0 1.5px #3c3c40 inset,
+    0 calc(var(--l) * .1) calc(var(--l) * .2) rgba(30, 24, 14, .28),
+    0 calc(var(--l) * .02) calc(var(--l) * .05) rgba(30, 24, 14, .2);
+  flex: none;
+}
+.iphone::before { /* boutons lateraux */
+  content: ""; position: absolute; left: -2px; top: 22%; width: 3px; height: 9%;
+  border-radius: 2px; background: #1c1c1f; box-shadow: 0 calc(var(--l) * .2) 0 #1c1c1f;
+}
+.iphone__ecran {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  border-radius: calc(var(--l) * .135); background: #f4f1ea;
+}
+.iphone__ecran::after { /* ilot dynamique */
+  content: ""; position: absolute; top: calc(var(--l) * .03); left: 50%; transform: translateX(-50%);
+  width: 31%; height: calc(var(--l) * .085); border-radius: 999px; background: #0b0b0c; z-index: 2;
+}
+/* Taille et echelle de l'iframe calculees par telephones.js (largeur
+   reelle 390 px, reduite pour tenir dans l'ecran du telephone). */
+.iphone iframe {
+  position: absolute; top: 0; left: 0;
+  width: 390px; height: 820px; border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+  opacity: 0; transition: opacity .4s ease;
+}
+.iphone iframe.pret { opacity: 1; }
+
+/* ------------------------------------------------------------------ *
+ * Page d'accueil
+ * ------------------------------------------------------------------ */
+.ac-section { padding: 96px 0; }
+.ac-surtitre { margin: 0 0 12px; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-ink); font-weight: 500; }
+.ac-titre { margin: 0 0 16px; font-family: var(--font-titre); font-weight: 500; font-size: clamp(32px, 4.2vw, 50px); line-height: 1.1; }
+.ac-texte { margin: 0; color: var(--muted); font-size: 16.5px; line-height: 1.7; max-width: 36em; }
+.ac-entete-section { text-align: center; margin-bottom: 52px; }
+.ac-entete-section .ac-texte { margin-inline: auto; }
+
+/* Hero */
+.ac-hero { position: relative; overflow: hidden; padding: 56px 0 40px; }
+.ac-hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto auto; width: 70%; height: 120%;
+  background: radial-gradient(closest-side, rgba(201, 164, 76, .18), transparent 70%);
+  pointer-events: none;
+}
+.ac-hero__grille { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+.ac-hero__titre { margin: 0 0 20px; font-family: var(--font-titre); font-weight: 500; font-size: clamp(40px, 5.6vw, 72px); line-height: 1.02; letter-spacing: -.01em; }
+.ac-hero__titre em { font-style: italic; color: var(--accent-ink); }
+.ac-hero__texte { margin: 0 0 30px; color: var(--muted); font-size: 18px; line-height: 1.65; max-width: 30em; }
+.ac-hero__cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.ac-hero__cta .btn--principal { padding-inline: 34px; min-height: 54px; font-size: 15px; }
+.ac-hero__cta .btn--secondaire { min-height: 54px; }
+.ac-hero__atouts { list-style: none; display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 28px 0 0; padding: 0; color: var(--muted); font-size: 14px; }
+.ac-hero__atouts li::before { content: "✓"; margin-right: 7px; color: var(--accent-ink); font-weight: 600; }
+.ac-reprise { margin: 16px 0 0; font-size: 14px; }
+
+.ac-hero__telephones { position: relative; height: 600px; display: flex; justify-content: center; align-items: center; }
+.ac-hero__telephones .iphone { position: absolute; }
+.ac-hero__telephones .iphone:nth-child(1) { --l: 230px; transform: translateX(-62%) rotate(-7deg) translateY(30px); z-index: 1; }
+.ac-hero__telephones .iphone:nth-child(2) { --l: 270px; z-index: 3; }
+.ac-hero__telephones .iphone:nth-child(3) { --l: 230px; transform: translateX(62%) rotate(7deg) translateY(30px); z-index: 2; }
+.ac-hero__etiquette {
+  position: absolute; z-index: 4; padding: 10px 14px; border-radius: 14px;
+  background: var(--surface); box-shadow: 0 12px 30px rgba(42, 39, 34, .14);
+  font-size: 13px; line-height: 1.35; display: flex; align-items: center; gap: 10px;
+}
+.ac-hero__etiquette b { display: block; font-weight: 600; }
+.ac-hero__etiquette span:first-child { font-size: 22px; }
+.ac-hero__etiquette--1 { left: 2%; bottom: 14%; }
+.ac-hero__etiquette--2 { right: 0; top: 12%; }
+
+/* Bandeau des evenements */
+.ac-bandeau { border-block: 1px solid var(--rule); background: var(--surface); }
+.ac-bandeau ul { list-style: none; margin: 0 auto; padding: 18px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 38px; font-family: var(--font-titre); font-size: 21px; color: var(--ink); }
+.ac-bandeau li span { font-family: var(--font-he); font-size: 15px; color: var(--accent-ink); margin-left: 8px; }
+
+/* Comment ca marche */
+.ac-etapes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; counter-reset: etape; }
+.ac-etape { position: relative; padding: 28px 24px 26px; background: var(--surface); border: 1px solid var(--rule); border-radius: 20px; }
+.ac-etape__num { display: block; font-family: var(--font-titre); font-size: 44px; line-height: 1; color: var(--accent); margin-bottom: 16px; }
+.ac-etape h3 { margin: 0 0 8px; font-family: var(--font-titre); font-weight: 600; font-size: 22px; }
+.ac-etape p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.6; }
+.ac-etape--bientot { background: transparent; border-style: dashed; }
+.ac-etape__badge { position: absolute; top: 18px; right: 18px; padding: 4px 10px; border-radius: 999px; background: var(--accent-bg); color: var(--accent-ink); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.ac-etapes__cta { text-align: center; margin-top: 40px; }
+
+/* Les themes */
+.ac-themes { background: linear-gradient(180deg, var(--bg), #ece5d6); }
+.ac-themes__piste {
+  display: flex; gap: 34px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding: 10px max(20px, calc((100% - 1180px) / 2)) 40px; scrollbar-width: thin;
+}
+.ac-theme { flex: none; scroll-snap-align: center; text-align: center; text-decoration: none; color: inherit; }
+.ac-theme .iphone { --l: 220px; transition: transform .25s ease; }
+.ac-theme:hover .iphone, .ac-theme:focus-visible .iphone { transform: translateY(-8px); }
+.ac-theme__nom { display: block; margin-top: 18px; font-family: var(--font-titre); font-size: 21px; }
+.ac-theme__voir { font-size: 13px; color: var(--accent-ink); }
+.ac-themes__nav { display: flex; justify-content: center; gap: 10px; }
+.ac-themes__nav button { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--rule); background: var(--surface); font-size: 22px; cursor: pointer; color: var(--ink); }
+
+/* Fonctionnalites */
+.ac-fonctions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.ac-fonction { padding: 26px 22px; border-radius: 18px; background: var(--surface); border: 1px solid var(--rule); }
+.ac-fonction__icone { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: var(--accent-bg); color: var(--accent-ink); font-size: 22px; margin-bottom: 16px; }
+.ac-fonction h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+.ac-fonction p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* Espace des maries (bientot) */
+.ac-espace { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.ac-espace__liste { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.ac-espace__liste li { display: flex; gap: 12px; font-size: 15.5px; }
+.ac-espace__liste li::before { content: "◆"; color: var(--accent); font-size: 12px; margin-top: 4px; }
+.ac-tableau {
+  padding: 26px; border-radius: 22px; background: var(--surface);
+  border: 1px solid var(--rule); box-shadow: 0 30px 60px rgba(42, 39, 34, .12);
+}
+.ac-tableau__haut { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+.ac-tableau__haut b { font-family: var(--font-titre); font-size: 22px; font-weight: 600; }
+.ac-tableau__haut span { font-size: 12px; color: var(--accent-ink); letter-spacing: .1em; text-transform: uppercase; }
+.ac-tableau__chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.ac-tableau__chiffres div { padding: 14px; border-radius: 14px; background: var(--bg); text-align: center; }
+.ac-tableau__chiffres strong { display: block; font-family: var(--font-titre); font-size: 30px; line-height: 1; }
+.ac-tableau__chiffres small { color: var(--muted); font-size: 12px; }
+.ac-tableau__ligne { display: flex; justify-content: space-between; padding: 11px 2px; border-top: 1px solid var(--rule); font-size: 14px; }
+.ac-tableau__ligne em { font-style: normal; font-size: 12px; padding: 3px 10px; border-radius: 999px; background: #E6F0E1; color: #3D6B35; }
+.ac-tableau__ligne em.non { background: #F4E4E1; color: #9B3B30; }
+
+/* FAQ */
+.ac-faq { max-width: 780px; margin: 0 auto; }
+.ac-faq details { border-bottom: 1px solid var(--rule); }
+.ac-faq summary { list-style: none; display: flex; justify-content: space-between; gap: 20px; padding: 22px 0; cursor: pointer; font-family: var(--font-titre); font-size: 21px; }
+.ac-faq summary::-webkit-details-marker { display: none; }
+.ac-faq summary::after { content: "+"; font-family: var(--font-corps); font-size: 24px; color: var(--accent-ink); transition: transform .2s; }
+.ac-faq details[open] summary::after { transform: rotate(45deg); }
+.ac-faq details p { margin: 0 0 22px; color: var(--muted); line-height: 1.7; }
+
+/* Appel final + pied de page */
+.ac-final { text-align: center; padding: 90px 20px; border-radius: 28px; background: #2A2722; color: #F3EFE6; }
+.ac-final .ac-titre { color: #F3EFE6; }
+.ac-final .ac-texte { color: #CFC6B4; margin: 0 auto 30px; }
+.ac-pied { padding: 50px 0 40px; color: var(--muted); font-size: 13.5px; }
+.ac-pied__grille { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; border-top: 1px solid var(--rule); padding-top: 30px; }
+.ac-pied a { color: var(--muted); text-decoration: none; margin-right: 18px; }
+
+/* Responsive de l'accueil */
+@media (max-width: 1080px) {
+  .ac-etapes, .ac-fonctions { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .ac-section { padding: 70px 0; }
+  .ac-hero { padding-top: 34px; }
+  .ac-hero__grille { grid-template-columns: 1fr; text-align: center; }
+  .ac-hero__texte { margin-inline: auto; }
+  .ac-hero__cta, .ac-hero__atouts { justify-content: center; }
+  .ac-hero__telephones { height: 500px; }
+  .ac-hero__telephones .iphone:nth-child(2) { --l: 230px; }
+  .ac-hero__telephones .iphone:nth-child(1), .ac-hero__telephones .iphone:nth-child(3) { --l: 190px; }
+  .ac-espace { grid-template-columns: 1fr; gap: 40px; }
+}
+@media (max-width: 560px) {
+  .ac-etapes, .ac-fonctions { grid-template-columns: 1fr; }
+  .ac-hero__titre { font-size: 40px; }
+  .ac-hero__texte { font-size: 16px; }
+  .ac-hero__cta .btn { width: 100%; }
+  .ac-hero__telephones { height: 430px; }
+  .ac-hero__telephones .iphone:nth-child(2) { --l: 200px; }
+  .ac-hero__telephones .iphone:nth-child(1) { --l: 160px; transform: translateX(-58%) rotate(-7deg) translateY(26px); }
+  .ac-hero__telephones .iphone:nth-child(3) { --l: 160px; transform: translateX(58%) rotate(7deg) translateY(26px); }
+  .ac-hero__etiquette { display: none; }
+  .ac-bandeau ul { gap: 6px 22px; font-size: 18px; }
+  .ac-final { border-radius: 0; padding: 70px 20px; }
+}
+
+/* Generateur de logo, grand ecran : la galerie d'abord a gauche, puis tous
+   les reglages a droite (initiales, texte, police, couleurs, choix). */
+@media (min-width: 1000px) {
+  body.site .logo-mise-en-page { grid-template-areas: "apercu reglages1" "apercu reglages2"; grid-template-rows: auto 1fr; row-gap: 0; }
+  body.site .logo-mise-en-page > .logo-colonne-apercu { grid-area: apercu; }
+  body.site .logo-mise-en-page > .logo-colonne-reglages:first-child { grid-area: reglages1; }
+  body.site .logo-mise-en-page > .logo-colonne-reglages:last-child { grid-area: reglages2; }
+}

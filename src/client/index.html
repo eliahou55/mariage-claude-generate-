@@ -3,105 +3,230 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Créer votre invitation — Invitations de mariage juif</title>
-<meta name="description" content="Configurez le déroulé de votre mariage et créez votre invitation en ligne, dans 12 thèmes élégants.">
+<title>Invitations de mariage juif en ligne — henné, houppa, réception</title>
+<meta name="description" content="Créez le faire-part en ligne de votre mariage juif : henné, mairie, Chabbat 'Hatan, houppa et réception, 12 thèmes élégants, musique, logo, confirmation de présence.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
 <link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
 </head>
-<body>
-<div class="page">
-  <header class="entete">
-    <span class="entete__marque">בס״ד · Invitations</span>
-  </header>
+<body class="site">
+<div id="entete-site" data-base=""></div>
 
-  <main>
-    <section class="accueil__bloc accueil__hero">
-      <h1 class="titre">Créez l'invitation de votre mariage juif</h1>
-      <p class="chapo">
-        Henné, mairie, Chabbat 'Hatan, houppa, réception : composez le déroulé exact de votre
-        mariage, remplissez vos informations, et découvrez votre faire-part en ligne dans
-        12 thèmes élégants — prêt à partager à vos invités en quelques minutes.
-      </p>
-    </section>
+<main>
+  <!-- ================= Hero ================= -->
+  <section class="ac-hero">
+    <div class="site-largeur ac-hero__grille">
+      <div>
+        <p class="ac-surtitre">Faire-part de mariage juif en ligne</p>
+        <h1 class="ac-hero__titre">Votre mariage,<br><em>de la houppa</em><br>à la réception.</h1>
+        <p class="ac-hero__texte">
+          Henné, mairie, Chabbat 'Hatan, houppa, réception : composez le déroulé exact de votre
+          mariage, choisissez parmi 12 thèmes élégants et partagez une invitation qui réunit
+          tout — dates hébraïques, itinéraires et réponses de vos invités.
+        </p>
+        <div class="ac-hero__cta">
+          <a class="btn btn--principal" href="configurateur.html" id="lien-commencer">Créer mon invitation</a>
+          <button type="button" class="btn btn--secondaire" data-voir-exemple>Voir un exemple</button>
+        </div>
+        <p class="ac-reprise" id="reprise" hidden>
+          Vous avez déjà commencé ? <a href="formulaire.html">Reprendre ma saisie</a>
+        </p>
+        <ul class="ac-hero__atouts">
+          <li>Sans compte pour commencer</li>
+          <li>Dates hébraïques calculées</li>
+          <li>Prêt en quelques minutes</li>
+        </ul>
+      </div>
 
-    <section class="etapes" aria-label="Les 3 étapes">
-      <div class="etape-carte">
-        <span class="etape-carte__num">1</span>
-        <div>
-          <p class="etape-carte__titre">Vos événements</p>
-          <p class="etape-carte__texte">
-            Ajoutez, retirez et glissez dans l'ordre les événements de votre mariage — tout le
-            monde ne fait pas un henné ou un Chabbat 'Hatan, et la houppa n'est pas toujours
-            suivie de la réception au même endroit.
-          </p>
-        </div>
+      <div class="ac-hero__telephones" aria-label="Aperçus de trois thèmes">
+        <div class="iphone" data-theme="rose-poudre" data-nom="Rosé poudré" data-immediat></div>
+        <div class="iphone" data-theme="toile-de-jouy-bleu" data-nom="Toile de Jouy bleu" data-immediat></div>
+        <div class="iphone" data-theme="nuit-etoilee" data-nom="Nuit étoilée" data-immediat></div>
+        <div class="ac-hero__etiquette ac-hero__etiquette--1"><span>🎵</span><span><b>Musique de fond</b>au clic sur « Voir l'invitation »</span></div>
+        <div class="ac-hero__etiquette ac-hero__etiquette--2"><span>✉️</span><span><b>Réponses des invités</b>en un formulaire</span></div>
       </div>
-      <div class="etape-carte">
-        <span class="etape-carte__num">2</span>
-        <div>
-          <p class="etape-carte__titre">Vos informations</p>
-          <p class="etape-carte__texte">
-            Prénoms, noms hébreux, parents, grands-parents, dates, lieux et adresses de chaque
-            événement choisi à l'étape précédente, votre thème et votre couleur.
-          </p>
-        </div>
-      </div>
-      <div class="etape-carte">
-        <span class="etape-carte__num">3</span>
-        <div>
-          <p class="etape-carte__titre">Votre invitation</p>
-          <p class="etape-carte__texte">
-            Elle apparaît aussitôt avec vos vraies informations, dans les 12 thèmes — comparez,
-            choisissez, et partagez le lien.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <div class="accueil__cta">
-      <a class="btn btn--principal" href="configurateur.html" id="lien-commencer">Commencer</a>
-      <button type="button" class="btn btn--texte" id="bouton-exemple">Voir un exemple</button>
-      <!-- Version d'essai (branche generateur-logo) -->
-      <a class="btn btn--texte" href="logo.html">Créer mon logo (essai)</a>
     </div>
+  </section>
 
-    <p class="rassurance">
-      🔒 Pour cette première version, vos informations restent uniquement dans ce navigateur
-      (aucun serveur, aucun compte) : si vous changez d'appareil ou videz vos données de
-      navigation, il faudra les ressaisir.
-    </p>
-  </main>
-</div>
+  <!-- ================= Bandeau ================= -->
+  <div class="ac-bandeau">
+    <ul class="site-largeur">
+      <li>Henné<span>חינה</span></li>
+      <li>Mairie</li>
+      <li>Chabbat 'Hatan<span>שבת חתן</span></li>
+      <li>Houppa<span>חופה</span></li>
+      <li>Réception</li>
+    </ul>
+  </div>
+
+  <!-- ================= Comment ca marche ================= -->
+  <section class="ac-section" id="comment">
+    <div class="site-largeur">
+      <div class="ac-entete-section">
+        <p class="ac-surtitre">Comment ça marche</p>
+        <h2 class="ac-titre">Quatre étapes, aucune complication</h2>
+        <p class="ac-texte">Vous pouvez tout préparer sans créer de compte : il ne vous sera demandé qu'au moment de publier votre invitation.</p>
+      </div>
+      <div class="ac-etapes">
+        <article class="ac-etape">
+          <span class="ac-etape__num">01</span>
+          <h3>Vos événements</h3>
+          <p>Ajoutez, retirez et ordonnez henné, mairie, Chabbat 'Hatan, houppa et réception. Réunissez la houppa et la réception si elles ont lieu au même endroit.</p>
+        </article>
+        <article class="ac-etape">
+          <span class="ac-etape__num">02</span>
+          <h3>Vos informations</h3>
+          <p>Prénoms et noms hébreux, parents, grands-parents, dates, lieux et adresses. Les dates hébraïques se calculent toutes seules.</p>
+        </article>
+        <article class="ac-etape">
+          <span class="ac-etape__num">03</span>
+          <h3>Thème, musique, logo</h3>
+          <p>Comparez les 12 thèmes avec vos vraies informations, choisissez la musique et un monogramme à vos initiales.</p>
+        </article>
+        <article class="ac-etape ac-etape--bientot">
+          <span class="ac-etape__badge">Bientôt</span>
+          <span class="ac-etape__num">04</span>
+          <h3>Publiez et partagez</h3>
+          <p>Validez votre invitation, recevez son lien définitif à partager par WhatsApp ou e-mail, et suivez les réponses depuis votre espace.</p>
+        </article>
+      </div>
+      <div class="ac-etapes__cta"><a class="btn btn--principal" href="configurateur.html">Commencer maintenant</a></div>
+    </div>
+  </section>
+
+  <!-- ================= Les themes ================= -->
+  <section class="ac-section ac-themes" id="themes">
+    <div class="site-largeur ac-entete-section">
+      <p class="ac-surtitre">12 thèmes</p>
+      <h2 class="ac-titre">Une invitation à votre image</h2>
+      <p class="ac-texte">Chaque thème a ses couleurs, ses typographies et ses ornements. Touchez un téléphone pour découvrir le thème en grand.</p>
+    </div>
+    <div class="ac-themes__piste" id="piste-themes">
+      <a class="ac-theme" href="../apercu/toile-de-jouy-vert/index.html"><div class="iphone" data-theme="toile-de-jouy-vert" data-nom="Toile de Jouy vert"></div><span class="ac-theme__nom">Toile de Jouy vert</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/marbre-or/index.html"><div class="iphone" data-theme="marbre-or" data-nom="Marbre &amp; Or"></div><span class="ac-theme__nom">Marbre &amp; Or</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/botanique-sauge/index.html"><div class="iphone" data-theme="botanique-sauge" data-nom="Botanique sauge"></div><span class="ac-theme__nom">Botanique sauge</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/diner-chandelles/index.html"><div class="iphone" data-theme="diner-chandelles" data-nom="Dîner aux chandelles"></div><span class="ac-theme__nom">Dîner aux chandelles</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/mediterranee/index.html"><div class="iphone" data-theme="mediterranee" data-nom="Méditerranée"></div><span class="ac-theme__nom">Méditerranée</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/jardin-blanc/index.html"><div class="iphone" data-theme="jardin-blanc" data-nom="Jardin blanc"></div><span class="ac-theme__nom">Jardin blanc</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/esquisse-illustree/index.html"><div class="iphone" data-theme="esquisse-illustree" data-nom="Esquisse illustrée"></div><span class="ac-theme__nom">Esquisse illustrée</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/boheme-terracotta/index.html"><div class="iphone" data-theme="boheme-terracotta" data-nom="Bohème terracotta"></div><span class="ac-theme__nom">Bohème terracotta</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/epure-minimaliste/index.html"><div class="iphone" data-theme="epure-minimaliste" data-nom="Épuré minimaliste"></div><span class="ac-theme__nom">Épuré minimaliste</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/rose-poudre/index.html"><div class="iphone" data-theme="rose-poudre" data-nom="Rosé poudré"></div><span class="ac-theme__nom">Rosé poudré</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/nuit-etoilee/index.html"><div class="iphone" data-theme="nuit-etoilee" data-nom="Nuit étoilée"></div><span class="ac-theme__nom">Nuit étoilée</span><span class="ac-theme__voir">Voir le thème →</span></a>
+      <a class="ac-theme" href="../apercu/toile-de-jouy-bleu/index.html"><div class="iphone" data-theme="toile-de-jouy-bleu" data-nom="Toile de Jouy bleu"></div><span class="ac-theme__nom">Toile de Jouy bleu</span><span class="ac-theme__voir">Voir le thème →</span></a>
+    </div>
+    <div class="ac-themes__nav">
+      <button type="button" data-defiler="-1" aria-label="Thèmes précédents">‹</button>
+      <button type="button" data-defiler="1" aria-label="Thèmes suivants">›</button>
+    </div>
+  </section>
+
+  <!-- ================= Fonctionnalites ================= -->
+  <section class="ac-section" id="fonctions">
+    <div class="site-largeur">
+      <div class="ac-entete-section">
+        <p class="ac-surtitre">Tout est inclus</p>
+        <h2 class="ac-titre">Pensé pour un mariage juif</h2>
+      </div>
+      <div class="ac-fonctions">
+        <div class="ac-fonction"><div class="ac-fonction__icone">✡</div><h3>Hébreu soigné</h3><p>Prénoms hébreux face aux prénoms français, versets en arche, dates hébraïques calculées automatiquement.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">⇅</div><h3>Déroulé sur mesure</h3><p>Seulement les événements que vous faites, dans votre ordre, réunis ou séparés selon les lieux.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">✓</div><h3>Confirmation de présence</h3><p>Vos invités répondent pour chaque événement, avec le nombre de personnes et un mot pour vous.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">⌖</div><h3>Itinéraires</h3><p>Un bouton Waze et un bouton Itinéraire sous chaque adresse : plus personne ne se perd.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">♫</div><h3>Musique de fond</h3><p>Écoutez et choisissez parmi nos morceaux ; elle démarre quand vos invités ouvrent l'invitation.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">❦</div><h3>Votre monogramme</h3><p>Un logo à vos initiales, assorti au thème ou créé dans notre générateur : au trait ou en couleur.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">⏳</div><h3>Compte à rebours</h3><p>Jours, heures, minutes et secondes jusqu'à la houppa, dès la page d'accueil.</p></div>
+        <div class="ac-fonction"><div class="ac-fonction__icone">↗</div><h3>Un simple lien</h3><p>Une invitation qui s'ouvre sur tous les téléphones, à envoyer par WhatsApp, SMS ou e-mail.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Espace des maries (bientot) ================= -->
+  <section class="ac-section" style="padding-top:0">
+    <div class="site-largeur ac-espace">
+      <div>
+        <p class="ac-surtitre">Bientôt · Votre espace</p>
+        <h2 class="ac-titre">Suivez les réponses de vos invités</h2>
+        <p class="ac-texte">Une fois votre invitation publiée, retrouvez tout au même endroit, depuis votre téléphone ou votre ordinateur.</p>
+        <ul class="ac-espace__liste">
+          <li>Tableau de bord : présents, absents, nombre de personnes par événement</li>
+          <li>Fichier des réponses à télécharger pour le traiteur et le plan de table</li>
+          <li>Modifications de votre invitation à tout moment</li>
+        </ul>
+      </div>
+      <div class="ac-tableau" aria-hidden="true">
+        <div class="ac-tableau__haut"><b>Ilan &amp; Yaël</b><span>Tableau de bord</span></div>
+        <div class="ac-tableau__chiffres">
+          <div><strong>142</strong><small>présents</small></div>
+          <div><strong>18</strong><small>absents</small></div>
+          <div><strong>37</strong><small>en attente</small></div>
+        </div>
+        <div class="ac-tableau__ligne"><span>Famille Benhamou · 4 pers.</span><em>Houppa &amp; réception</em></div>
+        <div class="ac-tableau__ligne"><span>Sarah et David · 2 pers.</span><em>Henné</em></div>
+        <div class="ac-tableau__ligne"><span>Famille Attias · 3 pers.</span><em class="non">Absents</em></div>
+        <div class="ac-tableau__ligne"><span>Rachel Cohen · 1 pers.</span><em>Mairie</em></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="ac-section" id="faq" style="padding-top:20px">
+    <div class="site-largeur">
+      <div class="ac-entete-section">
+        <p class="ac-surtitre">Questions fréquentes</p>
+        <h2 class="ac-titre">Vous vous demandez peut-être…</h2>
+      </div>
+      <div class="ac-faq">
+        <details><summary>Faut-il créer un compte pour commencer ?</summary><p>Non. Vous pouvez composer votre déroulé, remplir vos informations et comparer tous les thèmes sans compte. Il ne sera demandé qu'au moment de publier votre invitation.</p></details>
+        <details><summary>Et si nous ne faisons pas de henné ou de Chabbat 'Hatan ?</summary><p>Chaque événement est facultatif, sauf la houppa. Vous choisissez ceux qui vous concernent et leur ordre ; vous pouvez aussi réunir deux événements qui ont lieu au même endroit.</p></details>
+        <details><summary>Les dates hébraïques sont-elles calculées automatiquement ?</summary><p>Oui : dès que vous indiquez une date, sa date hébraïque est proposée. Vous pouvez la corriger si besoin.</p></details>
+        <details><summary>Nos invités doivent-ils installer quelque chose ?</summary><p>Non. L'invitation est une simple page web qui s'ouvre sur tous les téléphones et ordinateurs, à partir du lien que vous leur envoyez.</p></details>
+        <details><summary>Où sont gardées nos informations pour l'instant ?</summary><p>Dans cette première version, uniquement dans votre navigateur (aucun serveur). Si vous changez d'appareil ou videz vos données de navigation, il faudra les ressaisir.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Appel final ================= -->
+  <section class="site-largeur" style="margin-bottom:20px">
+    <div class="ac-final">
+      <p class="ac-surtitre">Mazal tov</p>
+      <h2 class="ac-titre">Créons ensemble votre invitation</h2>
+      <p class="ac-texte">Quelques minutes suffisent. Vous verrez votre invitation dans les 12 thèmes avant de choisir.</p>
+      <a class="btn btn--principal" href="configurateur.html">Créer mon invitation</a>
+    </div>
+  </section>
+</main>
+
+<footer class="ac-pied">
+  <div class="site-largeur ac-pied__grille">
+    <span><span style="font-family:var(--font-he)">בס״ד</span> · Invitations de mariage juif</span>
+    <span><a href="#comment">Comment ça marche</a><a href="#themes">Thèmes</a><a href="#faq">Questions</a><a href="logo.html">Créer mon logo</a></span>
+  </div>
+</footer>
 
 <script src="../stockage.js"></script>
 <script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
+<script src="entete.js"></script>
+<script src="telephones.js"></script>
 <script>
-  // Si un brouillon existe deja, "Commencer" reprend la saisie en cours
-  // plutot que de forcer un redemarrage a zero.
-  (function () {
-    try {
-      if (window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) {
-        document.getElementById('lien-commencer').textContent = 'Reprendre ma saisie';
-      }
-    } catch (e) { /* ignore */ }
-  })();
+  // Brouillon deja commence : proposer de le reprendre.
+  try {
+    if (window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) document.getElementById('reprise').hidden = false;
+  } catch (e) { /* ignore */ }
 
-  // "Voir un exemple" : genere un mariage fictif complet (mairie, henne,
-  // houppa+reception, chabbat) et ouvre directement la galerie des 12
-  // themes avec ces donnees -- sans toucher au brouillon en cours du
-  // visiteur, qu'il pourra reprendre ensuite normalement.
-  document.getElementById('bouton-exemple').addEventListener('click', function () {
-    try {
-      var donnees = ClientInvitation.construireDonnees(ClientInvitation.exempleBrouillon());
-      donnees.exemple = true;   // la galerie ne recopie pas ce choix de musique dans le brouillon
-      window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(donnees));
-      window.location.href = '../apercu/index.html';
-    } catch (e) {
-      window.location.href = '../apercu/index.html';
-    }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-voir-exemple]'), function (b) {
+    b.addEventListener('click', SiteEntete.voirExemple);
+  });
+
+  // Fleches de la galerie des themes
+  var piste = document.getElementById('piste-themes');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-defiler]'), function (b) {
+    b.addEventListener('click', function () {
+      piste.scrollBy({ left: +b.getAttribute('data-defiler') * Math.min(piste.clientWidth * .8, 760), behavior: 'smooth' });
+    });
   });
 </script>
 </body>

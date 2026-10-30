@@ -12,3 +12,5 @@ var CLE_STOCKAGE_BROUILLON = 'invitation-client:brouillon';
 var CLE_STOCKAGE_DONNEES = 'invitation-client:donnees';
 // Logo choisi dans le generateur (src/client/logo.html) : { choisi: {...} }.
 var CLE_STOCKAGE_LOGO = 'invitation-client:logo';
+// Compte FACTICE (connexion / inscription de demonstration, src/client/entete.js).
+var CLE_STOCKAGE_COMPTE = 'invitation-client:compte';

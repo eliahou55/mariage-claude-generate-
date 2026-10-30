@@ -9,10 +9,12 @@
 <!-- Polices des 10 logos + celles de l'espace client -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Great+Vibes&family=Cinzel:wght@400;500;600&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:wght@200;300&family=Italiana&family=Pinyon+Script&family=Libre+Baskerville&family=Marcellus&family=Parisienne&family=Allura&display=swap">
 <link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
 <link rel="stylesheet" href="logo.css">
 </head>
-<body>
-<div class="page">
+<body class="site">
+<div id="entete-site" data-base=""></div>
+<div class="page page--large">
   <header class="entete">
     <a class="entete__marque" href="index.html">בס״ד · Invitations</a>
     <span class="entete__etape">Version d'essai</span>
@@ -30,6 +32,8 @@
       les couleurs de celui qui vous plaît. En haut, passez des logos au trait aux logos colorés.
     </p>
 
+    <div class="logo-mise-en-page">
+    <div class="logo-colonne-reglages">
     <section class="logo-lettres" aria-label="Vos initiales">
       <div class="champ">
         <label for="lettre-1">Initiale du marié</label>
@@ -45,7 +49,9 @@
       <label for="texte-logo">Texte sous le logo (facultatif)</label>
       <input id="texte-logo" type="text" maxlength="40" placeholder="Ex. Ilan &amp; Yaël" autocomplete="off">
     </div>
+    </div>
 
+    <div class="logo-colonne-apercu">
     <section class="logo-galerie" aria-label="Les 10 styles de logo" aria-roledescription="carrousel">
       <div class="logo-galerie__piste" id="piste" tabindex="0"></div>
       <button type="button" class="logo-galerie__fleche logo-galerie__fleche--prec" id="prec" aria-label="Logo précédent">&#8249;</button>
@@ -53,6 +59,9 @@
     </section>
     <p class="logo-galerie__nom" id="nom-style" aria-live="polite"></p>
     <div class="logo-galerie__points" id="points" role="tablist" aria-label="Choisir un style"></div>
+    </div>
+
+    <div class="logo-colonne-reglages">
 
     <section class="logo-polices" aria-labelledby="titre-polices">
       <h2 class="soustitre" id="titre-polices">Police des initiales</h2>
@@ -70,12 +79,15 @@
       <button type="button" class="btn btn--principal" id="choisir">Choisir ce logo</button>
     </div>
     <p class="note logo-confirmation" id="confirmation" hidden></p>
+    </div>
+    </div>
   </main>
 </div>
 
 <script src="../stockage.js"></script>
 <script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
+<script src="entete.js"></script>
 <script src="logo-styles.js"></script>
 <script src="logo.js"></script>
 </body>

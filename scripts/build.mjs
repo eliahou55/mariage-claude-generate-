@@ -563,13 +563,12 @@ function vignette(t) {
 
 function pageIndexApercus(donnees) {
   const cartes = THEMES.map((t) => {
-    const encre = accentLisible(donnees.site.couleurHex, t.surface, 4.5);
     const actif = t.slug === donnees.site.themeSlug;
-    return `  <a class="carte${actif ? ' carte--actif' : ''}" href="${t.slug}/index.html">
-    <span class="carte__swatch" style="${vignette(t)}" aria-hidden="true"></span>
-    <span class="carte__texte"><strong>${echappe(t.nom)}</strong></span>
-    ${actif ? '<span class="carte__badge">Choisi dans l\u2019Excel</span>' : ''}
-  </a>`;
+    return `    <a class="theme-carte${actif ? ' theme-carte--actif' : ''}" href="${t.slug}/index.html">
+      <span class="theme-carte__vignette" style="${vignette(t)}" aria-hidden="true"></span>
+      <span class="theme-carte__pied"><strong>${echappe(t.nom)}</strong><span>Voir ce thème →</span></span>
+      ${actif ? '<span class="theme-carte__badge">Choisi dans l\u2019Excel</span>' : ''}
+    </a>`;
   }).join('\n');
 
   const { marie, mariee } = donnees.couple;
@@ -578,49 +577,73 @@ function pageIndexApercus(donnees) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aperçus — ${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</title>
+<title>Thème et musique — ${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="../client/client.css">
+<link rel="stylesheet" href="../client/site.css">
 <link rel="stylesheet" href="../client/lecteur-musique.css">
 <style>
-*,*::before,*::after{box-sizing:border-box}
-body{margin:0;padding:28px 18px 56px;background:#14161a;color:#efeae1;font:400 16px/1.5 Jost,system-ui,sans-serif;-webkit-text-size-adjust:100%}
-.wrap{max-width:720px;margin:0 auto}
-h1{font:600 30px/1.2 "Cormorant Garamond",Georgia,serif;margin:0 0 6px;letter-spacing:.01em}
-p.sous{margin:0 0 26px;color:#9fa6b2;font-size:14px}
-.grille{display:grid;gap:12px;grid-template-columns:1fr}
-@media (min-width:560px){.grille{grid-template-columns:1fr 1fr}}
-.carte{display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:72px;border:1px solid #2b3040;border-radius:14px;background:#1b1f27;color:inherit;text-decoration:none;transition:border-color .2s,transform .2s;position:relative}
-.carte:hover,.carte:focus-visible{border-color:#6b738c;transform:translateY(-2px)}
-.carte--actif{border-color:#c9a44c}
-.carte__swatch{width:64px;height:64px;border-radius:12px;flex:none;border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
-.carte__texte{display:flex;flex-direction:column;gap:2px;min-width:0}
-.carte__texte strong{font-weight:500;font-size:15px}
-.carte__badge{position:absolute;top:-9px;right:12px;background:#c9a44c;color:#1a1a1a;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;font-weight:500}
-footer{margin-top:30px;color:#767d8c;font-size:13px;line-height:1.7}
-code{background:#242935;padding:2px 6px;border-radius:5px;font-size:12px}
-.musique{margin:0 0 28px}
-h2{font:600 20px/1.2 "Cormorant Garamond",Georgia,serif;margin:0 0 4px;letter-spacing:.01em}
-.musique>p{margin:0 0 12px;color:#9fa6b2;font-size:13px}
+/* Etape 3 du parcours : galerie des themes + musique (et logo). */
+.choix { display: grid; grid-template-columns: 1fr; gap: 30px; }
+@media (min-width: 1000px) { .choix { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; align-items: start; } .choix__cote { position: sticky; top: 150px; order: 2; } }
+.choix__cote { display: flex; flex-direction: column; gap: 18px; }
+.encart { padding: 20px; border: 1px solid var(--rule); border-radius: 18px; background: var(--bg); }
+.encart h2 { margin: 0 0 4px; font-family: var(--font-titre); font-weight: 600; font-size: 21px; }
+.encart > p { margin: 0 0 14px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.encart .lecteur { --lecteur-fond: var(--surface); --lecteur-bord: var(--rule); --lecteur-texte: var(--ink); --lecteur-doux: var(--muted); --lecteur-accent: var(--accent); --lecteur-sur-accent: #2A2008; --lecteur-piste: rgba(42,39,34,.14); }
+.encart--suite { background: transparent; border-style: dashed; }
+.grille-themes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (min-width: 700px) { .grille-themes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+.theme-carte { position: relative; display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; background: var(--surface); color: inherit; text-decoration: none; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.theme-carte:hover, .theme-carte:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(42,39,34,.12); border-color: var(--accent); }
+.theme-carte__vignette { display: block; aspect-ratio: 4 / 3; }
+.theme-carte__pied { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 14px; }
+.theme-carte__pied strong { font-family: var(--font-titre); font-weight: 600; font-size: 19px; line-height: 1.2; }
+.theme-carte__pied span { font-size: 12.5px; color: var(--accent-ink); }
+.theme-carte--actif { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-carte__badge { position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: #2A2008; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+.pied-apercus { margin-top: 28px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.pied-apercus code { background: var(--bg); padding: 2px 6px; border-radius: 5px; font-size: 12px; }
 </style>
 </head>
-<body>
-<div class="wrap">
-<h1>${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</h1>
-<p class="sous">Les ${THEMES.length} thèmes, avec les données réelles de l’Excel et la couleur « ${echappe(donnees.site.couleurNom)} ».</p>
-<section class="musique" id="choix-musique" hidden>
-<h2>Musique de fond</h2>
-<p>Écoutez et choisissez la musique : celle affichée ici jouera dans le thème que vous ouvrirez ensuite.</p>
-<div id="lecteur-musique"></div>
-</section>
-<div class="grille">
+<body class="site">
+<div id="entete-site" data-base="../client/" data-etape="3"></div>
+<div class="page page--large">
+<main>
+<h1 class="titre">${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</h1>
+<p class="chapo sous">Les ${THEMES.length} thèmes, avec les données réelles de l’Excel et la couleur « ${echappe(donnees.site.couleurNom)} ».</p>
+<div class="choix">
+  <aside class="choix__cote">
+    <section class="encart" id="choix-musique" hidden>
+      <h2>Musique de fond</h2>
+      <p>Écoutez et choisissez : la musique affichée jouera dans le thème que vous ouvrirez.</p>
+      <div id="lecteur-musique"></div>
+    </section>
+    <section class="encart" id="choix-logo" hidden>
+      <h2>Votre logo</h2>
+      <p id="logo-etat">Vos initiales en monogramme, assorti à chaque thème.</p>
+      <a class="btn btn--secondaire btn--petit" href="../client/logo.html">Personnaliser mon logo</a>
+    </section>
+    <section class="encart encart--suite" id="choix-suite" hidden>
+      <h2>Et ensuite ?</h2>
+      <p>Bientôt : validez votre thème, réglez votre invitation et recevez son lien à partager, puis suivez les réponses depuis votre espace.</p>
+      <a class="btn btn--texte" href="../client/formulaire.html">← Modifier mes informations</a>
+    </section>
+  </aside>
+  <div>
+    <div class="grille-themes">
 ${cartes}
+    </div>
+    <p class="pied-apercus" id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</p>
+  </div>
 </div>
-<footer id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</footer>
+</main>
 </div>
 <script src="../stockage.js"></script>
 <script src="../client/client.js"></script>
+<script src="../client/entete.js"></script>
 <script src="../client/lecteur-musique.js"></script>
 <script>
 /* Si une invitation a ete configuree dans ce navigateur (espace client),
@@ -637,16 +660,20 @@ ${cartes}
     // retire tout badge/surbrillance "actif" (qui ne refleterait que la
     // valeur par defaut interne) -- chaque carte ci-dessous est un choix
     // ouvert, a comparer avec les vraies informations du client.
-    document.querySelectorAll('.carte--actif').forEach(function (c) {
-      c.classList.remove('carte--actif');
-      var b = c.querySelector('.carte__badge');
+    document.querySelectorAll('.theme-carte--actif').forEach(function (c) {
+      c.classList.remove('theme-carte--actif');
+      var b = c.querySelector('.theme-carte__badge');
       if (b) b.remove();
     });
 
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Choisissez votre musique, puis comparez les 12 thèmes avec vos vraies informations et choisissez celui qui vous plaît.';
+    if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, choisissez votre musique, puis ouvrez le thème qui vous plaît.';
+    document.getElementById('choix-logo').hidden = false;
+    document.getElementById('choix-suite').hidden = false;
+    if (D.site.logo === 'aucun') document.getElementById('logo-etat').textContent = 'Vous avez choisi de ne pas afficher de logo.';
+    else if (D.site.logo && D.site.logo.style) document.getElementById('logo-etat').textContent = 'Votre logo personnalisé s’affichera sur tous les thèmes.';
 
     // Lecteur de musique (avant les themes) : la piste affichee devient
     // celle de l'invitation (D.site.musique), donc celle qui jouera dans
@@ -677,9 +704,8 @@ ${cartes}
     }
     var pied = document.getElementById('pied-apercus');
     if (pied) {
-      pied.innerHTML = 'Vous pouvez revenir modifier vos informations depuis '
-        + '<a href="../client/formulaire.html" style="color:#c9a44c">le formulaire</a>, ou '
-        + '<a href="../client/configurateur.html" style="color:#c9a44c">l’ordre de vos événements</a>.';
+      pied.innerHTML = 'Vous pouvez revenir modifier <a href="../client/formulaire.html">vos informations</a> '
+        + 'ou <a href="../client/configurateur.html">l’ordre de vos événements</a> à tout moment.';
     }
   } catch (e) { /* ignore */ }
 })();
