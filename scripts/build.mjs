@@ -587,17 +587,18 @@ function pageIndexApercus(donnees) {
 <link rel="stylesheet" href="../client/lecteur-musique.css">
 <style>
 /* Etape 3 du parcours : galerie des themes + musique (et logo). */
-.choix { display: grid; grid-template-columns: 1fr; gap: 30px; }
+.choix { display: grid; grid-template-columns: minmax(0, 1fr); gap: 30px; }
+.choix > * { min-width: 0; }   /* un titre de musique long ne doit pas elargir la colonne */
 @media (min-width: 1000px) { .choix { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; align-items: start; } .choix__cote { position: sticky; top: 150px; order: 2; } }
 .choix__cote { display: flex; flex-direction: column; gap: 18px; }
-.encart { padding: 20px; border: 1px solid var(--rule); border-radius: 18px; background: var(--bg); }
+.encart { padding: 22px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg); min-width: 0; }
 .encart h2 { margin: 0 0 4px; font-family: var(--font-titre); font-weight: 600; font-size: 21px; }
 .encart > p { margin: 0 0 14px; font-size: 13.5px; color: var(--muted); line-height: 1.55; }
 .encart .lecteur { --lecteur-fond: var(--surface); --lecteur-bord: var(--rule); --lecteur-texte: var(--ink); --lecteur-doux: var(--muted); --lecteur-accent: var(--accent); --lecteur-sur-accent: #2A2008; --lecteur-piste: rgba(42,39,34,.14); }
 .encart--suite { background: transparent; border-style: dashed; }
 .grille-themes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 @media (min-width: 700px) { .grille-themes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
-.theme-carte { position: relative; display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 16px; overflow: hidden; background: var(--surface); color: inherit; text-decoration: none; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.theme-carte { position: relative; display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; background: var(--surface); color: inherit; text-decoration: none; transition: transform .2s, box-shadow .2s, border-color .2s; }
 .theme-carte:hover, .theme-carte:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(42,39,34,.12); border-color: var(--accent); }
 .theme-carte__vignette { display: block; aspect-ratio: 4 / 3; }
 .theme-carte__pied { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 14px; }
