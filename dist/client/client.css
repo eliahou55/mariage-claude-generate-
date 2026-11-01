@@ -639,3 +639,11 @@ p.chapo { margin: 0 0 28px; color: var(--muted); font-size: 15px; line-height: 1
 .logo-choix__apercu { width: 92px; flex: none; }
 .logo-choix__apercu:empty { display: none; }
 .logo-choix__apercu svg { width: 100%; height: auto; display: block; }
+
+/* Telephone : pas de zoom au double-tapotement (le zoom a deux doigts reste
+   possible), et pas de zoom automatique de Safari sur les champs de saisie
+   (il zoome sur tout champ dont le texte fait moins de 16 px). */
+html, body { touch-action: manipulation; }
+@media (max-width: 900px) {
+  input, select, textarea { font-size: 16px !important; }
+}

@@ -36,6 +36,40 @@
 
   if (!D) { montrer('etat-vide'); return; }
   if (D.exemple) { montrer('etat-exemple'); return; }
+
+  /* --- Icone de l'invitation (favicon) : le logo par defaut, ou une image
+   *     televersee. Calculee avant tout enregistrement. --- */
+  var apercuIcone = document.getElementById('icone-apercu');
+  function memoriserDonnees() { try { window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D)); } catch (e) { /* ignore */ } }
+  function majIcone() {
+    var image = brouillon.site && brouillon.site.faviconImage;
+    document.getElementById('icone-logo').hidden = !image;
+    document.getElementById('icone-source').textContent = image
+      ? 'Votre image, affichée dans l’onglet et sur l’écran d’accueil du téléphone de vos invités.'
+      : 'Votre logo, affiché dans l’onglet et sur l’écran d’accueil du téléphone de vos invités.';
+    var calcul = image ? Promise.resolve(image) : FaviconInvitation.depuisLogo(D);
+    return calcul.then(function (url) {
+      D.site.favicon = url;
+      apercuIcone.src = url;
+      memoriserDonnees();
+    }).catch(function () { D.site.favicon = image || null; });
+  }
+  var iconePrete = typeof FaviconInvitation !== 'undefined' ? majIcone() : Promise.resolve();
+  document.getElementById('icone-fichier').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    this.value = '';
+    if (!f) return;
+    iconePrete = FaviconInvitation.depuisFichier(f).then(function (url) {
+      brouillon.site.faviconImage = url;
+      ClientInvitation.ecrireBrouillon(brouillon);
+      return majIcone();
+    }, function (e) { erreur(e.message); });
+  });
+  document.getElementById('icone-logo').addEventListener('click', function () {
+    delete brouillon.site.faviconImage;
+    ClientInvitation.ecrireBrouillon(brouillon);
+    iconePrete = majIcone();
+  });
   if (!FB) { montrer('etat-compte'); erreur('Connexion indisponible pour le moment. Réessayez dans un instant.'); return; }
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-ouvrir]'), function (b) {
@@ -49,7 +83,7 @@
    *  compte (autre compte connecte), cree une nouvelle invitation. */
   function enregistrer() {
     var id = idLocal();
-    return FB.enregistrer(id, brouillon, D).catch(function (e) {
+    return iconePrete.then(function () { return FB.enregistrer(id, brouillon, D); }).catch(function (e) {
       if (id) return FB.enregistrer(null, brouillon, D);
       throw e;
     }).then(function (nouvelId) { memoriserId(nouvelId); return nouvelId; });

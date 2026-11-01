@@ -238,9 +238,15 @@
       var brut = window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
       if (brut) { var D = JSON.parse(brut); if (!D.exemple) { D.site.logo = etat.choisi; window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D)); } }
     } catch (err) { /* ignore */ }
-    var retour = /[?&]retour=formulaire/.test(window.location.search);
+    var retour = (/[?&]retour=(formulaire|publication)/.exec(window.location.search) || [])[1];
+    var liens = {
+      formulaire: '<a href="formulaire.html">Revenir au formulaire</a>',
+      publication: '<a href="publication.html">Revenir à la publication</a>',
+    };
     confirmation.innerHTML = '« ' + style.nom + ' » est enregistré comme votre logo. ' +
-      (retour ? '<a href="formulaire.html">Revenir au formulaire</a>' : '<a href="../apercu/index.html">Voir mon invitation</a>');
+      (liens[retour] || '<a href="../apercu/index.html">Voir mon invitation</a>');
+    // Depuis la publication : retour automatique, l'icone suivra le nouveau logo.
+    if (retour === 'publication') setTimeout(function () { window.location.href = 'publication.html'; }, 1200);
     confirmation.hidden = false;
   });
 

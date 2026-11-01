@@ -49,6 +49,12 @@
     if (D.site && D.site.musique === 'perso') D.site.musique = 'client/musique/bereshit-olam.mp3';
     var noms = [D.couple.marie.prenom, D.couple.mariee.prenom].join(' & ');
     document.title = noms + ' — Invitation';
+    // Icone de l'invitation (onglet + ecran d'accueil du telephone).
+    if (D.site && D.site.favicon && String(D.site.favicon).indexOf('data:image/') === 0) {
+      ['icon', 'apple-touch-icon'].forEach(function (rel) {
+        var l = document.createElement('link'); l.rel = rel; l.href = D.site.favicon; document.head.appendChild(l);
+      });
+    }
 
     window.SASSON_PUBLIC = true;
     window.SassonReponse = function (reponse) { return SassonFB.envoyerReponse(inv.id, reponse); };

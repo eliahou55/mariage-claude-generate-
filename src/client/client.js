@@ -511,6 +511,9 @@ var ClientInvitation = (function () {
         // Logo : 'aucun', le logo choisi dans le generateur ('perso'), ou
         // null = logo automatique du theme (initiales des maries).
         logo: logoDuBrouillon(brouillon),
+        // Icone de l'invitation : image televersee, sinon (null) le logo,
+        // converti en icone a l'etape Publication (favicon.js).
+        favicon: brouillon.site.faviconImage || null,
         image: null,       // pas d'upload d'image en v1 (voir notes projet)
       },
       compteARebours: {

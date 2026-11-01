@@ -985,3 +985,11 @@ body:has(.apercu-bar) .ecran--accueil { padding-top: 54px; }
 @media (max-width: 559px) {
   body .app { border-top-width: 0; border-bottom-width: 0; }
 }
+
+/* Telephone : pas de zoom au double-tapotement (le zoom a deux doigts reste
+   possible), et pas de zoom automatique de Safari sur les champs de saisie
+   (il zoome sur tout champ dont le texte fait moins de 16 px). */
+html, body { touch-action: manipulation; }
+@media (max-width: 900px) {
+  input, select, textarea { font-size: 16px !important; }
+}

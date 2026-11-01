@@ -46,17 +46,32 @@
    * Chips "+ ajouter"
    * ---------------------------------------------------------------- */
 
+  /* Ordre naturel d'un mariage : un evenement ajoute prend sa place dans
+   * cet ordre (le client peut ensuite le deplacer en glissant). */
+  var ORDRE = ['mairie', 'henne', 'houppa', 'reception', 'chabbat'];
+  function rang(groupe) {
+    return Math.min.apply(null, groupe.map(function (c) { var i = ORDRE.indexOf(c); return i < 0 ? 99 : i; }));
+  }
+  function inserer(cle) {
+    var r = ORDRE.indexOf(cle);
+    var pos = brouillon.groupes.length;
+    for (var i = 0; i < brouillon.groupes.length; i++) {
+      if (rang(brouillon.groupes[i]) > r) { pos = i; break; }
+    }
+    brouillon.groupes.splice(pos, 0, [cle]);
+  }
+
   function rendreChips() {
     var presentes = ClientInvitation.toutesLesCles(brouillon);
     chipsEl.innerHTML = '';
-    ClientInvitation.CATALOGUE.forEach(function (def) {
+    ClientInvitation.CATALOGUE.slice().sort(function (a, b) { return ORDRE.indexOf(a.cle) - ORDRE.indexOf(b.cle); }).forEach(function (def) {
       if (presentes.indexOf(def.cle) !== -1) return;
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'chip';
       btn.innerHTML = '<span class="chip__plus">+</span> ' + def.titre;
       btn.addEventListener('click', function () {
-        brouillon.groupes.push([def.cle]);
+        inserer(def.cle);
         sauvegarder();
         rendreTout();
       });

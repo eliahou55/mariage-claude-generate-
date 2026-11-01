@@ -29,6 +29,20 @@
           <div><dt>Musique</dt><dd id="recap-musique">—</dd></div>
         </dl>
         <p class="recap__liens"><a href="../apercu/index.html">Changer de thème</a> · <a href="formulaire.html">Modifier mes informations</a></p>
+
+        <div class="icone" aria-labelledby="icone-titre">
+          <img class="icone__apercu" id="icone-apercu" alt="Icône de votre invitation" width="64" height="64">
+          <div class="icone__texte">
+            <p class="icone__titre" id="icone-titre">Icône de l'invitation</p>
+            <p class="note" id="icone-source">Votre logo, affiché dans l'onglet et sur l'écran d'accueil du téléphone de vos invités.</p>
+            <div class="icone__boutons">
+              <label class="icone__bouton" for="icone-fichier">Téléverser une image</label>
+              <input type="file" id="icone-fichier" accept="image/*" hidden>
+              <button type="button" class="icone__bouton" id="icone-logo" hidden>Utiliser mon logo</button>
+              <a class="icone__bouton" href="logo.html?retour=publication">Modifier mon logo</a>
+            </div>
+          </div>
+        </div>
         <div class="recap__prix"><span>Paiement unique · tout compris</span><strong>19,99 €</strong></div>
         <ul class="recap__inclus">
           <li>Votre lien à partager, à vie</li>
@@ -92,6 +106,8 @@
 <script src="../sasson-firebase.js"></script>
 <script src="calendrier-hebreu.js"></script>
 <script src="client.js"></script>
+<script src="logo-styles.js"></script>
+<script src="favicon.js"></script>
 <script src="entete.js"></script>
 <script src="publication.js"></script>
 </body>
