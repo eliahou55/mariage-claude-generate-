@@ -875,6 +875,10 @@ async function main() {
   await fs.copyFile(path.join(PROJECT, 'src', 'stockage.js'), path.join(DIST, 'stockage.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'musique-perso.js'), path.join(DIST, 'musique-perso.js'));
   await fs.copyFile(path.join(PROJECT, 'src', 'sasson-firebase.js'), path.join(DIST, 'sasson-firebase.js'));
+  // Regles Netlify lues a coup sur depuis le dossier publie (en plus de
+  // netlify.toml) : /i/<adresse> -> page de l'invitation publiee.
+  await fs.writeFile(path.join(DIST, '_redirects'), '/i/*  /i/index.html  200
+', 'utf8');
   await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
 
   // data/invitation.json

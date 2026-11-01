@@ -4,7 +4,7 @@
  * Appelee au retour du paiement (espace client) : verifie aupres de Stripe
  * que la session est payee, puis publie l'invitation (adresse publique).
  */
-import { getStripe, utilisateurDepuis, publier, reponse } from '../lib/commun.js';
+import { getStripe, utilisateurDepuis, publier, reponse, messageErreur } from '../lib/commun.js';
 
 export const handler = async (event) => {
   try {
@@ -20,6 +20,6 @@ export const handler = async (event) => {
     return reponse(200, resultat);
   } catch (e) {
     console.error(e);
-    return reponse(e.statut || 500, { erreur: e.statut ? e.message : 'Vérification du paiement impossible.' });
+    return reponse(e.statut || 500, { erreur: messageErreur(e, 'Vérification du paiement impossible.') });
   }
 };

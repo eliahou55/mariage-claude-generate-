@@ -15,28 +15,49 @@ import { getAuth } from 'firebase-admin/auth';
 const PROJET = 'e-faire-part';
 const PRIX_CENTIMES = 1999;
 
+/** Erreur de configuration : message affiche tel quel (aucun secret dedans). */
+function configErreur(message) { return Object.assign(new Error(message), { config: true }); }
+
+/** Message renvoye au navigateur pour une erreur. */
+function messageErreur(e, defaut) {
+  if (e && e.statut) return e.message;
+  if (e && e.config) return 'Configuration serveur : ' + e.message;
+  if (e && e.type === 'StripeAuthenticationError') return 'Configuration serveur : STRIPE_SECRET_KEY invalide.';
+  return defaut;
+}
+
 let stripe = null;
 function getStripe() {
   if (!stripe) {
-    if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY manquante (variables Netlify).');
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    if (!process.env.STRIPE_SECRET_KEY) throw configErreur('STRIPE_SECRET_KEY absente des variables Netlify (redéployer après l\'avoir ajoutée).');
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY.trim());
   }
   return stripe;
+}
+
+/** Cle privee telle que collee dans Netlify : guillemets retires, "\n"
+ *  litteraux remis en vrais retours a la ligne. */
+function clePrivee() {
+  let cle = process.env.FIREBASE_PRIVATE_KEY.trim();
+  if (cle.startsWith('"') && cle.endsWith('"')) cle = cle.slice(1, -1);
+  cle = cle.replace(/\\n/g, '\n');
+  if (!/-----BEGIN PRIVATE KEY-----[\s\S]+-----END PRIVATE KEY-----/.test(cle)) {
+    throw configErreur('FIREBASE_PRIVATE_KEY mal copiée : elle doit commencer par -----BEGIN PRIVATE KEY----- et finir par -----END PRIVATE KEY-----.');
+  }
+  return cle;
 }
 
 function getDb() {
   if (!getApps().length) {
     if (!process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) {
-      throw new Error('FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY manquantes (variables Netlify).');
+      throw configErreur('FIREBASE_CLIENT_EMAIL ou FIREBASE_PRIVATE_KEY absente des variables Netlify (redéployer après les avoir ajoutées).');
     }
-    initializeApp({
-      credential: cert({
-        projectId: PROJET,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        // Netlify garde les retours a la ligne sous forme de "\n" litteraux.
-        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      }),
-    });
+    const cle = clePrivee();
+    try {
+      initializeApp({ credential: cert({ projectId: PROJET, clientEmail: process.env.FIREBASE_CLIENT_EMAIL.trim(), privateKey: cle }) });
+    } catch (e) {
+      throw configErreur('compte de service Firebase refusé (' + String(e.message).split('\n')[0] + ').');
+    }
   }
   return getFirestore();
 }
@@ -91,4 +112,4 @@ function reponse(statut, corps) {
   return { statusCode: statut, headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(corps) };
 }
 
-export { getStripe, getDb, utilisateurDepuis, publier, reponse, PRIX_CENTIMES };
+export { getStripe, getDb, utilisateurDepuis, publier, reponse, messageErreur, PRIX_CENTIMES };

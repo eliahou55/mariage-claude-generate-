@@ -76,10 +76,17 @@
         });
       });
     }
+    // Session demandee AVANT d'afficher le formulaire Stripe : en cas
+    // d'erreur, notre message s'affiche (et non le "Something went wrong"
+    // generique de Stripe).
     var creer = stripe.createEmbeddedCheckoutPage ? 'createEmbeddedCheckoutPage' : 'initEmbeddedCheckout';
-    stripe[creer]({ fetchClientSecret: secret })
+    secret()
+      .then(function (cs) { return stripe[creer]({ fetchClientSecret: function () { return Promise.resolve(cs); } }); })
       .then(function (checkout) { checkout.mount('#paiement'); })
-      .catch(function (e) { paiementMonte = false; erreur(e.message || 'Paiement indisponible pour le moment.'); });
+      .catch(function (e) {
+        paiementMonte = false;
+        erreur((e && e.message) || 'Paiement indisponible pour le moment.');
+      });
   }
 
   SiteEntete.surCompte(function (compte) {

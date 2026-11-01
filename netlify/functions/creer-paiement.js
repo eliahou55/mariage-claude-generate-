@@ -4,7 +4,7 @@
  * -> { clientSecret } pour Stripe Embedded Checkout (paiement dans la page :
  *    Apple Pay / Google Pay / carte, selon l'appareil).
  */
-import { getStripe, getDb, utilisateurDepuis, reponse, PRIX_CENTIMES } from '../lib/commun.js';
+import { getStripe, getDb, utilisateurDepuis, reponse, PRIX_CENTIMES, messageErreur } from '../lib/commun.js';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return reponse(405, { erreur: 'Méthode non autorisée.' });
@@ -48,6 +48,6 @@ export const handler = async (event) => {
     return reponse(200, { clientSecret: session.client_secret });
   } catch (e) {
     console.error(e);
-    return reponse(e.statut || 500, { erreur: e.statut ? e.message : 'Paiement indisponible pour le moment.' });
+    return reponse(e.statut || 500, { erreur: messageErreur(e, 'Paiement indisponible pour le moment.') });
   }
 };

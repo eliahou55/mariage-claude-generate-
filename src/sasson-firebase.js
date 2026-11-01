@@ -67,12 +67,21 @@ var SassonFB = (function () {
     });
   }
   function connecter(email, mdp) { return auth.signInWithEmailAndPassword(email, mdp).then(function (r) { return r.user; }); }
+  /** Connexion Google par fenetre surgissante, sur ordinateur comme sur
+   *  mobile : la redirection echoue quand le site et Firebase ne sont pas
+   *  sur le meme domaine (Safari / Chrome bloquent le stockage tiers) et
+   *  ramene l'utilisateur deconnecte. Repli sur la redirection seulement
+   *  si la fenetre est bloquee. A appeler directement dans le clic. */
   function google() {
     var p = new firebase.auth.GoogleAuthProvider();
-    // Sur mobile, la fenetre surgissante est souvent bloquee : redirection.
-    if (/iPhone|iPad|Android/i.test(navigator.userAgent)) return auth.signInWithRedirect(p);
-    return auth.signInWithPopup(p).then(function (r) { return r.user; });
+    p.setCustomParameters({ prompt: 'select_account' });
+    return auth.signInWithPopup(p).then(function (r) { return r.user; }, function (e) {
+      if (e && e.code === 'auth/popup-blocked') return auth.signInWithRedirect(p);
+      throw e;
+    });
   }
+  // Retour d'une eventuelle redirection : remonte l'erreur dans la console.
+  auth.getRedirectResult().catch(function (e) { if (window.console) console.warn('Connexion Google :', e.code || e); });
   function motDePasseOublie(email) { return auth.sendPasswordResetEmail(email); }
   function deconnecter() { return auth.signOut(); }
   function jeton() { return auth.currentUser ? auth.currentUser.getIdToken() : Promise.resolve(null); }
