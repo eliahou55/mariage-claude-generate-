@@ -877,7 +877,13 @@ async function main() {
   await fs.copyFile(path.join(PROJECT, 'src', 'sasson-firebase.js'), path.join(DIST, 'sasson-firebase.js'));
   // Regles Netlify lues a coup sur depuis le dossier publie (en plus de
   // netlify.toml) : /i/<adresse> -> page de l'invitation publiee.
-  await fs.writeFile(path.join(DIST, '_redirects'), '/i/*  /i/index.html  200\n', 'utf8');
+  // 1. L'ancienne adresse Netlify renvoie vers le domaine (301, forcee).
+  // 2. /i/<adresse> -> page de l'invitation publiee.
+  await fs.writeFile(path.join(DIST, '_redirects'), [
+    'https://sasson.netlify.app/*  https://sasson-invit.fr/:splat  301!',
+    '/i/*  /i/index.html  200',
+    '',
+  ].join('\n'), 'utf8');
   await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
 
   // data/invitation.json

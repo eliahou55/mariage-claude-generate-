@@ -38,7 +38,6 @@
     fixe('f-gparents-mariee-maman', brouillon.familles.grandsParentsMarieeMaman);
     fixe('f-gparents-mariee-papa', brouillon.familles.grandsParentsMarieePapa);
     fixe('f-memoire', brouillon.familles.memoire);
-    fixe('f-lien', brouillon.site.lien);
   }
 
   /* --- Suggestions d'ecriture hebraique du prenom (cliquer pour inserer,
@@ -343,7 +342,6 @@
 
     brouillon.site.verset = selectVerset.value === '__autre__' ? autreVersetInput.value.trim() : selectVerset.value;
     brouillon.site.musique = val('f-musique');
-    brouillon.site.lien = val('f-lien');
     var radioLogo = document.querySelector('input[name="f-logo"]:checked');
     brouillon.site.logoMode = radioLogo ? radioLogo.value : 'auto';
 
