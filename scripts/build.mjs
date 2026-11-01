@@ -605,7 +605,7 @@ function pagePublique() {
     // Musique importee : pas encore envoyee sur le serveur -> musique par defaut.
     if (D.site && D.site.musique === 'perso') D.site.musique = 'client/musique/bereshit-olam.mp3';
     var noms = [D.couple.marie.prenom, D.couple.mariee.prenom].join(' & ');
-    document.title = noms + ' — Invitation';
+    document.title = noms;
     // Icone de l'invitation (onglet + ecran d'accueil du telephone).
     if (D.site && D.site.favicon && String(D.site.favicon).indexOf('data:image/') === 0) {
       ['icon', 'apple-touch-icon'].forEach(function (rel) {
@@ -887,6 +887,9 @@ async function main() {
   // 2. /i/<adresse> -> page de l'invitation publiee.
   await fs.writeFile(path.join(DIST, '_redirects'), [
     'https://sasson.netlify.app/*  https://sasson-invit.fr/:splat  301!',
+    // Page publiee : servie par une fonction (titre et icone dans le HTML,
+    // pour les apercus WhatsApp) ; /i/index.html en secours.
+    '/i/:slug  /.netlify/functions/invitation?slug=:slug  200',
     '/i/*  /i/index.html  200',
     '',
   ].join('\n'), 'utf8');
@@ -921,6 +924,11 @@ async function main() {
   await fs.writeFile(path.join(DIST, 'apercu', 'index.html'), pageIndexApercus(donnees), 'utf8');
   await fs.mkdir(path.join(DIST, 'i'), { recursive: true });
   await fs.writeFile(path.join(DIST, 'i', 'index.html'), pagePublique(), 'utf8');
+  // Meme page pour la fonction Netlify qui y ajoute titre / description /
+  // icone (apercu des liens WhatsApp) : netlify/functions/invitation.js.
+  await fs.writeFile(path.join(PROJECT, 'netlify', 'lib', 'page-publique.js'),
+    '// Genere par scripts/build.mjs (pagePublique) : ne pas modifier a la main.\n'
+    + 'export default ' + JSON.stringify(pagePublique()) + ';\n', 'utf8');
 
   /* ---- Rapport ---- */
   console.log(`\n  Invitation ${donnees.id} — ${marie.prenom} & ${mariee.prenom}`);
