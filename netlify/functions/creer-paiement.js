@@ -25,10 +25,9 @@ export const handler = async (event) => {
     const session = await getStripe().checkout.sessions.create({
       ui_mode: 'embedded_page',
       mode: 'payment',
-      // Carte uniquement : Apple Pay et Google Pay en font partie (affiches
-      // automatiquement sur les appareils compatibles). Pas de Klarna,
-      // Bancontact, Link... pour un paiement sobre en un geste.
-      payment_method_types: ['card'],
+      // Moyens de paiement (carte, Apple Pay, Google Pay...) : regles dans
+      // le tableau de bord Stripe (Parametres -> Moyens de paiement) ; Stripe
+      // n'accepte plus de les choisir ici.
       line_items: [{
         quantity: 1,
         price_data: {
