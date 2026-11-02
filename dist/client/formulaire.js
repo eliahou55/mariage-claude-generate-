@@ -423,7 +423,7 @@
       var v = (document.getElementById(id) || {}).value || '';
       return (v.trim().charAt(0) || (i ? 'L' : 'R')).toUpperCase();
     });
-    try { cible.innerHTML = LogoStyles.logoInvitation(null, 'toile-de-jouy-vert', ini, '#FAF7EB') || ''; } catch (e) { cible.innerHTML = ''; }
+    try { cible.innerHTML = LogoStyles.logoInvitation(null, brouillon.site.themeSlug || 'toile-de-jouy-vert', ini, '#FAF7EB') || ''; } catch (e) { cible.innerHTML = ''; }
   }
   ['f-marie-prenom', 'f-mariee-prenom'].forEach(function (id) {
     var c = document.getElementById(id);
@@ -433,6 +433,27 @@
   Array.prototype.forEach.call(document.querySelectorAll('input[name="f-logo"]'), function (r) {
     r.addEventListener('change', function () { brouillon.site.logoMode = r.value; rendreLogo(); });
   });
+
+  /* --- D'ou vient le visiteur ? ---
+   * Depuis un theme d'exemple (« Choisir ce theme pour ma carte ») : son
+   * theme est deja choisi, la section Logo s'affiche en fin de formulaire
+   * et il arrive ensuite directement sur sa carte dans ce theme.
+   * Depuis « Creer gratuitement » : pas de section Logo ici ; il decouvre
+   * les themes avec leur logo d'origine (pastille « Changer le logo »). */
+  var parcours = null;
+  try { parcours = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_PARCOURS) || 'null'); } catch (e) { parcours = null; }
+  var depuisExemple = !!(parcours && parcours.origine === 'exemple' && parcours.theme
+    && ClientInvitation.THEMES.some(function (t) { return t.slug === parcours.theme; }));
+  if (depuisExemple) {
+    brouillon.site.themeSlug = parcours.theme;
+    document.getElementById('section-logo').hidden = false;
+    document.getElementById('btn-voir').textContent = 'Découvrir ma carte';
+    var nomTheme = ClientInvitation.THEMES.filter(function (t) { return t.slug === parcours.theme; })[0].nom;
+    document.getElementById('note-theme').textContent = 'Thème choisi : ' + nomTheme
+      + '. Vous pourrez en essayer d’autres une fois votre carte créée.';
+  }
+  // Avant de partir creer son logo : on enregistre la saisie en cours.
+  document.getElementById('lien-logo').addEventListener('click', function () { sauvegarder(); });
 
   /* --- Initialisation --- */
   preRemplir();
@@ -474,6 +495,9 @@
       return;
     }
 
-    window.location.href = '../apercu/index.html';
+    // Theme deja choisi sur un exemple : directement sa carte, dans ce theme.
+    window.location.href = depuisExemple
+      ? '../apercu/' + parcours.theme + '/index.html'
+      : '../apercu/index.html';
   });
 })();

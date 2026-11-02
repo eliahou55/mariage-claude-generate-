@@ -16,3 +16,7 @@ var CLE_STOCKAGE_LOGO = 'invitation-client:logo';
 var CLE_STOCKAGE_COMPTE = 'invitation-client:compte';
 // Invitation enregistree dans le compte (Firestore) pour cette saisie.
 var CLE_STOCKAGE_INVITATION = 'invitation-client:id';
+// D'ou vient le visiteur : { origine: 'exemple', theme: '<slug>' } s'il a
+// clique « Choisir ce theme pour ma carte » sur un theme d'exemple ; absent
+// s'il est parti de « Creer gratuitement » (cf. formulaire.js, logo.js).
+var CLE_STOCKAGE_PARCOURS = 'invitation-client:parcours';

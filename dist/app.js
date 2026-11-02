@@ -102,8 +102,15 @@
     if (!bouton || !m || !origineLocale || window.SASSON_PUBLIC) return;
     bouton.hidden = false;
     if (D.exemple) {
-      bouton.textContent = 'Créer la mienne';
+      // Le visiteur garde ce theme pour sa propre carte : on retient d'ou il
+      // vient (le formulaire lui montrera son logo, puis l'amenera
+      // directement sur sa carte dans ce theme).
+      bouton.textContent = 'Choisir ce thème pour ma carte';
+      bouton.classList.add('apercu-bar__choisir--long');
       bouton.href = BASE + 'client/configurateur.html';
+      bouton.addEventListener('click', function () {
+        try { window.localStorage.setItem(CLE_STOCKAGE_PARCOURS, JSON.stringify({ origine: 'exemple', theme: m[1] })); } catch (e) { /* ignore */ }
+      });
       return;
     }
     bouton.addEventListener('click', function () {
@@ -915,111 +922,38 @@
   });
 
   /* ---------------------------------------------------------------- *
-   * « Vous aimez votre logo ? » (pages d'apercu, invitation du client)
-   * Le logo s'aborde d'abord dans le formulaire ; le client voit ensuite
-   * son logo par defaut sur sa vraie invitation. Une fois ses cartes
-   * d'evenements parcourues, un bandeau lui demande s'il lui plait :
-   * « Oui » le garde, « Pas tellement » ouvre le generateur de logo (qui
-   * le ramene ensuite sur ce theme). Jamais pour le mariage d'exemple,
-   * ni si un logo personnalise (ou aucun logo) est deja choisi.
+   * Pastille « Changer le logo » (pages d'apercu, invitation du client)
+   * Consigne du proprietaire : aucune question, rien d'insistant. Une
+   * petite pastille flottante, neutre, toujours disponible une fois
+   * l'invitation ouverte ; elle ouvre le generateur de logo, qui ramene
+   * ensuite sur ce theme (?logo=maj : le nouveau logo apparait en
+   * douceur). Le logo choisi vaut pour tous les themes. Jamais pour le
+   * mariage d'exemple, ni sur l'invitation publiee, ni si « pas de logo ».
    * ---------------------------------------------------------------- */
-  (function avisLogo() {
-    var CLE_AVIS = 'invitation-client:avis-logo';
-    var barre = document.querySelector('.apercu-bar');
-    if (!barre || !origineLocale || window.SASSON_PUBLIC || D.exemple) return;
-    if (D.site.logo === 'aucun' || (D.site.logo && D.site.logo.style)) return;
-    try { if (window.localStorage.getItem(CLE_AVIS)) return; } catch (e) { return; }
-    var logo = construireLogo('avis-logo__apercu');
-    if (!logo) return;
-
-    var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
-    var slug = m ? m[1] : D.site.themeSlug;
-    var bandeau = el('aside', 'avis-logo');
-    bandeau.setAttribute('role', 'dialog');
-    bandeau.setAttribute('aria-label', 'Votre logo');
-    bandeau.hidden = true;
-    bandeau.appendChild(logo);
-    var texte = el('div', 'avis-logo__texte');
-    texte.appendChild(el('p', 'avis-logo__titre', 'Vous aimez votre logo ?'));
-    texte.appendChild(el('p', 'avis-logo__detail', 'Vos initiales en monogramme, assorti au thème. Vous pouvez en choisir un autre.'));
-    var actions = el('div', 'avis-logo__actions');
-    var oui = el('button', 'avis-logo__oui', 'Oui, je le garde');
-    oui.type = 'button';
-    var non = el('button', 'avis-logo__non', 'Pas tellement');
-    non.type = 'button';
-    actions.appendChild(oui);
-    actions.appendChild(non);
-    texte.appendChild(actions);
-    bandeau.appendChild(texte);
-    var fermer = el('button', 'avis-logo__fermer', '×');
-    fermer.type = 'button';
-    fermer.setAttribute('aria-label', 'Plus tard');
-    bandeau.appendChild(fermer);
-    document.body.appendChild(bandeau);
-
-    function retenir(v) { try { window.localStorage.setItem(CLE_AVIS, v); } catch (e) { /* ignore */ } }
-    function cacher() { bandeau.classList.remove('avis-logo--visible'); window.setTimeout(function () { bandeau.hidden = true; }, 300); }
-    oui.addEventListener('click', function () {
-      retenir('oui');
-      texte.innerHTML = '';
-      texte.appendChild(el('p', 'avis-logo__titre', 'Parfait, on le garde !'));
-      texte.appendChild(el('p', 'avis-logo__detail', 'Il s’affichera sur votre invitation, quel que soit le thème.'));
-      window.setTimeout(cacher, 2200);
-    });
-    non.addEventListener('click', function () {
-      retenir('non');
-      window.location.href = BASE + 'client/logo.html?retour=apercu&theme=' + encodeURIComponent(slug);
-    });
-    // La croix ne retient rien : la question reviendra a la prochaine visite.
-    fermer.addEventListener('click', cacher);
-
-    var montre = false;
-    function montrer() {
-      if (montre) return;
-      montre = true;
-      bandeau.hidden = false;
-      requestAnimationFrame(function () { requestAnimationFrame(function () { bandeau.classList.add('avis-logo--visible'); }); });
-    }
-
-    // Declencheur : la derniere carte d'evenement (ou le RSVP) apparait a
-    // l'ecran, c'est-a-dire une fois que le client a vu sa ou ses cartes.
-    var cartes = invitation.querySelectorAll('.evenements > *');
-    var cible = cartes.length ? cartes[cartes.length - 1] : invitation.querySelector('.rsvp');
-    if (cible && 'IntersectionObserver' in window) {
-      var obs = new IntersectionObserver(function (entrees) {
-        entrees.forEach(function (en) {
-          if (en.isIntersecting && ouvert) { obs.disconnect(); window.setTimeout(montrer, 700); }
-        });
-      }, { threshold: 0.35 });
-      obs.observe(cible);
-    } else {
-      document.getElementById('ouvrir').addEventListener('click', function () { window.setTimeout(montrer, 9000); });
-    }
-  })();
-
-  /* ---------------------------------------------------------------- *
-   * Allers-retours avec le generateur de logo (pages d'apercu seulement)
-   * Pas de nouvelle question : un simple lien discret « Modifier le logo »
-   * sous le logo, toujours disponible, et au retour du generateur
-   * (?logo=maj) le nouveau logo apparait en douceur, a sa place.
-   * ---------------------------------------------------------------- */
-  (function retoursLogo() {
+  (function pastilleLogo() {
     if (!document.querySelector('.apercu-bar') || !origineLocale || window.SASSON_PUBLIC || D.exemple) return;
-    if (D.site.logo === 'aucun') return;
-    var perso = !!(D.site.logo && D.site.logo.style);
-    var avisDonne = false;
-    try { avisDonne = !!window.localStorage.getItem('invitation-client:avis-logo'); } catch (e) { /* ignore */ }
-    // Logo par defaut jamais commente : c'est le bandeau qui s'en charge.
-    if (!perso && !avisDonne) return;
-
+    if (D.site.logo === 'aucun' || typeof LogoStyles === 'undefined') return;
     var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
     var slug = m ? m[1] : D.site.themeSlug;
-    var url = BASE + 'client/logo.html?retour=apercu&theme=' + encodeURIComponent(slug);
-    Array.prototype.forEach.call(document.querySelectorAll('.logo-site--accueil, .logo-site--invitation'), function (logo) {
-      var lien = el('a', 'logo-modifier', 'Modifier le logo');
-      lien.href = url;
-      logo.parentNode.insertBefore(lien, logo.nextSibling);
-    });
+
+    var pastille = el('a', 'pastille-logo');
+    pastille.href = BASE + 'client/logo.html?retour=apercu&theme=' + encodeURIComponent(slug);
+    var ico = el('span', 'pastille-logo__ico', '✎');
+    ico.setAttribute('aria-hidden', 'true');
+    pastille.appendChild(ico);
+    pastille.appendChild(document.createTextNode('Changer le logo'));
+    pastille.hidden = true;
+    document.body.appendChild(pastille);
+
+    function montrer() {
+      if (!pastille.hidden) return;
+      pastille.hidden = false;
+      requestAnimationFrame(function () { requestAnimationFrame(function () { pastille.classList.add('pastille-logo--visible'); }); });
+    }
+    // Visible des que l'invitation est ouverte (pas sur l'ecran d'accueil,
+    // qui reste celui que verront les invites).
+    if (ouvert) montrer();
+    else document.getElementById('ouvrir').addEventListener('click', function () { window.setTimeout(montrer, 1200); });
 
     if (/[?&]logo=maj\b/.test(window.location.search)) {
       Array.prototype.forEach.call(document.querySelectorAll('.logo-site--accueil, .logo-site--invitation'), function (logo) {

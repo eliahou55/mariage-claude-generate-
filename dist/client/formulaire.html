@@ -128,16 +128,28 @@
           <span class="aide">Elle démarre quand vos invités cliquent sur « Voir l'invitation ». Si vous ne changez rien, « Bereshit Olam » joue par défaut.</span>
         </div>
 
-        <div class="champ" style="margin-top:20px">
-          <span class="champ__titre">Votre logo</span>
+
+        <p class="note" style="margin-top:10px" id="note-theme">
+          Le thème et la couleur se choisissent à l'étape suivante, en comparant les 12 modèles avec
+          vos vraies informations.
+        </p>
+      </section>
+
+      <section class="form-section" id="zone-evenements">
+        <h2 class="soustitre">Vos événements</h2>
+        <!-- Rempli dynamiquement par formulaire.js selon l'ordre choisi a l'etape 1 -->
+      </section>
+
+      <section class="form-section" id="section-logo" hidden>
+        <h2 class="soustitre">Votre logo</h2>
+        <div class="champ">
           <p class="logo-intro">
-            Votre invitation porte un petit logo : vos deux initiales en monogramme. Inutile de le
-            dessiner maintenant, <strong>nous en créons un pour vous</strong>. Vous le découvrirez sur
-            votre invitation, et pourrez alors le garder ou en choisir un autre.
+            Voici le logo de votre carte : vos deux initiales en monogramme, assorti au thème que vous
+            avez choisi. Gardez-le tel quel, créez le vôtre, ou n’en mettez pas.
           </p>
           <div class="logo-auto" id="logo-auto">
             <div class="logo-auto__apercu" id="logo-auto-apercu"></div>
-            <span class="logo-auto__legende" id="logo-auto-legende">Votre logo par défaut</span>
+            <span class="logo-auto__legende" id="logo-auto-legende">Le logo de votre carte</span>
           </div>
           <div class="logo-choix" role="radiogroup" aria-label="Logo">
             <label class="logo-choix__option"><input type="radio" name="f-logo" value="auto"> Logo par défaut, assorti au thème (recommandé)</label>
@@ -149,21 +161,11 @@
             <a class="btn btn--secondaire" href="logo.html?retour=formulaire" id="lien-logo">Créer mon logo</a>
           </div>
         </div>
-
-        <p class="note" style="margin-top:10px">
-          Le thème et la couleur se choisissent à l'étape suivante, en comparant les 12 modèles avec
-          vos vraies informations.
-        </p>
-      </section>
-
-      <section class="form-section" id="zone-evenements">
-        <h2 class="soustitre">Vos événements</h2>
-        <!-- Rempli dynamiquement par formulaire.js selon l'ordre choisi a l'etape 1 -->
       </section>
 
       <div class="barre-actions">
         <a class="btn btn--texte" href="configurateur.html">← Retour</a>
-        <button type="submit" class="btn btn--principal">Voir mon invitation</button>
+        <button type="submit" class="btn btn--principal" id="btn-voir">Voir mon invitation</button>
       </div>
     </form>
   </main>

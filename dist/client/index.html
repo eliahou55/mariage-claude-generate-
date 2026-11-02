@@ -184,6 +184,12 @@
     if (window.localStorage.getItem(CLE_STOCKAGE_BROUILLON)) document.getElementById('reprise').hidden = false;
   } catch (e) { /* ignore */ }
 
+  // « Creer gratuitement » : parcours sans exemple (le logo s'abordera sur
+  // les themes, pas dans le formulaire).
+  Array.prototype.forEach.call(document.querySelectorAll('a[href="configurateur.html"]'), function (a) {
+    a.addEventListener('click', function () { try { window.localStorage.removeItem(CLE_STOCKAGE_PARCOURS); } catch (e) { /* ignore */ } });
+  });
+
   Array.prototype.forEach.call(document.querySelectorAll('[data-voir-exemple]'), function (b) {
     b.addEventListener('click', SiteEntete.voirExemple);
   });

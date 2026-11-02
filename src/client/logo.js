@@ -242,6 +242,31 @@
     }
   }
 
+  /* --- Arrivee depuis le formulaire, pour un visiteur venu d'un theme
+   *     d'exemple : une fois le logo choisi, il decouvre directement sa
+   *     carte dans le theme retenu (sans repasser par la galerie). --- */
+  var parcours = null;
+  try { parcours = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_PARCOURS) || 'null'); } catch (e) { parcours = null; }
+  var versMaCarte = /[?&]retour=formulaire/.test(window.location.search)
+    && !!(parcours && parcours.origine === 'exemple' && parcours.theme);
+  if (versMaCarte) {
+    document.getElementById('choisir').textContent = 'Choisir ce logo et découvrir ma carte';
+    var retourForm = document.querySelector('.barre-actions a[href="index.html"]');
+    if (retourForm) { retourForm.href = 'formulaire.html'; retourForm.textContent = '← Retour au formulaire'; }
+  }
+  /** Construit l'invitation a partir de la saisie du formulaire ; null si
+   *  l'essentiel manque encore (prenoms, date et heure de la houppa). */
+  function donneesDuFormulaire() {
+    try {
+      var b = ClientInvitation.lireBrouillon();
+      var h = b.evenementsDonnees && b.evenementsDonnees.houppa;
+      if (!b.couple.marie.prenom || !b.couple.mariee.prenom || !h || !h.date || !h.heure) return null;
+      b.site.themeSlug = parcours.theme;
+      ClientInvitation.ecrireBrouillon(b);
+      return ClientInvitation.construireDonnees(b);
+    } catch (e) { return null; }
+  }
+
   /* --- Choix final (garde dans ce navigateur pour plus tard) --- */
   document.getElementById('choisir').addEventListener('click', function () {
     var style = styles()[indexCourant()];
@@ -265,6 +290,18 @@
     };
     confirmation.innerHTML = '« ' + style.nom + ' » est enregistré comme votre logo. ' +
       (liens[retour] || '<a href="../apercu/index.html">Voir mon invitation</a>');
+    if (versMaCarte) {
+      var donnees = donneesDuFormulaire();
+      if (donnees) {
+        try { window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(donnees)); } catch (e) { donnees = null; }
+      }
+      confirmation.textContent = donnees ? 'Logo enregistré. Voici votre carte…' : 'Logo enregistré. Terminez votre formulaire pour découvrir votre carte…';
+      confirmation.hidden = false;
+      setTimeout(function () {
+        window.location.href = donnees ? '../apercu/' + parcours.theme + '/index.html?logo=maj' : 'formulaire.html';
+      }, 900);
+      return;
+    }
     // Depuis la publication : retour automatique, l'icone suivra le nouveau logo.
     if (retour === 'publication') setTimeout(function () { window.location.href = 'publication.html'; }, 1200);
     // Depuis « Vous aimez votre logo ? » : retour sur le theme, avec le nouveau logo.
