@@ -57,10 +57,14 @@ var FaviconInvitation = (function () {
       var c = canvas(), x = c.getContext('2d');
       x.fillStyle = fond;
       x.fillRect(0, 0, TAILLE, TAILLE);
-      // Le monogramme occupe le centre du logo : leger agrandissement pour
-      // qu'il reste lisible a petite taille (onglet du navigateur).
-      var m = TAILLE * .08;
-      x.drawImage(img, -m, -m, TAILLE + 2 * m, TAILLE + 2 * m);
+      // Dans un onglet (16-32 px), le cadre decoratif du logo prenait toute
+      // la place et les initiales devenaient invisibles (carre presque vide) :
+      // on recadre sur le monogramme, au centre, nettement agrandi. Un logo
+      // personnalise peut porter une ligne de texte sous les initiales :
+      // recadrage un peu plus large.
+      var k = perso ? 1.7 : 2.15;
+      var cote = TAILLE * k;
+      x.drawImage(img, (TAILLE - cote) / 2, (TAILLE - cote) / 2 - (perso ? TAILLE * .06 : 0), cote, cote);
       URL.revokeObjectURL(url);
       return c.toDataURL('image/png');
     });
