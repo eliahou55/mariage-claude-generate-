@@ -224,6 +224,20 @@
   champ2.addEventListener('input', majTexte);
   champTexte.addEventListener('input', majTexte);
 
+  /* --- Arrivee depuis « Vous aimez votre logo ? » (page d'un theme) --- */
+  var themeRetour = ((/[?&]theme=([\w-]+)/.exec(window.location.search) || [])[1]) || '';
+  if (/[?&]retour=apercu/.test(window.location.search)) {
+    var chapo = document.querySelector('.chapo');
+    if (chapo) chapo.textContent = 'Choisissons-en un qui vous ressemble. Vos initiales sont déjà en place : '
+      + 'faites défiler les logos, ajustez les couleurs si besoin, puis cliquez sur « Choisir ce logo ». '
+      + 'Vous reviendrez directement sur votre invitation.';
+    var retourAccueil = document.querySelector('.barre-actions a[href="index.html"]');
+    if (retourAccueil) {
+      retourAccueil.href = themeRetour ? '../apercu/' + themeRetour + '/index.html' : '../apercu/index.html';
+      retourAccueil.textContent = '← Garder mon logo actuel';
+    }
+  }
+
   /* --- Choix final (garde dans ce navigateur pour plus tard) --- */
   document.getElementById('choisir').addEventListener('click', function () {
     var style = styles()[indexCourant()];
@@ -238,15 +252,19 @@
       var brut = window.localStorage.getItem(CLE_STOCKAGE_DONNEES);
       if (brut) { var D = JSON.parse(brut); if (!D.exemple) { D.site.logo = etat.choisi; window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(D)); } }
     } catch (err) { /* ignore */ }
-    var retour = (/[?&]retour=(formulaire|publication)/.exec(window.location.search) || [])[1];
+    var retour = (/[?&]retour=(formulaire|publication|apercu)/.exec(window.location.search) || [])[1];
+    var urlApercu = themeRetour ? '../apercu/' + themeRetour + '/index.html' : '../apercu/index.html';
     var liens = {
       formulaire: '<a href="formulaire.html">Revenir au formulaire</a>',
       publication: '<a href="publication.html">Revenir à la publication</a>',
+      apercu: '<a href="' + urlApercu + '">Revoir mon invitation</a>',
     };
     confirmation.innerHTML = '« ' + style.nom + ' » est enregistré comme votre logo. ' +
       (liens[retour] || '<a href="../apercu/index.html">Voir mon invitation</a>');
     // Depuis la publication : retour automatique, l'icone suivra le nouveau logo.
     if (retour === 'publication') setTimeout(function () { window.location.href = 'publication.html'; }, 1200);
+    // Depuis « Vous aimez votre logo ? » : retour sur le theme, avec le nouveau logo.
+    if (retour === 'apercu') setTimeout(function () { window.location.href = urlApercu; }, 1400);
     confirmation.hidden = false;
   });
 

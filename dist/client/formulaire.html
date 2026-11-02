@@ -129,17 +129,25 @@
         </div>
 
         <div class="champ" style="margin-top:20px">
-          <span class="champ__titre">Logo</span>
+          <span class="champ__titre">Votre logo</span>
+          <p class="logo-intro">
+            Votre invitation porte un petit logo : vos deux initiales en monogramme. Inutile de le
+            dessiner maintenant, <strong>nous en créons un pour vous</strong>. Vous le découvrirez sur
+            votre invitation, et pourrez alors le garder ou en choisir un autre.
+          </p>
+          <div class="logo-auto" id="logo-auto">
+            <div class="logo-auto__apercu" id="logo-auto-apercu"></div>
+            <span class="logo-auto__legende" id="logo-auto-legende">Votre logo par défaut</span>
+          </div>
           <div class="logo-choix" role="radiogroup" aria-label="Logo">
-            <label class="logo-choix__option"><input type="radio" name="f-logo" value="auto"> Automatique, adapté au thème</label>
-            <label class="logo-choix__option"><input type="radio" name="f-logo" value="perso"> Mon logo personnalisé</label>
+            <label class="logo-choix__option"><input type="radio" name="f-logo" value="auto"> Logo par défaut, assorti au thème (recommandé)</label>
+            <label class="logo-choix__option"><input type="radio" name="f-logo" value="perso"> Je crée mon logo moi-même</label>
             <label class="logo-choix__option"><input type="radio" name="f-logo" value="aucun"> Pas de logo</label>
           </div>
           <div class="logo-choix__perso" id="logo-perso" hidden>
             <div class="logo-choix__apercu" id="logo-apercu"></div>
             <a class="btn btn--secondaire" href="logo.html?retour=formulaire" id="lien-logo">Créer mon logo</a>
           </div>
-          <span class="aide">Automatique : vos initiales dans un monogramme assorti au thème choisi. Le logo s'affiche en haut de l'accueil et de l'invitation.</span>
         </div>
 
         <p class="note" style="margin-top:10px">

@@ -898,5 +898,88 @@
     ouvrirInvitation(accueil, invitation);
   });
 
+  /* ---------------------------------------------------------------- *
+   * « Vous aimez votre logo ? » (pages d'apercu, invitation du client)
+   * Le logo s'aborde d'abord dans le formulaire ; le client voit ensuite
+   * son logo par defaut sur sa vraie invitation. Une fois ses cartes
+   * d'evenements parcourues, un bandeau lui demande s'il lui plait :
+   * « Oui » le garde, « Pas tellement » ouvre le generateur de logo (qui
+   * le ramene ensuite sur ce theme). Jamais pour le mariage d'exemple,
+   * ni si un logo personnalise (ou aucun logo) est deja choisi.
+   * ---------------------------------------------------------------- */
+  (function avisLogo() {
+    var CLE_AVIS = 'invitation-client:avis-logo';
+    var barre = document.querySelector('.apercu-bar');
+    if (!barre || !origineLocale || window.SASSON_PUBLIC || D.exemple) return;
+    if (D.site.logo === 'aucun' || (D.site.logo && D.site.logo.style)) return;
+    try { if (window.localStorage.getItem(CLE_AVIS)) return; } catch (e) { return; }
+    var logo = construireLogo('avis-logo__apercu');
+    if (!logo) return;
+
+    var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
+    var slug = m ? m[1] : D.site.themeSlug;
+    var bandeau = el('aside', 'avis-logo');
+    bandeau.setAttribute('role', 'dialog');
+    bandeau.setAttribute('aria-label', 'Votre logo');
+    bandeau.hidden = true;
+    bandeau.appendChild(logo);
+    var texte = el('div', 'avis-logo__texte');
+    texte.appendChild(el('p', 'avis-logo__titre', 'Vous aimez votre logo ?'));
+    texte.appendChild(el('p', 'avis-logo__detail', 'Vos initiales en monogramme, assorti au thème. Vous pouvez en choisir un autre.'));
+    var actions = el('div', 'avis-logo__actions');
+    var oui = el('button', 'avis-logo__oui', 'Oui, je le garde');
+    oui.type = 'button';
+    var non = el('button', 'avis-logo__non', 'Pas tellement');
+    non.type = 'button';
+    actions.appendChild(oui);
+    actions.appendChild(non);
+    texte.appendChild(actions);
+    bandeau.appendChild(texte);
+    var fermer = el('button', 'avis-logo__fermer', '×');
+    fermer.type = 'button';
+    fermer.setAttribute('aria-label', 'Plus tard');
+    bandeau.appendChild(fermer);
+    document.body.appendChild(bandeau);
+
+    function retenir(v) { try { window.localStorage.setItem(CLE_AVIS, v); } catch (e) { /* ignore */ } }
+    function cacher() { bandeau.classList.remove('avis-logo--visible'); window.setTimeout(function () { bandeau.hidden = true; }, 300); }
+    oui.addEventListener('click', function () {
+      retenir('oui');
+      texte.innerHTML = '';
+      texte.appendChild(el('p', 'avis-logo__titre', 'Parfait, on le garde !'));
+      texte.appendChild(el('p', 'avis-logo__detail', 'Il s’affichera sur votre invitation, quel que soit le thème.'));
+      window.setTimeout(cacher, 2200);
+    });
+    non.addEventListener('click', function () {
+      retenir('non');
+      window.location.href = BASE + 'client/logo.html?retour=apercu&theme=' + encodeURIComponent(slug);
+    });
+    // La croix ne retient rien : la question reviendra a la prochaine visite.
+    fermer.addEventListener('click', cacher);
+
+    var montre = false;
+    function montrer() {
+      if (montre) return;
+      montre = true;
+      bandeau.hidden = false;
+      requestAnimationFrame(function () { requestAnimationFrame(function () { bandeau.classList.add('avis-logo--visible'); }); });
+    }
+
+    // Declencheur : la derniere carte d'evenement (ou le RSVP) apparait a
+    // l'ecran, c'est-a-dire une fois que le client a vu sa ou ses cartes.
+    var cartes = invitation.querySelectorAll('.evenements > *');
+    var cible = cartes.length ? cartes[cartes.length - 1] : invitation.querySelector('.rsvp');
+    if (cible && 'IntersectionObserver' in window) {
+      var obs = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (en) {
+          if (en.isIntersecting && ouvert) { obs.disconnect(); window.setTimeout(montrer, 700); }
+        });
+      }, { threshold: 0.35 });
+      obs.observe(cible);
+    } else {
+      document.getElementById('ouvrir').addEventListener('click', function () { window.setTimeout(montrer, 9000); });
+    }
+  })();
+
   document.documentElement.classList.add('pret');
 })();

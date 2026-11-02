@@ -24,8 +24,18 @@ const DIST = path.join(PROJECT, 'dist');
  * Catalogue des themes. `nom` doit correspondre EXACTEMENT au texte
  * de la liste deroulante Excel (colonne J de la feuille Site).
  * `surface` sert au calcul de contraste de la couleur d'accent.
+ * L'ORDRE est celui de la galerie : les deux Toile de Jouy (les plus
+ * choisies, `vedette`) sont presentees en premier.
  * ------------------------------------------------------------------ */
 const THEMES = [
+  {
+    nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert', vedette: true, sombre: false, surface: '#FAF7EB',
+    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
+  },
+  {
+    nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu', vedette: true, sombre: false, surface: '#FAFAF2',
+    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
+  },
   {
     nom: 'Marbre & Or', slug: 'marbre-or', sombre: false, surface: '#FBF8F2',
     fonts: 'family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Raleway:ital,wght@0,300;0,400;0,500;1,300&family=Pinyon+Script&family=Frank+Ruhl+Libre:wght@300;400;500;700',
@@ -65,14 +75,6 @@ const THEMES = [
   {
     nom: 'Bohème terracotta', slug: 'boheme-terracotta', sombre: false, surface: '#FBF2E7',
     fonts: 'family=DM+Serif+Display:ital@0;1&family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Satisfy&family=Frank+Ruhl+Libre:wght@300;400;500;700',
-  },
-  {
-    nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert', sombre: false, surface: '#FAF7EB',
-    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
-  },
-  {
-    nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu', sombre: false, surface: '#FAFAF2',
-    fonts: 'family=IM+Fell+English:ital@0;1&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Frank+Ruhl+Libre:wght@300;400;500;700',
   },
 ];
 
@@ -666,6 +668,7 @@ function pageIndexApercus(donnees) {
       <span class="theme-carte__vignette" style="${vignette(t)}" aria-hidden="true"></span>
       <span class="theme-carte__pied"><strong>${echappe(t.nom)}</strong><span>Voir ce thème →</span></span>
       ${actif ? '<span class="theme-carte__badge">Choisi dans l\u2019Excel</span>' : ''}
+      ${t.vedette ? '<span class="theme-carte__vedette">Le plus choisi</span>' : ''}
     </a>`;
   }).join('\n');
 
@@ -702,6 +705,7 @@ function pageIndexApercus(donnees) {
 .theme-carte__pied strong { font-family: var(--font-titre); font-weight: 600; font-size: 19px; line-height: 1.2; }
 .theme-carte__pied span { font-size: 12.5px; color: var(--accent-ink); }
 .theme-carte--actif { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-carte__vedette { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 999px; background: #1F3B2D; color: #F6F1E1; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
 .theme-carte__badge { position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: #2A2008; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
 .pied-apercus { margin-top: 28px; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .pied-apercus code { background: var(--bg); padding: 2px 6px; border-radius: 5px; font-size: 12px; }
@@ -774,8 +778,16 @@ ${cartes}
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
     if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, choisissez votre musique, puis ouvrez le thème qui vous plaît.';
-    document.getElementById('choix-logo').hidden = false;
-    document.getElementById('choix-suite').hidden = false;
+    // Mariage d'exemple : on ne propose PAS encore de creer un logo (trop
+    // tot, le visiteur n'a rien saisi). Le logo s'aborde dans le
+    // formulaire, puis apres avoir vu son invitation (bandeau « Vous
+    // aimez votre logo ? » sur la page du theme, cf. src/app.js).
+    if (!D.exemple) {
+      document.getElementById('choix-logo').hidden = false;
+      document.getElementById('choix-suite').hidden = false;
+    } else if (sous) {
+      sous.textContent = 'Un mariage d’exemple, affiché dans chacun des 12 thèmes. Ouvrez celui qui vous plaît, puis créez le vôtre.';
+    }
     if (D.site.logo === 'aucun') document.getElementById('logo-etat').textContent = 'Vous avez choisi de ne pas afficher de logo.';
     else if (D.site.logo && D.site.logo.style) document.getElementById('logo-etat').textContent = 'Votre logo personnalisé s’affichera sur tous les thèmes.';
 

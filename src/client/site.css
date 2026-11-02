@@ -352,6 +352,14 @@ body.site .page > .entete, body.site .page > .progression { display: none; }
 .ac-theme:hover .iphone, .ac-theme:focus-visible .iphone { transform: translateY(-6px); }
 .ac-theme:focus-visible { outline: none; }
 .ac-theme__nom { display: block; margin-top: 22px; font-family: var(--font-titre); font-size: 22px; font-weight: 400; }
+/* Les deux Toile de Jouy (les plus choisies) : pastille au-dessus du telephone. */
+.ac-theme { position: relative; }
+.ac-theme__vedette {
+  position: absolute; top: 4px; left: 50%; transform: translateX(-50%); z-index: 4; white-space: nowrap;
+  padding: 5px 12px; border-radius: 999px; background: #1F3B2D; color: #F6F1E1;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+}
 .ac-theme__voir { font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: var(--accent-ink); }
 .ac-themes__nav { display: flex; justify-content: center; gap: 12px; margin-top: 10px; }
 .ac-themes__nav button { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--rule); background: transparent; font-size: 20px; cursor: pointer; color: var(--ink); }

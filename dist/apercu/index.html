@@ -30,6 +30,7 @@
 .theme-carte__pied strong { font-family: var(--font-titre); font-weight: 600; font-size: 19px; line-height: 1.2; }
 .theme-carte__pied span { font-size: 12.5px; color: var(--accent-ink); }
 .theme-carte--actif { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.theme-carte__vedette { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 999px; background: #1F3B2D; color: #F6F1E1; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
 .theme-carte__badge { position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: #2A2008; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
 .pied-apercus { margin-top: 28px; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .pied-apercus code { background: var(--bg); padding: 2px 6px; border-radius: 5px; font-size: 12px; }
@@ -61,6 +62,18 @@
   </aside>
   <div>
     <div class="grille-themes">
+    <a class="theme-carte" href="toile-de-jouy-vert/index.html">
+      <span class="theme-carte__vignette" style="background:#FAF7EB url(../themes/toile-de-jouy-vert/fond.jpg) center/cover" aria-hidden="true"></span>
+      <span class="theme-carte__pied"><strong>Toile de Jouy vert</strong><span>Voir ce thème →</span></span>
+      
+      <span class="theme-carte__vedette">Le plus choisi</span>
+    </a>
+    <a class="theme-carte" href="toile-de-jouy-bleu/index.html">
+      <span class="theme-carte__vignette" style="background:#FAFAF2 url(../themes/toile-de-jouy-bleu/fond.jpg) center/cover" aria-hidden="true"></span>
+      <span class="theme-carte__pied"><strong>Toile de Jouy bleu</strong><span>Voir ce thème →</span></span>
+      
+      <span class="theme-carte__vedette">Le plus choisi</span>
+    </a>
     <a class="theme-carte theme-carte--actif" href="marbre-or/index.html">
       <span class="theme-carte__vignette" style="background:url(../themes/marbre-or/orn/coin.svg) -6px -6px/118% auto no-repeat,url(../themes/marbre-or/orn/fond.svg) 0 0/90px repeat,#FBF8F2" aria-hidden="true"></span>
       <span class="theme-carte__pied"><strong>Marbre &amp; Or</strong><span>Voir ce thème →</span></span>
@@ -111,16 +124,6 @@
       <span class="theme-carte__pied"><strong>Bohème terracotta</strong><span>Voir ce thème →</span></span>
       
     </a>
-    <a class="theme-carte" href="toile-de-jouy-vert/index.html">
-      <span class="theme-carte__vignette" style="background:#FAF7EB url(../themes/toile-de-jouy-vert/fond.jpg) center/cover" aria-hidden="true"></span>
-      <span class="theme-carte__pied"><strong>Toile de Jouy vert</strong><span>Voir ce thème →</span></span>
-      
-    </a>
-    <a class="theme-carte" href="toile-de-jouy-bleu/index.html">
-      <span class="theme-carte__vignette" style="background:#FAFAF2 url(../themes/toile-de-jouy-bleu/fond.jpg) center/cover" aria-hidden="true"></span>
-      <span class="theme-carte__pied"><strong>Toile de Jouy bleu</strong><span>Voir ce thème →</span></span>
-      
-    </a>
     </div>
     <p class="pied-apercus" id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</p>
   </div>
@@ -161,8 +164,16 @@
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
     var sous = document.querySelector('p.sous');
     if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, choisissez votre musique, puis ouvrez le thème qui vous plaît.';
-    document.getElementById('choix-logo').hidden = false;
-    document.getElementById('choix-suite').hidden = false;
+    // Mariage d'exemple : on ne propose PAS encore de creer un logo (trop
+    // tot, le visiteur n'a rien saisi). Le logo s'aborde dans le
+    // formulaire, puis apres avoir vu son invitation (bandeau « Vous
+    // aimez votre logo ? » sur la page du theme, cf. src/app.js).
+    if (!D.exemple) {
+      document.getElementById('choix-logo').hidden = false;
+      document.getElementById('choix-suite').hidden = false;
+    } else if (sous) {
+      sous.textContent = 'Un mariage d’exemple, affiché dans chacun des 12 thèmes. Ouvrez celui qui vous plaît, puis créez le vôtre.';
+    }
     if (D.site.logo === 'aucun') document.getElementById('logo-etat').textContent = 'Vous avez choisi de ne pas afficher de logo.';
     else if (D.site.logo && D.site.logo.style) document.getElementById('logo-etat').textContent = 'Votre logo personnalisé s’affichera sur tous les thèmes.';
 

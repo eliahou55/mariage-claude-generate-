@@ -54,3 +54,23 @@ Principes retenus :
   du navigateur.
 - Étape 4 : récapitulatif, paiement, génération du lien définitif.
 - Espace des mariés : tableau de bord, réponses RSVP (export), modifications.
+
+## Révision (novembre 2026) : logo, thèmes vedettes, démo
+
+- **Exemples** : « Essayer des exemples » ne propose plus de créer un logo
+  (l'encart « Votre logo » de la galerie est masqué pour le mariage d'exemple).
+- **Logo, en trois temps** :
+  1. *Formulaire* : la section « Votre logo » explique qu'un logo par défaut
+     (initiales en monogramme) est créé automatiquement, avec son aperçu.
+  2. *Invitation* : le client voit son logo par défaut sur le thème ouvert.
+  3. *Après les cartes* : un bandeau « Vous aimez votre logo ? » apparaît
+     (`src/app.js`, `avisLogo`). « Oui » le garde ; « Pas tellement » ouvre
+     `client/logo.html?retour=apercu&theme=<slug>`, qui ramène sur le thème une
+     fois le logo choisi. Jamais affiché pour l'exemple, ni si un logo
+     personnalisé ou « aucun logo » est déjà choisi.
+- **Thèmes vedettes** : Toile de Jouy vert et bleu (les plus vendus) passent en
+  premier partout (accueil, carrousel, galerie, thème par défaut), avec la
+  pastille « Le plus choisi ».
+- **Démo du configurateur** : vidéo de 30 s (`client/demo/composition.mp4`)
+  et explication en 4 points sur la page « Composez le déroulé ». La vidéo se
+  régénère avec `node scripts/video-demo.cjs` (dist/ servi sur le port 8765).

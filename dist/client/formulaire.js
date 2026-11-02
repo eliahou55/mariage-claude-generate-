@@ -382,6 +382,7 @@
     var lien = document.getElementById('lien-logo');
     if (!zone) return;
     zone.hidden = mode !== 'perso';
+    rendreLogoAuto(mode);
     var choisi = ClientInvitation.logoChoisi();
     apercu.innerHTML = '';
     if (choisi && typeof LogoStyles !== 'undefined') {
@@ -392,6 +393,26 @@
       lien.textContent = 'Créer mon logo';
     }
   }
+  /* Apercu du logo par defaut (initiales des prenoms saisis), pour que le
+   * client sache a quoi s'attendre sans avoir a le creer maintenant. */
+  function rendreLogoAuto(mode) {
+    var bloc = document.getElementById('logo-auto');
+    var cible = document.getElementById('logo-auto-apercu');
+    if (!bloc || !cible) return;
+    mode = mode || brouillon.site.logoMode || 'auto';
+    bloc.hidden = mode !== 'auto' || typeof LogoStyles === 'undefined';
+    if (bloc.hidden) return;
+    var ini = ['f-marie-prenom', 'f-mariee-prenom'].map(function (id, i) {
+      var v = (document.getElementById(id) || {}).value || '';
+      return (v.trim().charAt(0) || (i ? 'L' : 'R')).toUpperCase();
+    });
+    try { cible.innerHTML = LogoStyles.logoInvitation(null, 'toile-de-jouy-vert', ini, '#FAF7EB') || ''; } catch (e) { cible.innerHTML = ''; }
+  }
+  ['f-marie-prenom', 'f-mariee-prenom'].forEach(function (id) {
+    var c = document.getElementById(id);
+    if (c) c.addEventListener('input', function () { rendreLogoAuto(); });
+  });
+
   Array.prototype.forEach.call(document.querySelectorAll('input[name="f-logo"]'), function (r) {
     r.addEventListener('change', function () { brouillon.site.logoMode = r.value; rendreLogo(); });
   });

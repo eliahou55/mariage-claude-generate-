@@ -905,6 +905,42 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
   font: 500 10.5px/1 system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
 }
 .apercu-bar__choisir[hidden] { display: none; }
+/* « Vous aimez votre logo ? » (pages d'apercu, cf. app.js avisLogo) */
+.avis-logo {
+  position: fixed; z-index: 60;
+  left: max(12px, env(safe-area-inset-left));
+  right: calc(max(14px, env(safe-area-inset-right)) + 56px);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 38px 14px 14px;
+  background: rgba(14, 16, 20, .94); color: #f2eee7;
+  border-radius: 14px; box-shadow: 0 18px 44px rgba(0, 0, 0, .32);
+  font: 400 13px/1.45 system-ui, sans-serif;
+  opacity: 0; transform: translateY(16px); transition: opacity .3s ease, transform .3s ease;
+}
+.avis-logo[hidden] { display: none; }
+.avis-logo--visible { opacity: 1; transform: none; }
+@media (min-width: 620px) { .avis-logo { left: 50%; right: auto; width: 460px; margin-left: -230px; } }
+.avis-logo .logo-site.avis-logo__apercu {
+  flex: none; width: 64px; height: 64px; margin: 0; padding: 6px;
+  display: grid; place-items: center; border-radius: 10px; background: var(--surface, #fff);
+}
+.avis-logo__apercu svg { width: 100%; height: 100%; max-width: none; }
+.avis-logo__texte { min-width: 0; }
+.avis-logo__titre { margin: 0; font-weight: 600; font-size: 15px; }
+.avis-logo__detail { margin: 2px 0 0; color: #c9c4ba; font-size: 12.5px; }
+.avis-logo__actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.avis-logo__actions button {
+  padding: 9px 14px; border-radius: 999px; cursor: pointer;
+  font: 500 12px/1 system-ui, sans-serif; letter-spacing: .02em;
+}
+.avis-logo__oui { border: 0; background: #F7F4EE; color: #171614; }
+.avis-logo__non { border: 1px solid rgba(247, 244, 238, .45); background: transparent; color: #f2eee7; }
+.avis-logo__fermer {
+  position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; border: 0; background: transparent;
+  color: #c9c4ba; font-size: 20px; line-height: 1; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .avis-logo { transition: none; } }
 .rsvp__erreur { margin: 0; color: #9B3B30; font-size: 14px; text-align: center; }
 /* Decalage sous la barre d'apercu : padding du body (une marge sur .app
    "traversait" le body et allongeait la page de 44 px). */

@@ -25,7 +25,11 @@ var ClientInvitation = (function () {
     { cle: 'reception', titre: 'Réception', titreHe: 'סעודה', heure: true, obligatoire: false },
   ];
 
+  /* Ordre de presentation : les deux Toile de Jouy, les plus choisies,
+   * viennent en premier (galerie, exemples, theme par defaut). */
   var THEMES = [
+    { nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert' },
+    { nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu' },
     { nom: 'Marbre & Or', slug: 'marbre-or' },
     { nom: 'Botanique sauge', slug: 'botanique-sauge' },
     { nom: 'Nuit étoilée', slug: 'nuit-etoilee' },
@@ -36,8 +40,6 @@ var ClientInvitation = (function () {
     { nom: 'Dîner aux chandelles', slug: 'diner-chandelles' },
     { nom: 'Épuré minimaliste', slug: 'epure-minimaliste' },
     { nom: 'Bohème terracotta', slug: 'boheme-terracotta' },
-    { nom: 'Toile de Jouy vert', slug: 'toile-de-jouy-vert' },
-    { nom: 'Toile de Jouy bleu', slug: 'toile-de-jouy-bleu' },
   ];
 
   var COULEURS = [
@@ -266,7 +268,7 @@ var ClientInvitation = (function () {
         // 12 apercus (etape suivante), pas dans ce formulaire -- ces deux
         // valeurs par defaut restent utilisees en interne (accent par
         // defaut) mais ne sont plus demandees au client.
-        themeSlug: 'marbre-or',
+        themeSlug: 'toile-de-jouy-vert',
         couleurNom: 'Or',
         verset: VERSETS_PROPOSES[0],
         lien: '',
@@ -308,7 +310,7 @@ var ClientInvitation = (function () {
         memoire: '',
       },
       site: {
-        themeSlug: 'marbre-or',
+        themeSlug: 'toile-de-jouy-vert',
         couleurNom: 'Or',
         verset: VERSETS_PROPOSES[0],
         lien: '',

@@ -23,19 +23,43 @@
   </div>
 
   <main>
-    <h1 class="titre">Quels événements souhaitez-vous ?</h1>
+    <h1 class="titre">Composez le déroulé de votre mariage</h1>
     <p class="chapo">
-      Tout le monde ne fait pas un henné, ni un Chabbat 'Hatan, et la houppa n'a pas toujours
-      lieu au même endroit ni au même moment que la réception. Composez votre propre déroulé
-      ci-dessous.
+      Chaque mariage est différent : tout le monde ne fait pas de henné ni de Chabbat 'Hatan, et la
+      houppa n'a pas toujours lieu au même endroit que la réception. Ici, vous choisissez
+      <strong>quels événements</strong> apparaissent sur votre invitation, <strong>dans quel ordre</strong>,
+      et <strong>lesquels partagent la même carte</strong>.
     </p>
 
-    <ul class="legende" aria-hidden="true">
-      <li><span class="legende__icone">+</span> Ajouter un événement</li>
-      <li><span class="legende__icone">↕</span> Glisser une carte pour la réordonner</li>
-      <li><span class="legende__icone">⊕</span> La déposer sur une autre pour les réunir en une seule carte</li>
-      <li><span class="legende__icone">✕</span> La retirer</li>
-    </ul>
+    <section class="demo-deroule" aria-labelledby="demo-titre">
+      <div class="demo-deroule__video">
+        <video id="demo-video" src="demo/composition.mp4" poster="demo/composition.jpg"
+               muted loop playsinline preload="metadata" aria-describedby="demo-etapes"></video>
+        <button type="button" class="demo-deroule__lecture" id="demo-lecture" aria-label="Lire la vidéo de démonstration">
+          <span aria-hidden="true">▶</span> Voir la démo · 30 s
+        </button>
+      </div>
+      <div class="demo-deroule__texte">
+        <h2 class="demo-deroule__titre" id="demo-titre">Comment ça marche ?</h2>
+        <ol class="demo-deroule__etapes" id="demo-etapes">
+          <li><span class="demo-deroule__num">1</span><div><strong>Ajoutez vos événements</strong>
+            Touchez les boutons <em>+ Henné</em>, <em>+ Mairie</em>… Chacun se range tout seul à sa place
+            habituelle. La houppa est déjà là : elle est indispensable.</div></li>
+          <li><span class="demo-deroule__num">2</span><div><strong>Changez l'ordre si besoin</strong>
+            Maintenez une carte et glissez-la plus haut ou plus bas. L'ordre de la liste est
+            l'ordre de votre invitation.</div></li>
+          <li><span class="demo-deroule__num">3</span><div><strong>Réunissez deux événements</strong>
+            Houppa et réception au même endroit, le même soir ? Déposez la carte <em>Réception</em>
+            <u>au centre</u> de la carte <em>Houppa</em> : elles ne forment plus qu'une seule carte,
+            avec une seule adresse. Le bouton <span class="demo-deroule__icone">⤢</span> les sépare.</div></li>
+          <li><span class="demo-deroule__num">4</span><div><strong>Retirez ce qui ne vous concerne pas</strong>
+            avec la croix <span class="demo-deroule__icone">✕</span>. Rien n'est définitif : vous pourrez
+            revenir ici à tout moment.</div></li>
+        </ol>
+      </div>
+    </section>
+
+    <p class="conf-repere">Votre déroulé — <span>1 ligne = 1 carte sur votre invitation</span></p>
 
     <p id="message-erreur" class="message-erreur" hidden></p>
 
@@ -64,5 +88,17 @@
 <script src="client.js"></script>
 <script src="entete.js"></script>
 <script src="configurateur.js"></script>
+<script>
+  /* Video de demonstration : lecture au clic (avec controles), et lecture
+   * muette automatique quand elle entre a l'ecran sur ordinateur. */
+  (function () {
+    var v = document.getElementById('demo-video');
+    var b = document.getElementById('demo-lecture');
+    if (!v || !b) return;
+    function lancer() { b.hidden = true; v.controls = true; v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+    b.addEventListener('click', lancer);
+    v.addEventListener('error', function () { v.closest('.demo-deroule').classList.add('demo-deroule--sans-video'); });
+  })();
+</script>
 </body>
 </html>
