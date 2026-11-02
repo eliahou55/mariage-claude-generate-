@@ -488,6 +488,14 @@
     document.getElementById('note-theme').textContent = 'Thème choisi : ' + nomTheme
       + '. Vous pourrez en essayer d’autres une fois votre carte créée.';
   }
+  // Modification d'une invitation existante (depuis l'espace) : on revoit sa
+  // carte dans son theme actuel, ou l'on peut conserver ce theme ou en changer.
+  var modification = false;
+  try { modification = !!window.localStorage.getItem(CLE_STOCKAGE_MODIF); } catch (e) { /* ignore */ }
+  if (modification) {
+    document.getElementById('btn-voir').textContent = 'Enregistrer et voir ma carte';
+    document.getElementById('note-theme').textContent = 'Vous retrouverez ensuite votre carte dans son thème actuel ; vous pourrez le conserver ou en choisir un autre.';
+  }
   // Avant de partir creer son logo : on enregistre la saisie en cours.
   document.getElementById('lien-logo').addEventListener('click', function () { sauvegarder(); });
 
@@ -564,6 +572,8 @@
     // Theme deja choisi sur un exemple : directement sa carte, dans ce theme.
     window.location.href = depuisExemple
       ? '../apercu/' + parcours.theme + '/index.html'
-      : '../apercu/index.html';
+      : modification
+        ? '../apercu/' + (donnees.site.themeSlug || 'toile-de-jouy-vert') + '/index.html'
+        : '../apercu/index.html';
   });
 })();

@@ -48,7 +48,16 @@
         <p class="espace__infos" id="inv-infos">—</p>
       </div>
       <div class="espace__actions">
-        <button type="button" class="btn btn--secondaire btn--petit" id="btn-modifier">Modifier</button>
+        <div class="espace__modifier">
+          <button type="button" class="btn btn--secondaire btn--petit" id="btn-modifier" aria-haspopup="true" aria-expanded="false">Modifier ▾</button>
+          <div class="menu-modifier" id="menu-modifier" hidden>
+            <button type="button" data-modifier="informations"><strong>Informations et événements</strong><span>Prénoms, familles, dates, adresses</span></button>
+            <button type="button" data-modifier="carte"><strong>Ma carte</strong><span>Voir et conserver le thème actuel</span></button>
+            <button type="button" data-modifier="themes"><strong>Thème et musique</strong><span>Comparer les 12 thèmes</span></button>
+            <button type="button" data-modifier="logo"><strong>Logo</strong><span>Style, initiales, couleurs</span></button>
+            <button type="button" data-modifier="icone"><strong>Icône de l'invitation</strong><span>Votre logo ou une image</span></button>
+          </div>
+        </div>
         <a class="btn btn--secondaire btn--petit" id="btn-voir" target="_blank" rel="noopener">Voir l'invitation</a>
       </div>
     </header>

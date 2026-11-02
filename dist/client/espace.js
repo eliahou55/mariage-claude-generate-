@@ -41,6 +41,9 @@
       if (inv.brouillon) window.localStorage.setItem(CLE_STOCKAGE_BROUILLON, JSON.stringify(inv.brouillon));
       if (inv.donnees) window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(inv.donnees));
       window.localStorage.setItem(CLE_STOCKAGE_INVITATION, inv.id);
+      // Mode modification : on n'est plus dans le parcours « exemple ».
+      window.localStorage.setItem(CLE_STOCKAGE_MODIF, inv.id);
+      window.localStorage.removeItem(CLE_STOCKAGE_PARCOURS);
     } catch (e) { /* ignore */ }
   }
 
@@ -188,7 +191,30 @@
     (navigator.clipboard ? navigator.clipboard.writeText(champ.value) : Promise.reject()).catch(function () { champ.select(); document.execCommand('copy'); })
       .then(function () { b.textContent = 'Copié ✓'; setTimeout(function () { b.textContent = 'Copier'; }, 1600); });
   });
-  $('btn-modifier').addEventListener('click', function () { chargerLocalement(courante); window.location.href = 'formulaire.html'; });
+  /* « Modifier » : on choisit ce qu'on veut changer, et on y va directement
+   * (au lieu de toujours repasser par tout le formulaire). */
+  var menuModif = $('menu-modifier');
+  $('btn-modifier').addEventListener('click', function (e) {
+    e.stopPropagation();
+    menuModif.hidden = !menuModif.hidden;
+    this.setAttribute('aria-expanded', menuModif.hidden ? 'false' : 'true');
+  });
+  document.addEventListener('click', function (e) { if (!menuModif.contains(e.target)) menuModif.hidden = true; });
+  Array.prototype.forEach.call(menuModif.querySelectorAll('[data-modifier]'), function (b) {
+    b.addEventListener('click', function () {
+      chargerLocalement(courante);
+      var D = (courante && courante.donnees) || {};
+      var theme = (D.site && D.site.themeSlug) || 'toile-de-jouy-vert';
+      var cibles = {
+        informations: 'formulaire.html',
+        themes: '../apercu/index.html',
+        carte: '../apercu/' + theme + '/index.html',
+        logo: 'logo.html?retour=publication',
+        icone: 'publication.html#icone-titre',
+      };
+      window.location.href = cibles[b.getAttribute('data-modifier')] || 'formulaire.html';
+    });
+  });
   $('btn-publier').addEventListener('click', function () { chargerLocalement(courante); window.location.href = 'publication.html'; });
 
   /* ---------------- Demarrage ---------------- */

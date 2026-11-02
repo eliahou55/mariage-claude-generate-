@@ -113,6 +113,16 @@
       });
       return;
     }
+    // Theme deja retenu (modification depuis l'espace, ou theme choisi sur un
+    // exemple) et c'est celui-ci : on le conserve, on ne le « choisit » pas.
+    var modif = false, parcours = null;
+    try {
+      modif = !!window.localStorage.getItem(CLE_STOCKAGE_MODIF);
+      parcours = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_PARCOURS) || 'null');
+    } catch (e) { /* ignore */ }
+    var dejaRetenu = (modif || (parcours && parcours.origine === 'exemple')) && D.site && D.site.themeSlug === m[1];
+    if (dejaRetenu) bouton.textContent = 'Conserver ce thème';
+    else if (modif) { bouton.textContent = 'Choisir ce thème à la place'; bouton.classList.add('apercu-bar__choisir--long'); }
     bouton.addEventListener('click', function () {
       var nomTheme = (document.querySelector('.apercu-bar__name') || {}).textContent || '';
       try {

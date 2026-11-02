@@ -59,6 +59,7 @@ var SiteEntete = (function () {
   /** "Voir un exemple" : mariage fictif complet, sans toucher au brouillon. */
   function voirExemple() {
     try {
+      window.localStorage.removeItem(CLE_STOCKAGE_MODIF);
       var donnees = ClientInvitation.construireDonnees(ClientInvitation.exempleBrouillon());
       donnees.exemple = true;
       window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(donnees));

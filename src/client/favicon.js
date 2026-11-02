@@ -70,6 +70,25 @@ var FaviconInvitation = (function () {
     });
   }
 
+  /** Secours si le logo ne peut pas etre converti : les initiales dessinees
+   *  directement (aucune image SVG), dans la couleur du theme. Ne doit
+   *  jamais laisser l'invitation sans icone. */
+  function depuisInitiales(D) {
+    var theme = (D && D.site && D.site.themeSlug) || '';
+    var fond = FONDS[theme] || '#FDFCF9';
+    var encre = FONDS[theme] ? '#E8CF8E' : '#3A3630';
+    var c = canvas(), x = c.getContext('2d');
+    x.fillStyle = fond;
+    x.fillRect(0, 0, TAILLE, TAILLE);
+    var ini = D && D.couple ? [D.couple.marie.prenom, D.couple.mariee.prenom].map(function (p) { return String(p || '').trim().charAt(0).toUpperCase(); }).join('') : '';
+    x.fillStyle = encre;
+    x.textAlign = 'center';
+    x.textBaseline = 'middle';
+    x.font = '500 ' + Math.round(TAILLE * .46) + 'px "Cormorant Garamond", Georgia, serif';
+    x.fillText(ini || '♥', TAILLE / 2, TAILLE / 2 + TAILLE * .03);
+    return Promise.resolve(c.toDataURL('image/png'));
+  }
+
   /** Place l'icone dans la page (onglet + ecran d'accueil). */
   function appliquer(dataUrl) {
     if (!dataUrl) return;
@@ -81,5 +100,5 @@ var FaviconInvitation = (function () {
     });
   }
 
-  return { depuisFichier: depuisFichier, depuisLogo: depuisLogo, appliquer: appliquer };
+  return { depuisFichier: depuisFichier, depuisLogo: depuisLogo, depuisInitiales: depuisInitiales, appliquer: appliquer };
 })();

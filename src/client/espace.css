@@ -93,3 +93,13 @@
 .icone__boutons { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .icone__bouton { border: 0; background: none; padding: 0; font: 400 13px/1.4 var(--font-corps); color: var(--accent-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .icone__bouton[hidden] { display: none; }
+
+/* Menu « Modifier » : aller directement a ce qu'on veut changer. */
+.espace__modifier { position: relative; }
+.menu-modifier { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; width: min(300px, 86vw); padding: 6px; background: var(--surface, #fff); border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 18px 40px rgba(23, 22, 20, .14); }
+@media (max-width: 600px) { .menu-modifier { right: auto; left: 0; } }
+.menu-modifier[hidden] { display: none; }
+.menu-modifier button { display: block; width: 100%; padding: 11px 12px; border: 0; border-radius: 7px; background: none; text-align: left; cursor: pointer; font: inherit; color: var(--ink); }
+.menu-modifier button:hover, .menu-modifier button:focus-visible { background: var(--accent-bg); }
+.menu-modifier strong { display: block; font-weight: 500; font-size: 14px; }
+.menu-modifier span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }

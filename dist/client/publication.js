@@ -47,7 +47,8 @@
     document.getElementById('icone-source').textContent = image
       ? 'Votre image, affichée dans l’onglet et sur l’écran d’accueil du téléphone de vos invités.'
       : 'Votre logo, affiché dans l’onglet et sur l’écran d’accueil du téléphone de vos invités.';
-    var calcul = image ? Promise.resolve(image) : FaviconInvitation.depuisLogo(D);
+    // Logo impossible a convertir : les initiales, plutot qu'aucune icone.
+    var calcul = image ? Promise.resolve(image) : FaviconInvitation.depuisLogo(D).catch(function () { return FaviconInvitation.depuisInitiales(D); });
     return calcul.then(function (url) {
       D.site.favicon = url;
       apercuIcone.src = url;
@@ -153,6 +154,7 @@
     b.disabled = true;
     enregistrer().then(function () {
       b.textContent = 'Modifications enregistrées ✓';
+      try { window.localStorage.removeItem(CLE_STOCKAGE_MODIF); } catch (e) { /* ignore */ }
       setTimeout(function () { window.location.href = 'espace.html'; }, 900);
     }, function () { b.disabled = false; erreur('Enregistrement impossible. Réessayez.'); });
   });

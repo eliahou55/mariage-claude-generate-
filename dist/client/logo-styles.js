@@ -21,6 +21,12 @@ var LogoStyles = (function () {
   function echappe(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
+  /** Majuscules d'un texte DEJA echappe, sans toucher aux entites :
+   *  « &amp; » devenu « &AMP; » rendait le SVG invalide hors de la page
+   *  (icone de l'invitation impossible a generer). */
+  function majuscules(s) {
+    return String(s).replace(/&[a-z]+;|[^&]+/g, function (m) { return m.charAt(0) === '&' ? m : m.toUpperCase(); });
+  }
   function svg(contenu, defs) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" class="logo-svg">' + (defs ? '<defs>' + defs + '</defs>' : '') + contenu + '</svg>';
   }
@@ -84,7 +90,7 @@ var LogoStyles = (function () {
     if (largeurTxt > max) { var k = max / largeurTxt; taille = r2(taille * Math.max(.6, k)); espace = r2(espace * k * k); }
     return '<text x="150" y="' + y + '" text-anchor="middle" font-family="' + (o.police || 'Cormorant Garamond, serif') + '" font-weight="' + (o.graisse || 600) + '" font-size="' + taille +
       '" letter-spacing="' + espace + '" fill="' + couleur + '"' + (o.italique ? ' font-style="italic"' : '') + '>' +
-      (o.casse === false ? texte : texte.toUpperCase()) + '</text>';
+      (o.casse === false ? texte : majuscules(texte)) + '</text>';
   }
 
   function etincelle(x, y, r, c) {
@@ -570,7 +576,7 @@ var LogoStyles = (function () {
       dessin: function (a, b, c, t) {
         var id = 'arc-logo-' + (++uid), o = c.ornement;
         return svg('<circle cx="150" cy="150" r="96" fill="none" stroke="' + o + '" stroke-width=".9"/>' +
-          (t ? '<text font-family="Cormorant Garamond, serif" font-weight="600" font-size="13" letter-spacing="5" fill="' + o + '"><textPath href="#' + id + '" startOffset="50%" text-anchor="middle">' + t.toUpperCase() + '</textPath></text>' : '') +
+          (t ? '<text font-family="Cormorant Garamond, serif" font-weight="600" font-size="13" letter-spacing="5" fill="' + o + '"><textPath href="#' + id + '" startOffset="50%" text-anchor="middle">' + majuscules(t) + '</textPath></text>' : '') +
           etincelle(44, 150, 3.4, o) + etincelle(256, 150, 3.4, o) +
           monogramme(a, b, { couleur: c.lettres, taille: 96, cy: 162, dx: 22, dy: 32, police: 'Bodoni Moda, serif' }),
           '<path id="' + id + '" d="M42 150A108 108 0 0 1 258 150"/>');

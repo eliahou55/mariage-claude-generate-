@@ -20,3 +20,7 @@ var CLE_STOCKAGE_INVITATION = 'invitation-client:id';
 // clique « Choisir ce theme pour ma carte » sur un theme d'exemple ; absent
 // s'il est parti de « Creer gratuitement » (cf. formulaire.js, logo.js).
 var CLE_STOCKAGE_PARCOURS = 'invitation-client:parcours';
+// Modification d'une invitation existante depuis l'espace des maries (id de
+// l'invitation) : le formulaire et les themes s'adaptent (« Conserver ce
+// theme », « Enregistrer et voir ma carte »). Efface apres l'enregistrement.
+var CLE_STOCKAGE_MODIF = 'invitation-client:modification';
