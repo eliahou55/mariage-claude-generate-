@@ -88,6 +88,7 @@ body.modale-ouverte { overflow: hidden; }
 .site-entete__compte { display: flex; align-items: center; gap: 16px; }
 .btn--petit { min-height: 40px; padding: 8px 20px; font-size: 13.5px; }
 .site-entete__burger { display: none; }
+.site-entete__nav-compte { display: none; }
 
 .site-compte { position: relative; }
 .site-compte__bouton {
@@ -143,6 +144,10 @@ body.modale-ouverte { overflow: hidden; }
   .site-entete__nav a, .site-entete__nav .site-entete__lien-btn { padding: 14px 0; border-bottom: 1px solid var(--rule); text-align: left; font-size: 16px; }
   .site-entete__compte { margin-left: auto; gap: 10px; }
   .site-entete__compte > .site-entete__lien-btn { display: none; }
+  /* Liens de compte dans le menu burger, en bas, separes du reste. */
+  .site-entete__nav-compte { display: flex; flex-direction: column; margin-top: 18px; }
+  .site-entete__nav-compte:empty { display: none; }
+  .site-entete__nav-compte .site-entete__lien-btn:last-child { border-bottom: 0; color: var(--accent-ink); }
   .site-compte__nom { display: none; }
   .site-compte__bouton { padding-right: 5px; }
 }
@@ -531,3 +536,10 @@ body.site #form-invitation > *, body.site .lecteur-formulaire, body.site .lecteu
 .modale__oubli[hidden] { display: none; }
 .modale__info { margin: 0; color: #3D6B35; font-size: 13.5px; }
 
+
+/* Menu burger (mobile) : tous les liens a la meme taille. */
+@media (max-width: 900px) {
+  .site-entete .site-entete__nav a, .site-entete .site-entete__nav .site-entete__lien-btn { font-size: 13px; letter-spacing: .2em; }
+}
+/* Ordinateur : un peu d'air entre « Se connecter » et « Creer un compte ». */
+.site-entete__compte { gap: 24px; }

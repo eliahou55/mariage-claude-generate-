@@ -74,3 +74,15 @@ Principes retenus :
 - **Démo du configurateur** : vidéo de 30 s (`client/demo/composition.mp4`)
   et explication en 4 points sur la page « Composez le déroulé ». La vidéo se
   régénère avec `node scripts/video-demo.cjs` (dist/ servi sur le port 8765).
+
+## Révision (2 novembre 2026) : évaluation « premier visiteur » et corrections
+
+Évaluation sur iPhone simulé, en se mettant à la place d'un visiteur pressé :
+l'outil du configurateur arrivait après 2,5 écrans d'explications, le
+formulaire faisait 3 écrans avec les seuls champs obligatoires en bas, la
+galerie montrait des motifs sans les prénoms, l'exemple affichait des étapes
+« faites » et un Chabbat 'Hatan avant la houppa. Corrigé : outil d'abord,
+essentiel d'abord, prénoms sur chaque vignette, exemple réaliste (houppa à la
+synagogue et réception en salle séparées), logo selon l'origine du visiteur
+(exemple → section Logo au formulaire puis sa carte ; « Créer gratuitement » →
+pastille « Changer le logo » sur les thèmes), en-tête allégé sur mobile.

@@ -185,20 +185,32 @@ var SiteEntete = (function () {
   /* ---------------- En-tete ---------------- */
 
   var zoneCompte = null;
+  var zoneCompteMenu = null;   // copie des liens de compte dans le menu burger (mobile)
   function rendreCompte() {
     if (!zoneCompte) return;
     var c = lireCompte();
     zoneCompte.innerHTML = '';
+    if (zoneCompteMenu) zoneCompteMenu.innerHTML = '';
     if (!compteConnu) return;   // evite le clignotement "Se connecter" -> prenom
     if (!c) {
       var bCo = el('button', 'site-entete__lien-btn', 'Se connecter');
       bCo.type = 'button';
       bCo.addEventListener('click', function () { ouvrir('connexion'); });
-      var bIns = el('button', 'btn btn--principal btn--petit', 'Créer un compte');
+      // Pas de gros bouton noir : de simples liens (le compte n'est demande
+      // qu'a la publication). Sur mobile, ils passent dans le menu burger.
+      var bIns = el('button', 'site-entete__lien-btn', 'Créer un compte');
       bIns.type = 'button';
       bIns.addEventListener('click', function () { ouvrir('inscription'); });
       zoneCompte.appendChild(bCo);
       zoneCompte.appendChild(bIns);
+      if (zoneCompteMenu) {
+        [['Se connecter', 'connexion'], ['Créer un compte', 'inscription']].forEach(function (x) {
+          var b = el('button', 'site-entete__lien-btn', x[0]);
+          b.type = 'button';
+          b.addEventListener('click', function () { hote.querySelector('.site-entete').classList.remove('site-entete--ouvert'); ouvrir(x[1]); });
+          zoneCompteMenu.appendChild(b);
+        });
+      }
       return;
     }
     var bouton = el('button', 'site-compte__bouton', '<span class="site-compte__avatar">' + (c.prenom.charAt(0) || '?').toUpperCase() + '</span><span class="site-compte__nom">' + c.prenom.replace(/</g, '&lt;') + '</span>');
@@ -241,12 +253,14 @@ var SiteEntete = (function () {
       '    <a href="' + accueil + '#offre">Tarif</a>' +
       '    <a href="' + accueil + '#faq">Questions</a>' +
       '    <button type="button" class="site-entete__lien-btn" data-exemple>Essayer des exemples</button>' +
+      '    <div class="site-entete__nav-compte"></div>' +
       '  </nav>' +
       '  <div class="site-entete__compte"></div>' +
       '  <button type="button" class="site-entete__burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>' +
       '</div>';
     hote.appendChild(h);
     zoneCompte = h.querySelector('.site-entete__compte');
+    zoneCompteMenu = h.querySelector('.site-entete__nav-compte');
     h.querySelector('[data-exemple]').addEventListener('click', voirExemple);
 
     var burger = h.querySelector('.site-entete__burger');
@@ -260,7 +274,11 @@ var SiteEntete = (function () {
     window.addEventListener('scroll', function () { h.classList.toggle('site-entete--defile', window.scrollY > 8); }, { passive: true });
     rendreCompte();
 
-    if (ETAPE) {
+    // Mariage d'exemple : pas de barre d'etapes (le visiteur n'a rien rempli,
+    // des coches « Evenements / Informations » le derouteraient).
+    var exemple = false;
+    try { exemple = ETAPE === 3 && !!(JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_DONNEES) || '{}').exemple); } catch (e) { /* ignore */ }
+    if (ETAPE && !exemple) {
       var barre = el('nav', 'etapes-parcours');
       barre.setAttribute('aria-label', 'Étapes de création');
       barre.innerHTML = '<ol>' + ETAPES.map(function (e) {

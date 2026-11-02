@@ -26,40 +26,33 @@ généré par `pageIndexApercus()`), puis la page d'un thème (`apercu/<slug>/`,
 par `src/app.js`) → 4. Publication (`publication.html`, paiement Stripe).
 Les données circulent par `localStorage` (clés dans `src/stockage.js`).
 
-## Dernière session (novembre 2026, Claude Code dans le navigateur)
+## Dernière session (2 novembre 2026, Claude Code sur l'ordinateur, avec l'Excel)
 
-Branche `claude/adoring-brahmagupta-rgw7ew`, fusionnée dans `main`.
+Évaluation du parcours sur iPhone simulé (Playwright), puis 6 commits sur `main` :
 
-1. **Exemples** : « Essayer des exemples » ne propose plus de créer un logo
-   (l'encart logo de la galerie est masqué quand `D.exemple`).
-2. **Logo, en trois temps** :
-   - *Formulaire* : la section « Votre logo » explique qu'un logo par défaut
-     (initiales en monogramme) est créé automatiquement, avec son aperçu
-     (`rendreLogoAuto()` dans `formulaire.js`).
-   - *Page du thème* : après que les cartes d'événements ont été vues, un
-     bandeau « Vous aimez votre logo ? » apparaît (`avisLogo()` dans
-     `src/app.js`, styles `.avis-logo` dans `src/base.css`). « Oui » →
-     retenu dans `localStorage` (`invitation-client:avis-logo`). « Pas
-     tellement » → `client/logo.html?retour=apercu&theme=<slug>`. Une seule fois,
-     jamais pour l'exemple ni si un logo perso ou « aucun » est déjà choisi.
-   - *Allers-retours* : après « Choisir ce logo », retour automatique sur le
-     thème (`?logo=maj`), le nouveau logo apparaît en douceur
-     (`.logo-site--nouveau`). Un lien discret « Modifier le logo » sous le logo
-     (`retoursLogo()` dans `app.js`) permet de revenir. **Consigne du
-     propriétaire : ne jamais reposer de question ni donner l'impression qu'on
-     cherche à tout prix sa satisfaction. Rester subtil et neutre.**
-     Ces éléments n'existent que dans l'aperçu des mariés (jamais sur
-     l'invitation publiée `/i/…`).
-3. **Thèmes vedettes** : Toile de Jouy vert et bleu (les plus vendus) sont en
-   premier partout (ordre de `THEMES` dans `build.mjs` et `client.js`, accueil,
-   carrousel, galerie), avec la pastille « Le plus choisi ». Le thème par défaut
-   est `toile-de-jouy-vert`.
-4. **Configurateur** : nouveau titre « Composez le déroulé de votre mariage »,
-   explication en 4 étapes et vidéo démo de 30 s
-   (`src/client/demo/composition.mp4` + `.jpg`). Pour la régénérer : servir
-   `dist/` sur le port 8765 (`python3 -m http.server 8765 -d dist`), puis
-   `node scripts/video-demo.cjs` (Playwright + ffmpeg).
+1. **Houppa / réception** : deux cartes séparées par défaut (houppa l'après-midi
+   à la synagogue, réception le soir en salle) ; la date de la houppa est
+   reprise pour la réception. Exemple corrigé (cartes séparées, Chabbat 'Hatan
+   le samedi suivant). Mémoire des grands-parents : police de titre du thème,
+   hébreu en police hébraïque, phrase masquée sans vrai nom (`nomMemoire()`).
+2. **Logo, deux parcours** (clé `CLE_STOCKAGE_PARCOURS` dans `stockage.js`) :
+   - *Depuis un exemple* : « Choisir ce thème pour ma carte » retient le thème ;
+     le formulaire montre la section Logo (en fin de formulaire) et mène
+     directement à la carte ; sur le générateur, « Choisir ce logo et découvrir
+     ma carte » ouvre l'invitation.
+   - *Depuis « Créer gratuitement »* (efface la clé) : pas de section Logo ;
+     pastille flottante neutre « ✎ Changer le logo » sur chaque thème
+     (`pastilleLogo()` dans `app.js`). L'ancien bandeau « Vous aimez votre
+     logo ? » est supprimé. **Consigne : rester neutre, ne jamais demander d'avis.**
+3. **Configurateur** : l'outil d'abord, explication + démo repliées (`<details>`).
+4. **Formulaire** : mariés → événements → familles / verset et musique repliés
+   → logo ; l'erreur dit quel champ manque et y amène.
+5. **Galerie** : prénoms du couple sur chaque vignette dans la police/couleur du
+   thème (`identite()` dans `build.mjs`), thèmes avant musique et logo.
+6. **En-tête** : plus de bouton noir ; sur mobile, connexion et inscription dans
+   le burger. Pas de barre d'étapes pour l'exemple. **Favicon Sasson**
+   (`src/client/icones/`, copie à la racine : `sasson-favicon.png`, et
+   `dist/favicon.ico` écrit par le build).
 
-À vérifier au prochain `npm run build` avec l'Excel : que `dist/apercu/index.html`
-régénéré garde bien l'ordre des thèmes, les pastilles « Le plus choisi » et le
-masquage de l'encart logo pour l'exemple (normalement oui, `build.mjs` est à jour).
+Pour tester en local sans Python : un petit serveur statique Node sur `dist/`
+(`serve` réécrit les URL et casse les chemins relatifs de `client/`).

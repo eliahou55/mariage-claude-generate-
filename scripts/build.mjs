@@ -703,6 +703,9 @@ function pageIndexApercus(donnees) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="icon" type="image/png" sizes="32x32" href="../client/icones/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="../client/icones/favicon-192.png">
+<link rel="apple-touch-icon" href="../client/icones/apple-touch-icon.png">
 ${policesNoms ? `<link rel="stylesheet" href="${echappe(policesNoms)}">\n` : ''}<link rel="stylesheet" href="../client/client.css">
 <link rel="stylesheet" href="../client/site.css">
 <link rel="stylesheet" href="../client/lecteur-musique.css">
@@ -933,6 +936,9 @@ async function main() {
     '',
   ].join('\n'), 'utf8');
   await copierDossier(path.join(PROJECT, 'src', 'client'), path.join(DIST, 'client'));
+  // Icone Sasson a la racine : les navigateurs la demandent d'office
+  // (/favicon.ico), meme sur les pages qui n'en declarent pas.
+  await fs.copyFile(path.join(PROJECT, 'src', 'client', 'icones', 'favicon-48.png'), path.join(DIST, 'favicon.ico'));
 
   // data/invitation.json
   await fs.mkdir(path.join(DIST, 'data'), { recursive: true });
