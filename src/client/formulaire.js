@@ -323,6 +323,23 @@
       dateInput.addEventListener('change', function () { majDateHebraique(dateInput, dateHeInput); });
       if (!dateHeInput.value) majDateHebraique(dateInput, dateHeInput);
     });
+
+    // Houppa et reception separees ont presque toujours lieu le meme jour :
+    // la date de la houppa est reprise pour la reception tant que celle-ci
+    // n'a pas ete saisie (ou qu'elle suivait encore la houppa).
+    var dHouppa = document.getElementById('houppa-date');
+    var dRecep = document.getElementById('reception-date');
+    if (dHouppa && dRecep) {
+      var precedente = dHouppa.value;
+      dHouppa.addEventListener('change', function () {
+        if (!dRecep.value || dRecep.value === precedente) {
+          dRecep.value = dHouppa.value;
+          var he = document.getElementById('reception-datehe');
+          if (he) { he.value = ''; majDateHebraique(dRecep, he); }
+        }
+        precedente = dHouppa.value;
+      });
+    }
   }
 
   /* --- Collecte : DOM -> brouillon --- */

@@ -167,6 +167,17 @@
     return n;
   }
 
+  /** Un nom de la memoire des grands-parents, dans la police des noms du
+   *  theme ; les passages en hebreu (ex. « ז״ל ») dans sa police hebraique. */
+  function nomMemoire(nom) {
+    var p = el('p', 'recit__memoire-nom');
+    nom.split(/([֐-׿][֐-׿"'״׳.\s]*[֐-׿״׳]|[֐-׿])/).forEach(function (bout, i) {
+      if (!bout) return;
+      p.appendChild(i % 2 ? he('span', 'recit__memoire-he', bout) : document.createTextNode(bout));
+    });
+    return p;
+  }
+
   /** Un prenom + son nom hebreu juste a cote (en face), au lieu d'une
    *  ligne hebraique separee et commune aux deux maries. */
   function construireNomPersonne(personne) {
@@ -546,11 +557,16 @@
     ligneSi(det, ev.adresse, 'recit__adresse');
     recit.appendChild(det);
 
-    if (D.familles.memoire) {
+    // Memoire des grands-parents : la phrase n'apparait que s'il y a au
+    // moins un vrai nom (un champ fait d'espaces, de tirets ou de retours a
+    // la ligne ne compte pas).
+    var nomsMemoire = String(D.familles.memoire || '').split(/\r?\n|;/)
+      .map(function (s) { return s.trim(); })
+      .filter(function (s) { return /[A-Za-zÀ-ÿ֐-׿]/.test(s); });
+    if (nomsMemoire.length) {
       var mem = el('div', 'recit__memoire');
       mem.appendChild(el('p', 'recit__memoire-intro', 'En ce jour solennel, nous avons une pensée émue pour la mémoire bénie de nos grands-parents.'));
-      D.familles.memoire.split(/\r?\n|;/).map(function (s) { return s.trim(); }).filter(Boolean)
-        .forEach(function (nom) { mem.appendChild(el('p', 'recit__memoire-nom', nom)); });
+      nomsMemoire.forEach(function (nom) { mem.appendChild(nomMemoire(nom)); });
       recit.appendChild(mem);
     }
 

@@ -697,13 +697,17 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
   line-height: 1.65;
   color: var(--muted);
 }
+/* Memes police et couleur que les noms des maries (police de titre du
+   theme), l'hebreu dans la police hebraique du theme. */
 .recit__memoire-nom {
   margin: 0;
-  font-family: var(--font-corps);
-  font-style: italic;
-  font-size: 14px;
-  color: var(--ink);
+  font-family: var(--font-titre);
+  font-style: normal;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--accent-ink);
 }
+.recit__memoire-he { font-family: var(--font-he); font-size: .95em; unicode-bidi: isolate; }
 
 /* Le bloc familles reutilise dans la carte houppa perd son
    espacement de pleine page (deja a l'interieur d'une carte). */

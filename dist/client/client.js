@@ -275,16 +275,17 @@ var ClientInvitation = (function () {
         musique: '',   // vide = MUSIQUE_DEFAUT (Bereshit Olam) a la construction
       },
       // Chaque "groupe" est une carte sur l'invitation finale : un tableau
-      // d'une ou plusieurs cles d'evenements. [['houppa']] par defaut (une
-      // carte, un evenement). Deposer un groupe sur un autre les fusionne
-      // en UN tableau (n'importe quelle paire, pas seulement houppa/reception).
-      groupes: [['houppa']],
+      // d'une ou plusieurs cles d'evenements. Par defaut, houppa et
+      // reception en deux cartes (cas le plus courant : houppa l'apres-midi
+      // a la synagogue, reception le soir dans une salle). Deposer un groupe
+      // sur un autre les fusionne en UN tableau.
+      groupes: [['houppa'], ['reception']],
       evenementsDonnees: {},   // { cle: { date, heure, dateHe, lieu, adresse } }
     };
   }
 
   /** Brouillon factice complet (couple, familles et les 5 evenements,
-   *  houppa+reception fusionnes) pour le bouton "Voir un exemple" de la
+   *  houppa et reception en deux cartes) pour le bouton "Voir un exemple" de la
    *  page d'accueil -- genere entierement ici, jamais lu depuis l'Excel
    *  (qui contient les vraies donnees d'un client). Permet de visiter
    *  directement la galerie des 12 themes sans remplir le formulaire. */
@@ -307,7 +308,7 @@ var ClientInvitation = (function () {
         grandsParentsMariePapa: 'Papi Max & Mami Rosette',
         grandsParentsMarieeMaman: 'Papi Albert & Mami Suzanne',
         grandsParentsMarieePapa: 'Papi Léon & Mami Paulette',
-        memoire: '',
+        memoire: 'Eliahou Attali ז״ל\nRachel Touitou ז״ל',
       },
       site: {
         themeSlug: 'toile-de-jouy-vert',
@@ -316,13 +317,16 @@ var ClientInvitation = (function () {
         lien: '',
         musique: '',   // aucune choisie -> MUSIQUE_DEFAUT (Bereshit Olam)
       },
-      groupes: [['mairie'], ['henne'], ['houppa', 'reception'], ['chabbat']],
+      // Cas le plus courant : houppa l'apres-midi a la synagogue, reception
+      // le soir dans une salle (deux cartes) ; Chabbat 'Hatan le samedi
+      // qui suit le mariage (dimanche 20 -> samedi 26).
+      groupes: [['mairie'], ['henne'], ['houppa'], ['reception'], ['chabbat']],
       evenementsDonnees: {
         mairie: { date: '2027-06-15', heure: '10:00', dateHe: exempleDateHe('2027-06-15'), lieu: 'Mairie de Vincennes', adresse: '53 Rue de Fontenay, 94300 Vincennes' },
         henne: { date: '2027-06-17', heure: '20:00', dateHe: exempleDateHe('2027-06-17'), lieu: 'Salle Les Orangers', adresse: '12 Avenue des Palmiers, 94100 Saint-Maur-des-Fossés' },
-        houppa: { date: '2027-06-20', heure: '19:00', dateHe: exempleDateHe('2027-06-20'), lieu: 'Domaine de la Roseraie', adresse: '4 Allée des Tilleuls, 78000 Versailles' },
-        reception: { date: '2027-06-20', heure: '', dateHe: exempleDateHe('2027-06-20'), lieu: 'Domaine de la Roseraie', adresse: '4 Allée des Tilleuls, 78000 Versailles' },
-        chabbat: { date: '2027-06-19', heure: '', dateHe: exempleDateHe('2027-06-19'), lieu: "Synagogue Or 'Haïm", adresse: '8 Rue du Chabbat, 75011 Paris' },
+        houppa: { date: '2027-06-20', heure: '16:30', dateHe: exempleDateHe('2027-06-20'), lieu: 'Grande Synagogue de la Victoire', adresse: '44 Rue de la Victoire, 75009 Paris' },
+        reception: { date: '2027-06-20', heure: '20:00', dateHe: exempleDateHe('2027-06-20'), lieu: 'Domaine de la Roseraie', adresse: '4 Allée des Tilleuls, 78000 Versailles' },
+        chabbat: { date: '2027-06-26', heure: '', dateHe: exempleDateHe('2027-06-26'), lieu: "Synagogue Or 'Haïm", adresse: '8 Rue du Chabbat, 75011 Paris' },
       },
     };
   }
