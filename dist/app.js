@@ -981,5 +981,37 @@
     }
   })();
 
+  /* ---------------------------------------------------------------- *
+   * Allers-retours avec le generateur de logo (pages d'apercu seulement)
+   * Pas de nouvelle question : un simple lien discret « Modifier le logo »
+   * sous le logo, toujours disponible, et au retour du generateur
+   * (?logo=maj) le nouveau logo apparait en douceur, a sa place.
+   * ---------------------------------------------------------------- */
+  (function retoursLogo() {
+    if (!document.querySelector('.apercu-bar') || !origineLocale || window.SASSON_PUBLIC || D.exemple) return;
+    if (D.site.logo === 'aucun') return;
+    var perso = !!(D.site.logo && D.site.logo.style);
+    var avisDonne = false;
+    try { avisDonne = !!window.localStorage.getItem('invitation-client:avis-logo'); } catch (e) { /* ignore */ }
+    // Logo par defaut jamais commente : c'est le bandeau qui s'en charge.
+    if (!perso && !avisDonne) return;
+
+    var m = /(?:^|\s)theme-([\w-]+)/.exec(document.body.className);
+    var slug = m ? m[1] : D.site.themeSlug;
+    var url = BASE + 'client/logo.html?retour=apercu&theme=' + encodeURIComponent(slug);
+    Array.prototype.forEach.call(document.querySelectorAll('.logo-site--accueil, .logo-site--invitation'), function (logo) {
+      var lien = el('a', 'logo-modifier', 'Modifier le logo');
+      lien.href = url;
+      logo.parentNode.insertBefore(lien, logo.nextSibling);
+    });
+
+    if (/[?&]logo=maj\b/.test(window.location.search)) {
+      Array.prototype.forEach.call(document.querySelectorAll('.logo-site--accueil, .logo-site--invitation'), function (logo) {
+        logo.classList.add('logo-site--nouveau');
+      });
+      try { window.history.replaceState(null, '', window.location.pathname); } catch (e) { /* ignore */ }
+    }
+  })();
+
   document.documentElement.classList.add('pret');
 })();

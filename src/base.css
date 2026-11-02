@@ -941,6 +941,21 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
   color: #c9c4ba; font-size: 20px; line-height: 1; cursor: pointer;
 }
 @media (prefers-reduced-motion: reduce) { .avis-logo { transition: none; } }
+/* Lien discret sous le logo (apercu du client) et apparition du nouveau logo */
+.logo-modifier {
+  display: block; width: max-content; margin: 2px auto 10px; padding: 4px 6px;
+  font: 400 11px/1.2 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent-ink); opacity: .6; text-decoration: none; border-bottom: 1px solid transparent;
+  transition: opacity .2s ease, border-color .2s ease;
+}
+.logo-modifier:hover, .logo-modifier:focus-visible { opacity: 1; border-bottom-color: currentColor; }
+.logo-site--nouveau { animation: logo-arrivee 1.4s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes logo-arrivee {
+  0% { opacity: 0; transform: scale(.86); filter: blur(3px); }
+  60% { opacity: 1; filter: none; }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .logo-site--nouveau { animation: none; } }
 .rsvp__erreur { margin: 0; color: #9B3B30; font-size: 14px; text-align: center; }
 /* Decalage sous la barre d'apercu : padding du body (une marge sur .app
    "traversait" le body et allongeait la page de 44 px). */

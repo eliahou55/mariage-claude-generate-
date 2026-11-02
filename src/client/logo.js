@@ -228,13 +228,17 @@
   var themeRetour = ((/[?&]theme=([\w-]+)/.exec(window.location.search) || [])[1]) || '';
   if (/[?&]retour=apercu/.test(window.location.search)) {
     var chapo = document.querySelector('.chapo');
-    if (chapo) chapo.textContent = 'Choisissons-en un qui vous ressemble. Vos initiales sont déjà en place : '
-      + 'faites défiler les logos, ajustez les couleurs si besoin, puis cliquez sur « Choisir ce logo ». '
-      + 'Vous reviendrez directement sur votre invitation.';
+    // Premier passage (depuis le bandeau) ou simple retouche : meme ton
+    // neutre, on explique le geste, sans jamais demander un avis.
+    var dejaPerso = !!(etat.choisi && etat.choisi.style);
+    if (chapo) chapo.textContent = (dejaPerso
+      ? 'Votre logo actuel est affiché. Changez de style, d’initiales ou de couleurs, puis cliquez sur « Choisir ce logo » : '
+      : 'Vos initiales sont déjà en place. Faites défiler les logos, ajustez les couleurs si besoin, puis cliquez sur « Choisir ce logo » : ')
+      + 'vous retrouverez aussitôt votre invitation avec ce logo.';
     var retourAccueil = document.querySelector('.barre-actions a[href="index.html"]');
     if (retourAccueil) {
       retourAccueil.href = themeRetour ? '../apercu/' + themeRetour + '/index.html' : '../apercu/index.html';
-      retourAccueil.textContent = '← Garder mon logo actuel';
+      retourAccueil.textContent = '← Retour à mon invitation';
     }
   }
 
@@ -264,7 +268,10 @@
     // Depuis la publication : retour automatique, l'icone suivra le nouveau logo.
     if (retour === 'publication') setTimeout(function () { window.location.href = 'publication.html'; }, 1200);
     // Depuis « Vous aimez votre logo ? » : retour sur le theme, avec le nouveau logo.
-    if (retour === 'apercu') setTimeout(function () { window.location.href = urlApercu; }, 1400);
+    if (retour === 'apercu') {
+      confirmation.textContent = 'Logo enregistré. Retour à votre invitation…';
+      setTimeout(function () { window.location.href = urlApercu + '?logo=maj'; }, 900);
+    }
     confirmation.hidden = false;
   });
 
