@@ -18,8 +18,19 @@ function html(corps, maxAge) {
   };
 }
 
+/** Adresse de l'invitation. Avec la reecriture /i/:slug -> fonction,
+ *  Netlify ne transmet PAS toujours le parametre ?slug= : on le relit
+ *  alors dans le chemin demande (/i/<adresse>), puis dans l'URL brute. */
+function lireSlug(event) {
+  const depuisChemin = (s) => (/\/i\/([^/?#]+)/.exec(String(s || '')) || [])[1] || '';
+  let brut = event.queryStringParameters?.slug || depuisChemin(event.path) || depuisChemin(event.rawUrl)
+    || depuisChemin(event.headers?.['x-nf-original-path']) || '';
+  try { brut = decodeURIComponent(brut); } catch (e) { /* tel quel */ }
+  return String(brut).toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 80);
+}
+
 export const handler = async (event) => {
-  const slug = String(event.queryStringParameters?.slug || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 80);
+  const slug = lireSlug(event);
   if (!slug) return html(PAGE, 60);
   try {
     const q = await getDb().collection('invitations').where('slug', '==', slug).where('statut', '==', 'publiee').limit(1).get();

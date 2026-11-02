@@ -30,12 +30,30 @@
     var e = null;
     try { e = JSON.parse(window.localStorage.getItem(CLE_LOGO) || 'null'); } catch (err) { /* ignore */ }
     e = e || {};
+    // Prenoms deja saisis : formulaire (brouillon), sinon invitation construite.
     var b = ClientInvitation.lireBrouillon();
     var p1 = (b.couple && b.couple.marie && b.couple.marie.prenom || '').trim();
     var p2 = (b.couple && b.couple.mariee && b.couple.mariee.prenom || '').trim();
-    if (!e.lettres) e.lettres = [(p1.charAt(0) || 'A').toUpperCase(), (p2.charAt(0) || 'B').toUpperCase()];
-    // Par defaut, les prenoms deja saisis dans le formulaire sous le logo.
-    if (e.texte == null) e.texte = p1 && p2 ? p1 + ' & ' + p2 : '';
+    if (!p1 || !p2) {
+      try {
+        var D = JSON.parse(window.localStorage.getItem(CLE_STOCKAGE_DONNEES) || 'null');
+        if (D && !D.exemple && D.couple) {
+          p1 = p1 || String(D.couple.marie && D.couple.marie.prenom || '').trim();
+          p2 = p2 || String(D.couple.mariee && D.couple.mariee.prenom || '').trim();
+        }
+      } catch (err) { /* ignore */ }
+    }
+    // Initiales et ligne de texte reprises des prenoms du formulaire : a la
+    // premiere visite, et a nouveau chaque fois que les prenoms ont change
+    // depuis (on ne redemande jamais ce qui a deja ete saisi plus haut).
+    var cle = p1 + '|' + p2;
+    if ((p1 || p2) && e.prenoms !== cle) {
+      e.lettres = [(p1.charAt(0) || 'A').toUpperCase(), (p2.charAt(0) || 'B').toUpperCase()];
+      e.texte = p1 && p2 ? p1 + ' & ' + p2 : '';
+      e.prenoms = cle;
+    }
+    if (!e.lettres) e.lettres = ['A', 'B'];
+    if (e.texte == null) e.texte = '';
     if (!FAMILLES[e.famille]) e.famille = 'trait';
     e.index = e.index && typeof e.index === 'object' ? e.index : { trait: 0, couleur: 0 };
     e.couleurs = e.couleurs || {};

@@ -708,6 +708,8 @@ a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !im
   color: var(--accent-ink);
 }
 .recit__memoire-he { font-family: var(--font-he); font-size: .95em; unicode-bidi: isolate; }
+/* « Une tenue conforme rejouira les maries. » : discrete, en fin de carte. */
+.recit__tenue { margin: 14px 0 0; font-size: 12.5px; font-style: italic; letter-spacing: .02em; color: var(--muted); opacity: .9; }
 
 /* Le bloc familles reutilise dans la carte houppa perd son
    espacement de pleine page (deja a l'interieur d'une carte). */

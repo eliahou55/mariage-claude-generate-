@@ -594,6 +594,9 @@
       }
     }
 
+    // Mention choisie par les maries (case du formulaire), en toute fin.
+    if (D.site && D.site.tenue) recit.appendChild(el('p', 'recit__tenue', 'Une tenue conforme réjouira les mariés.'));
+
     art.appendChild(recit);
     ajouteActions(art, ev);
 

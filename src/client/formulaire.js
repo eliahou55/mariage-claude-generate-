@@ -271,6 +271,15 @@
     var zone = document.getElementById('zone-evenements');
     while (zone.children.length > 1) zone.removeChild(zone.lastChild);   // garde le <h2>
 
+    // Les boutons Waze / Itineraire de l'invitation ouvrent l'adresse telle
+    // qu'elle est saisie : une adresse incomplete y envoie ailleurs.
+    var alerte = document.createElement('p');
+    alerte.className = 'alerte-adresse';
+    alerte.innerHTML = '<strong>Vérifiez bien chaque adresse.</strong> Les boutons « Waze » et « Itinéraire » '
+      + 'de votre invitation y conduisent vos invités : saisissez-la complète et exacte (numéro, rue, '
+      + 'code postal, ville), sinon ils risquent d’arriver au mauvais endroit.';
+    zone.appendChild(alerte);
+
     brouillon.groupes.forEach(function (groupe) {
       var defs = groupe.map(ClientInvitation.infoEvenement).filter(Boolean);
       if (!defs.length) return;
@@ -315,6 +324,22 @@
       champ(grille, prefixe + '-lieu', 'Lieu', 'text', saisie.lieu, false);
       var adresse = champ(grille, prefixe + '-adresse', 'Adresse', 'text', saisie.adresse, false, true);
       adresse.placeholder = 'Numéro, rue, code postal, ville';
+      // Lien pour verifier l'adresse sur la carte, avant que les invites ne
+      // s'en servent : exactement la recherche du bouton « Itineraire »
+      // (l'adresse seule, comme urlMaps() dans client.js).
+      var verif = document.createElement('a');
+      verif.className = 'verif-adresse';
+      verif.target = '_blank';
+      verif.rel = 'noopener';
+      verif.textContent = 'Vérifier cette adresse sur la carte ↗';
+      function majVerif() {
+        var q = adresse.value.trim();
+        verif.hidden = !q;
+        verif.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+      }
+      adresse.addEventListener('input', majVerif);
+      majVerif();
+      adresse.parentNode.appendChild(verif);
 
       bloc.appendChild(grille);
       aide(bloc, 'La date hébraïque se calcule automatiquement — vous pouvez la corriger si besoin.');
@@ -323,6 +348,15 @@
       dateInput.addEventListener('change', function () { majDateHebraique(dateInput, dateHeInput); });
       if (!dateHeInput.value) majDateHebraique(dateInput, dateHeInput);
     });
+
+    // Mention facultative, decochee par defaut, ecrite discretement en fin
+    // de carte de la houppa si elle est cochee.
+    var option = document.createElement('label');
+    option.className = 'option-mention';
+    option.innerHTML = '<input type="checkbox" id="f-tenue"> <span>Inscrire la phrase « <em>Une tenue conforme réjouira les mariés.</em> »'
+      + '<small>Elle apparaît discrètement à la fin de la carte de la houppa.</small></span>';
+    zone.appendChild(option);
+    document.getElementById('f-tenue').checked = !!brouillon.site.tenue;
 
     // Houppa et reception separees ont presque toujours lieu le meme jour :
     // la date de la houppa est reprise pour la reception tant que celle-ci
@@ -359,6 +393,8 @@
 
     brouillon.site.verset = selectVerset.value === '__autre__' ? autreVersetInput.value.trim() : selectVerset.value;
     brouillon.site.musique = val('f-musique');
+    var tenue = document.getElementById('f-tenue');
+    brouillon.site.tenue = !!(tenue && tenue.checked);
     var radioLogo = document.querySelector('input[name="f-logo"]:checked');
     brouillon.site.logoMode = radioLogo ? radioLogo.value : 'auto';
 

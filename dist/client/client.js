@@ -196,7 +196,21 @@ var ClientInvitation = (function () {
     return prec[n];
   }
 
+  // Complement (prenoms-hebreu.js, charge avant ce fichier sur le formulaire) :
+  // ses propositions passent en premier, sans doublon.
+  if (typeof PRENOMS_HEBREU_PLUS !== 'undefined') {
+    Object.keys(PRENOMS_HEBREU_PLUS).forEach(function (cle) {
+      var liste = PRENOMS_HEBREU_PLUS[cle].slice();
+      (PRENOMS_HEBREU[cle] || []).forEach(function (h) { if (liste.indexOf(h) === -1) liste.push(h); });
+      PRENOMS_HEBREU[cle] = liste;
+    });
+  }
   var CLES_PRENOMS_HEBREU = Object.keys(PRENOMS_HEBREU);
+
+  /** Ecriture phonetique de secours (prenom absent du dictionnaire). */
+  function phonetique(cle) {
+    return typeof translitererHebreu === 'function' ? translitererHebreu(cle) : '';
+  }
 
   /** Cherche les correspondances d'UN mot (pas de prenom compose) :
    *  1) correspondance exacte, 2) prefixe partage avec un prenom connu
@@ -216,16 +230,30 @@ var ClientInvitation = (function () {
         if (!correspond) return;
         PRENOMS_HEBREU[c].forEach(function (h) { if (parPrefixe.indexOf(h) === -1) parPrefixe.push(h); });
       });
-      if (parPrefixe.length) return parPrefixe;
+      if (parPrefixe.length) {
+        // Prenom complet mais absent du dictionnaire : on ajoute sa phonetique.
+        var phP = cle.length >= 4 ? phonetique(cle) : '';
+        if (phP && parPrefixe.indexOf(phP) === -1) parPrefixe.push(phP);
+        return parPrefixe;
+      }
     }
 
-    var meilleure = null, meilleurScore = 3;
+    // Faute de frappe : une seule lettre d'ecart, meme premiere lettre, et
+    // au moins 5 lettres (sinon Kylian -> Dylan, Kenzo -> Enzo...).
+    var tolerance = cle.length >= 5 ? 1 : 0;
+    var meilleure = null, meilleurScore = tolerance + 1;
     CLES_PRENOMS_HEBREU.forEach(function (c) {
-      if (Math.abs(c.length - cle.length) > 2) return;
+      if (!tolerance || c.charAt(0) !== cle.charAt(0) || Math.abs(c.length - cle.length) > tolerance) return;
       var score = distanceEdition(cle, c);
       if (score < meilleurScore) { meilleurScore = score; meilleure = c; }
     });
-    return meilleure ? PRENOMS_HEBREU[meilleure].slice() : [];
+    // Prenom inconnu : son ecriture phonetique d'abord, puis le prenom connu
+    // le plus proche s'il y en a un (faute de frappe probable).
+    var res = [];
+    var ph = cle.length >= 2 ? phonetique(cle) : '';
+    if (ph) res.push(ph);
+    if (meilleure) PRENOMS_HEBREU[meilleure].forEach(function (h) { if (res.indexOf(h) === -1) res.push(h); });
+    return res;
   }
 
   /** Prenom compose ("Jean-Claude", "Marie Jeanne") : on cherche chaque
@@ -508,6 +536,9 @@ var ClientInvitation = (function () {
         couleurNom: brouillon.site.couleurNom,
         couleurHex: couleurHex,
         verset: brouillon.site.verset || '',
+        // Phrase « Une tenue conforme réjouira les mariés. » (case du formulaire,
+        // decochee par defaut), discrete a la fin de la carte de la houppa.
+        tenue: !!brouillon.site.tenue,
         // Chemin relatif a la racine de dist/, resolu par app.js via
         // BASE + musique (meme mecanisme que medias/<id>_musique.mp3 cote
         // Excel). Aucun choix -> MUSIQUE_DEFAUT (Bereshit Olam) : il y a

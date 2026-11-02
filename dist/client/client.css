@@ -722,3 +722,14 @@ html, body { touch-action: manipulation; }
 /* Champ obligatoire oublie : entoure, le message dit lequel. */
 .champ--erreur input, .champ--erreur select, .champ--erreur textarea { border-color: #B4463A !important; box-shadow: 0 0 0 3px rgba(180, 70, 58, .14); }
 .champ--erreur label { color: #9B3B30; }
+
+/* Formulaire : avertissement sur les adresses (Waze / Itineraire). */
+.alerte-adresse { margin: 0 0 18px; padding: 12px 14px 12px 40px; position: relative; border-radius: 10px; background: #FFF6E5; border: 1px solid #EBD3A0; color: #5C4718; font-size: 13.5px; line-height: 1.55; }
+.alerte-adresse::before { content: "!"; position: absolute; left: 13px; top: 12px; width: 18px; height: 18px; border-radius: 50%; background: #C08A1E; color: #fff; font: 700 12px/18px system-ui, sans-serif; text-align: center; }
+.alerte-adresse strong { color: #3F300D; }
+.verif-adresse { display: inline-block; margin-top: 6px; font-size: 12.5px; color: var(--accent-ink); }
+.verif-adresse[hidden] { display: none; }
+/* Case « Une tenue conforme... » */
+.option-mention { display: flex; gap: 12px; align-items: flex-start; margin: 6px 0 0; padding: 14px; border: 1px dashed var(--rule); border-radius: 10px; cursor: pointer; font-size: 14px; line-height: 1.5; }
+.option-mention input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--accent-ink); }
+.option-mention small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
