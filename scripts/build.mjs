@@ -10,7 +10,7 @@
 
 import ExcelJS from 'exceljs';
 import { promises as fs } from 'node:fs';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -661,11 +661,32 @@ function vignette(t) {
   return `background:url(../themes/${t.slug}/orn/coin.svg) -6px -6px/118% auto no-repeat,url(../themes/${t.slug}/orn/fond.svg) 0 0/90px repeat,${t.surface}`;
 }
 
+/** Identite typographique d'un theme (police des titres, couleur des noms),
+ *  lue dans son theme.css (derniere valeur declaree), pour ecrire les
+ *  prenoms du couple sur sa vignette dans la galerie. */
+function identite(t) {
+  let css = '';
+  try { css = readFileSync(path.join(PROJECT, 'themes', t.slug, 'theme.css'), 'utf8'); } catch (e) { /* theme sans css */ }
+  const derniere = (nom) => {
+    const v = [...css.matchAll(new RegExp('--' + nom + ':\\s*([^;]+);', 'g'))];
+    return v.length ? v[v.length - 1][1].trim() : '';
+  };
+  const police = derniere('font-titre') || 'Georgia, serif';
+  const famille = (/^"([^"]+)"/.exec(police) || [])[1] || '';
+  return { police, famille, encre: derniere('oui') || derniere('ink') || '#2A2722' };
+}
+
 function pageIndexApercus(donnees) {
+  const familles = [...new Set(THEMES.map((t) => identite(t).famille).filter(Boolean))];
+  const policesNoms = familles.length
+    ? 'https://fonts.googleapis.com/css2?' + familles.map((f) => 'family=' + f.replace(/ /g, '+')).join('&') + '&display=swap'
+    : '';
+  const nomsCouple = `${donnees.couple.marie.prenom} & ${donnees.couple.mariee.prenom}`;
   const cartes = THEMES.map((t) => {
     const actif = t.slug === donnees.site.themeSlug;
+    const id = identite(t);
     return `    <a class="theme-carte${actif ? ' theme-carte--actif' : ''}" href="${t.slug}/index.html">
-      <span class="theme-carte__vignette" style="${vignette(t)}" aria-hidden="true"></span>
+      <span class="theme-carte__vignette" style="${vignette(t)}" aria-hidden="true"><span class="theme-carte__noms" style="font-family:${echappe(id.police)};color:${id.encre};background:${t.surface}E6">${echappe(nomsCouple)}</span></span>
       <span class="theme-carte__pied"><strong>${echappe(t.nom)}</strong><span>Voir ce thème →</span></span>
       ${actif ? '<span class="theme-carte__badge">Choisi dans l\u2019Excel</span>' : ''}
       ${t.vedette ? '<span class="theme-carte__vedette">Le plus choisi</span>' : ''}
@@ -682,7 +703,7 @@ function pageIndexApercus(donnees) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400&display=swap">
-<link rel="stylesheet" href="../client/client.css">
+${policesNoms ? `<link rel="stylesheet" href="${echappe(policesNoms)}">\n` : ''}<link rel="stylesheet" href="../client/client.css">
 <link rel="stylesheet" href="../client/site.css">
 <link rel="stylesheet" href="../client/lecteur-musique.css">
 <style>
@@ -700,7 +721,9 @@ function pageIndexApercus(donnees) {
 @media (min-width: 700px) { .grille-themes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
 .theme-carte { position: relative; display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 2px; overflow: hidden; background: var(--surface); color: inherit; text-decoration: none; transition: transform .2s, box-shadow .2s, border-color .2s; }
 .theme-carte:hover, .theme-carte:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(42,39,34,.12); border-color: var(--accent); }
-.theme-carte__vignette { display: block; aspect-ratio: 4 / 3; }
+.theme-carte__vignette { display: grid; place-items: center; aspect-ratio: 4 / 3; padding: 10px; }
+/* Les prenoms du couple, dans la police et la couleur de chaque theme. */
+.theme-carte__noms { max-width: 100%; padding: 8px 12px; border-radius: 2px; font-size: clamp(15px, 4.4vw, 21px); line-height: 1.2; text-align: center; overflow-wrap: anywhere; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
 .theme-carte__pied { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 14px; }
 .theme-carte__pied strong { font-family: var(--font-titre); font-weight: 600; font-size: 19px; line-height: 1.2; }
 .theme-carte__pied span { font-size: 12.5px; color: var(--accent-ink); }
@@ -718,6 +741,12 @@ function pageIndexApercus(donnees) {
 <h1 class="titre">${echappe(marie.prenom)} &amp; ${echappe(mariee.prenom)}</h1>
 <p class="chapo sous">Les ${THEMES.length} thèmes, avec les données réelles de l’Excel et la couleur « ${echappe(donnees.site.couleurNom)} ».</p>
 <div class="choix">
+  <div>
+    <div class="grille-themes">
+${cartes}
+    </div>
+    <p class="pied-apercus" id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</p>
+  </div>
   <aside class="choix__cote">
     <section class="encart" id="choix-musique" hidden>
       <h2>Musique de fond</h2>
@@ -731,16 +760,10 @@ function pageIndexApercus(donnees) {
     </section>
     <section class="encart encart--suite" id="choix-suite" hidden>
       <h2>Et ensuite ?</h2>
-      <p>Bientôt : publiez votre invitation pour 19,99 €, une seule fois. Vous recevez son lien à partager et accédez à votre tableau de bord des réponses.</p>
+      <p>Ouvrez un thème, puis « Choisir ce thème » : vous le publiez pour 19,99 €, une seule fois, et recevez son lien à partager et votre tableau de bord des réponses.</p>
       <a class="btn btn--texte" href="../client/formulaire.html">← Modifier mes informations</a>
     </section>
   </aside>
-  <div>
-    <div class="grille-themes">
-${cartes}
-    </div>
-    <p class="pied-apercus" id="pied-apercus">Le thème publié sur <code>dist/index.html</code> est celui de la cellule « Thème ».<br>Après modification de l’Excel : <code>npm run build</code>.</p>
-  </div>
 </div>
 </main>
 </div>
@@ -776,8 +799,12 @@ ${cartes}
 
     var h1 = document.querySelector('h1');
     if (h1 && D.couple) h1.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
+    // Les vignettes portent les prenoms du couple, dans la police de chaque theme.
+    if (D.couple) document.querySelectorAll('.theme-carte__noms').forEach(function (n) {
+      n.textContent = D.couple.marie.prenom + ' & ' + D.couple.mariee.prenom;
+    });
     var sous = document.querySelector('p.sous');
-    if (sous) sous.textContent = 'Comparez les 12 thèmes avec vos vraies informations, choisissez votre musique, puis ouvrez le thème qui vous plaît.';
+    if (sous) sous.textContent = 'Vos prénoms dans chacun des 12 thèmes : ouvrez celui qui vous plaît pour découvrir votre carte complète.';
     // Mariage d'exemple : on ne propose PAS encore de creer un logo (trop
     // tot, le visiteur n'a rien saisi). Le logo s'aborde dans le
     // formulaire, puis apres avoir vu son invitation (bandeau « Vous
