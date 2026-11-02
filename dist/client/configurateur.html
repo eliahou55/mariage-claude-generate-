@@ -25,13 +25,16 @@
   <main>
     <h1 class="titre">Composez le déroulé de votre mariage</h1>
     <p class="chapo">
-      Chaque mariage est différent : tout le monde ne fait pas de henné ni de Chabbat 'Hatan.
-      Souvent, la houppa a lieu l'après-midi à la synagogue et la réception le soir dans une salle :
-      ce sont alors <strong>deux cartes séparées</strong>, chacune avec son adresse. Ici, vous choisissez
-      <strong>quels événements</strong> apparaissent sur votre invitation, <strong>dans quel ordre</strong>,
-      et <strong>lesquels partagent la même carte</strong>.
+      Ajoutez vos événements et rangez-les dans l’ordre : <strong>1 ligne = 1 carte</strong> sur votre
+      invitation. Souvent, la houppa a lieu l’après-midi à la synagogue et la réception le soir dans
+      une salle : ce sont alors <strong>deux cartes séparées</strong>, chacune avec son adresse.
     </p>
 
+    <details class="aide-deroule" id="aide-deroule">
+      <summary class="aide-deroule__resume">
+        <span class="aide-deroule__q">Comment ça marche ?</span>
+        <span class="aide-deroule__video">▶ Démo · 30 s</span>
+      </summary>
     <section class="demo-deroule" aria-labelledby="demo-titre">
       <div class="demo-deroule__video">
         <video id="demo-video" src="demo/composition.mp4" poster="demo/composition.jpg"
@@ -60,8 +63,9 @@
         </ol>
       </div>
     </section>
+    </details>
 
-    <p class="conf-repere">Votre déroulé — <span>1 ligne = 1 carte sur votre invitation</span></p>
+    <p class="conf-repere">Votre déroulé</p>
 
     <p id="message-erreur" class="message-erreur" hidden></p>
 
@@ -99,6 +103,15 @@
     if (!v || !b) return;
     function lancer() { b.hidden = true; v.controls = true; v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
     b.addEventListener('click', lancer);
+    // « ▶ Démo · 30 s » dans le résumé replié : ouvre l'aide et lance la vidéo.
+    var resume = document.querySelector('.aide-deroule__video');
+    var aide = document.getElementById('aide-deroule');
+    if (resume && aide) resume.addEventListener('click', function (e) {
+      e.preventDefault();
+      aide.open = true;
+      lancer();
+      v.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
     v.addEventListener('error', function () { v.closest('.demo-deroule').classList.add('demo-deroule--sans-video'); });
   })();
 </script>

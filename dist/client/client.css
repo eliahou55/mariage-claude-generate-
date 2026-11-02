@@ -689,3 +689,19 @@ html, body { touch-action: manipulation; }
 .logo-auto__apercu { width: 84px; height: 84px; flex: none; display: grid; place-items: center; padding: 8px; background: #FAF7EB; border: 1px solid var(--rule); border-radius: 4px; }
 .logo-auto__apercu svg { width: 100%; height: 100%; display: block; }
 .logo-auto__legende { font-size: 12.5px; color: var(--muted); letter-spacing: .02em; }
+
+/* Configurateur : l'explication et la demo sont repliees par defaut
+   (une ligne), pour que l'outil soit visible tout de suite sur mobile. */
+.aide-deroule { margin: 0 0 22px; border: 1px solid var(--rule); border-radius: 2px; background: var(--bg); }
+.aide-deroule__resume {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 13px 16px; cursor: pointer; list-style: none; font-size: 14px; color: var(--ink);
+}
+.aide-deroule__resume::-webkit-details-marker { display: none; }
+.aide-deroule__q::before { content: '+'; display: inline-block; width: 1.1em; color: var(--accent-ink, #8A6D3B); font-weight: 600; }
+.aide-deroule[open] .aide-deroule__q::before { content: '–'; }
+.aide-deroule__video {
+  flex: none; padding: 7px 12px; border-radius: 999px; background: var(--ink); color: var(--bg);
+  font-size: 11.5px; letter-spacing: .06em; white-space: nowrap;
+}
+.aide-deroule .demo-deroule { margin: 0; border: 0; border-top: 1px solid var(--rule); border-radius: 0; }
