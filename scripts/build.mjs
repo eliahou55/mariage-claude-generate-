@@ -570,12 +570,46 @@ function pagePublique() {
 <link rel="stylesheet" href="${POLICES_LOGO.replace(/&/g, '&amp;')}">
 <link rel="stylesheet" href="/base.css">
 <style>
-.chargement-public { min-height: 100vh; display: grid; place-items: center; padding: 30px; text-align: center; font: 300 15px/1.6 system-ui, sans-serif; color: #6E695F; background: #F7F4EE; }
-.chargement-public strong { display: block; margin-bottom: 8px; font: 400 26px/1.2 Georgia, serif; color: #171614; }
+/* Ecran d'ouverture (pendant la lecture de l'invitation) : les initiales
+   dans un anneau dore qui se dessine, les prenoms, aux couleurs du theme
+   (body[data-theme], pose par la fonction serveur). Aucun mot « chargement ». */
+.chargement-public {
+  --cp-fond: #F7F4EE; --cp-encre: #3A3630; --cp-or: #B8975A;
+  position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 30px;
+  text-align: center; background: var(--cp-fond); color: var(--cp-encre);
+  transition: opacity .7s ease, visibility .7s;
+}
+.chargement-public--fin { opacity: 0; visibility: hidden; }
+.cp__anneau { position: relative; width: 132px; height: 132px; margin: 0 auto 26px; }
+.cp__anneau svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.cp__cercle { fill: none; stroke: var(--cp-or); stroke-width: 1.2; stroke-dasharray: 380; stroke-dashoffset: 380; animation: cp-trace 1.8s cubic-bezier(.6, .1, .2, 1) forwards; }
+.cp__cercle--fin { stroke-width: .6; opacity: .55; animation-delay: .35s; }
+.cp__etoile { fill: var(--cp-or); transform-origin: 66px 6px; animation: cp-scintille 2.4s ease-in-out infinite 1.4s; opacity: 0; }
+.cp__ini { position: absolute; inset: 0; display: grid; place-items: center; font: 400 44px/1 "Cormorant Garamond", Georgia, serif; letter-spacing: .04em; opacity: 0; animation: cp-apparait 1s ease .9s forwards; }
+.cp__noms { margin: 0; font: italic 400 clamp(26px, 8vw, 34px)/1.2 "Cormorant Garamond", Georgia, serif; opacity: 0; animation: cp-apparait 1.1s ease 1.1s forwards; }
+.cp__noms:empty { display: none; }
+.cp__filet { display: block; width: 46px; height: 1px; margin: 18px auto 0; background: var(--cp-or); transform: scaleX(0); animation: cp-filet 1.6s ease-in-out infinite alternate 1.6s; }
+.cp__msg { margin: 0; font: 300 15px/1.6 system-ui, sans-serif; opacity: .8; }
+.cp__msg strong { display: block; margin-bottom: 8px; font: 400 26px/1.2 "Cormorant Garamond", Georgia, serif; }
+@keyframes cp-trace { to { stroke-dashoffset: 0; } }
+@keyframes cp-apparait { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes cp-filet { from { transform: scaleX(.2); opacity: .4; } to { transform: scaleX(1); opacity: 1; } }
+@keyframes cp-scintille { 0%, 100% { opacity: 0; transform: scale(.5); } 50% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .cp__cercle, .cp__ini, .cp__noms, .cp__filet, .cp__etoile { animation: none; opacity: 1; stroke-dashoffset: 0; transform: none; } }
+${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}"] .chargement-public { --cp-fond: ${t.surface}; --cp-encre: ${id.encre}; }`; }).join('\n')}
 </style>
 </head>
 <body>
-<div class="chargement-public" id="chargement-public"><p>Chargement de l'invitation…</p></div>
+<div class="chargement-public" id="chargement-public" role="status" aria-label="Ouverture de l'invitation">
+  <div class="cp__contenu" id="chargement-contenu">
+    <div class="cp__anneau" aria-hidden="true">
+      <svg viewBox="0 0 132 132"><circle class="cp__cercle" cx="66" cy="66" r="60" transform="rotate(-90 66 66)"></circle><circle class="cp__cercle cp__cercle--fin" cx="66" cy="66" r="54" transform="rotate(-90 66 66)"></circle><path class="cp__etoile" d="M66 0l1.6 4.4L72 6l-4.4 1.6L66 12l-1.6-4.4L60 6l4.4-1.6z"></path></svg>
+      <span class="cp__ini" id="chargement-ini"><!--INITIALES--></span>
+    </div>
+    <p class="cp__noms" id="chargement-noms"><!--NOMS--></p>
+    <span class="cp__filet" aria-hidden="true"></span>
+  </div>
+</div>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -586,7 +620,13 @@ function pagePublique() {
   var POLICES = ${jsonSur(polices)};
   var attente = document.getElementById('chargement-public');
   function introuvable() {
-    attente.innerHTML = '<p><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
+    attente.classList.remove('chargement-public--fin');
+    document.getElementById('chargement-contenu').innerHTML = '<p class="cp__msg"><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
+  }
+  /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur. */
+  function devoiler() {
+    attente.classList.add('chargement-public--fin');
+    window.setTimeout(function () { attente.remove(); }, 800);
   }
   // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
   var slug = decodeURIComponent(location.pathname.replace(/^\\/i\\/?/, '').replace(/\\/.*$/, '').replace(/index\\.html$/, ''))
@@ -608,6 +648,12 @@ function pagePublique() {
     if (D.site && D.site.musique === 'perso') D.site.musique = 'client/musique/bereshit-olam.mp3';
     var noms = [D.couple.marie.prenom, D.couple.mariee.prenom].join(' & ');
     document.title = noms;
+    // Ecran d'ouverture deja personnalise par le serveur ; sinon on le complete ici.
+    document.body.setAttribute('data-theme', theme);
+    var cpNoms = document.getElementById('chargement-noms');
+    if (cpNoms && !cpNoms.textContent.trim()) cpNoms.textContent = noms;
+    var cpIni = document.getElementById('chargement-ini');
+    if (cpIni && !cpIni.textContent.trim()) cpIni.textContent = [D.couple.marie.prenom, D.couple.mariee.prenom].map(function (p) { return String(p || '').trim().charAt(0).toUpperCase(); }).join('');
     // Icone de l'invitation (onglet + ecran d'accueil du telephone).
     if (D.site && D.site.favicon && String(D.site.favicon).indexOf('data:image/') === 0) {
       ['icon', 'apple-touch-icon'].forEach(function (rel) {
@@ -624,7 +670,6 @@ function pagePublique() {
       chargerCss('/themes/' + theme + '/theme.css'),
     ]).then(function () {
       document.body.className = 'theme-' + theme;
-      attente.remove();
       var decor = document.createElement('div');
       decor.className = 'decor decor--page';
       decor.setAttribute('aria-hidden', 'true');
@@ -639,7 +684,9 @@ function pagePublique() {
       document.body.insertBefore(decor, document.body.firstChild);
       return chargerScript('/versets.js')
         .then(function () { return chargerScript('/client/logo-styles.js'); })
-        .then(function () { return chargerScript('/app.js'); });
+        .then(function () { return chargerScript('/app.js'); })
+        // un court instant pour que la premiere image se peigne sous l'ecran
+        .then(function () { window.setTimeout(devoiler, 250); });
     });
   }).catch(introuvable);
 })();

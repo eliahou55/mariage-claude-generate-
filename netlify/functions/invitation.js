@@ -59,7 +59,15 @@ export const handler = async (event) => {
       icone ? `<link rel="icon" type="image/png" href="${icone}"><link rel="apple-touch-icon" href="${icone}">` : '',
     ].filter(Boolean).join('\n');
 
-    return html(PAGE.replace(/<title>[^<]*<\/title>/, meta), 60);
+    // Ecran d'ouverture personnalise des le premier affichage (avant meme le
+    // JavaScript) : prenoms, initiales et couleurs du theme.
+    const initiales = [c.marie?.prenom, c.mariee?.prenom].map((p) => String(p || '').trim().charAt(0).toUpperCase()).join('');
+    const theme = String(D.site?.themeSlug || '').replace(/[^a-z0-9-]/g, '');
+    const page = PAGE.replace(/<title>[^<]*<\/title>/, meta)
+      .replace('<body>', theme ? `<body data-theme="${theme}">` : '<body>')
+      .replace('<!--NOMS-->', c.marie?.prenom && c.mariee?.prenom ? echappe(noms) : '')
+      .replace('<!--INITIALES-->', echappe(initiales));
+    return html(page, 60);
   } catch (e) {
     console.error(e);
     return html(PAGE, 10);   // la page se charge quand meme (lecture cote navigateur)
