@@ -468,14 +468,44 @@
   // Persistance continue (survit a un retour arriere vers le configurateur).
   form.addEventListener('change', sauvegarder);
 
+  // Un champ signale se corrige : il n'est plus entoure, et le message
+  // disparait des que plus rien ne manque.
+  // (Tous les champs signales sont reverifies : certains se remplissent
+  // seuls, comme la date de la reception reprise de la houppa.)
+  function effacerErreur() {
+    Array.prototype.forEach.call(form.querySelectorAll('.champ--erreur'), function (ch) {
+      var c = ch.querySelector('input, select, textarea');
+      if (!c || c.checkValidity()) ch.classList.remove('champ--erreur');
+    });
+    if (!erreurEl.hidden && !form.querySelector('.champ--erreur')) erreurEl.hidden = true;
+  }
+  form.addEventListener('input', effacerErreur);
+  form.addEventListener('change', effacerErreur);
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     erreurEl.hidden = true;
     sauvegarder();
 
-    if (!form.reportValidity()) {
-      erreurEl.textContent = 'Merci de renseigner tous les champs obligatoires (*).';
+    var invalides = Array.prototype.filter.call(form.querySelectorAll('input, select, textarea'), function (c) { return !c.checkValidity(); });
+    if (invalides.length) {
+      // On dit exactement ce qui manque, on entoure les champs concernes et
+      // on amene le visiteur sur le premier (en ouvrant sa section si besoin).
+      var noms = invalides.map(function (c) {
+        var lab = form.querySelector('label[for="' + c.id + '"]');
+        var bloc = c.closest('.evenement-bloc');
+        var titre = bloc ? bloc.querySelector('.evenement-bloc__titre') : null;
+        var nom = lab ? lab.firstChild.textContent.trim() : c.id;
+        return titre ? nom + ' (' + titre.firstChild.textContent.trim() + ')' : nom;
+      });
+      invalides.forEach(function (c) { var ch = c.closest('.champ'); if (ch) ch.classList.add('champ--erreur'); });
+      erreurEl.textContent = 'Il manque : ' + noms.join(', ') + '.';
       erreurEl.hidden = false;
+      var premier = invalides[0];
+      var repli = premier.closest('details');
+      if (repli) repli.open = true;
+      premier.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.setTimeout(function () { try { premier.focus({ preventScroll: true }); } catch (e) { premier.focus(); } }, 350);
       return;
     }
 
