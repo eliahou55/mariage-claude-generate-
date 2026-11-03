@@ -622,7 +622,7 @@ ${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}
 <!--INVITATION-->
 <script>
 // L'invitation est lue par le serveur et ecrite dans la page
-// (#invitation-prechargee, cf. netlify/functions/invitation.js) : elle
+// (#invitation-prechargee, cf. netlify/edge-functions/invitation) : elle
 // s'affiche sans attendre Firebase (~250 Ko + connexion a la base), qui
 // n'est charge qu'ensuite, en fond, pour les reponses des invites. Sans
 // donnees prechargees (page de secours), lecture classique via Firebase.
@@ -1022,9 +1022,8 @@ async function main() {
   // 2. /i/<adresse> -> page de l'invitation publiee.
   await fs.writeFile(path.join(DIST, '_redirects'), [
     'https://sasson.netlify.app/*  https://sasson-invit.fr/:splat  301!',
-    // Page publiee : servie par une fonction (titre et icone dans le HTML,
-    // pour les apercus WhatsApp) ; /i/index.html en secours.
-    '/i/:slug  /.netlify/functions/invitation?slug=:slug  200',
+    // Page publiee : /i/index.html, personnalisee a la volee par l'Edge
+    // Function netlify/edge-functions/invitation (titre, icone, invitation).
     '/i/*  /i/index.html  200',
     '',
   ].join('\n'), 'utf8');
@@ -1062,11 +1061,8 @@ async function main() {
   await fs.writeFile(path.join(DIST, 'apercu', 'index.html'), pageIndexApercus(donnees), 'utf8');
   await fs.mkdir(path.join(DIST, 'i'), { recursive: true });
   await fs.writeFile(path.join(DIST, 'i', 'index.html'), pagePublique(), 'utf8');
-  // Meme page pour la fonction Netlify qui y ajoute titre / description /
-  // icone (apercu des liens WhatsApp) : netlify/functions/invitation.js.
-  await fs.writeFile(path.join(PROJECT, 'netlify', 'lib', 'page-publique.js'),
-    '// Genere par scripts/build.mjs (pagePublique) : ne pas modifier a la main.\n'
-    + 'export default ' + JSON.stringify(pagePublique()) + ';\n', 'utf8');
+  // Cette page est personnalisee a la volee (titre, icone, ecran d'ouverture,
+  // invitation) par l'Edge Function netlify/edge-functions/invitation.
 
   /* ---- Rapport ---- */
   console.log(`\n  Invitation ${donnees.id} — ${marie.prenom} & ${mariee.prenom}`);

@@ -56,3 +56,17 @@ Les données circulent par `localStorage` (clés dans `src/stockage.js`).
 
 Pour tester en local sans Python : un petit serveur statique Node sur `dist/`
 (`serve` réécrit les URL et casse les chemins relatifs de `client/`).
+
+## Invitation publiée (/i/<adresse>) — à savoir
+
+- Servie par l'**Edge Function** `netlify/edge-functions/invitation/` (ne
+  s'endort pas, contrairement aux fonctions classiques : l'ancienne
+  `netlify/functions/invitation.js` faisait attendre ~5 s d'écran blanc au
+  réveil). Elle part de la coquille `dist/i/index.html` (`pagePublique()` dans
+  `build.mjs`), lit l'invitation par l'API REST publique de Firestore et y écrit
+  titre, icône, écran d'ouverture et l'invitation (`#invitation-prechargee`).
+  Logique testable sans réseau : `personnaliser.js`.
+- Le navigateur affiche l'invitation sans Firebase ; Firebase n'est chargé
+  qu'ensuite (réponses des invités). Sans données préchargées : lecture Firebase.
+- Ne jamais écrire de caractères U+2028/U+2029 bruts dans le code (l'outil
+  d'écriture les convertit) : utiliser les échappements.

@@ -74,7 +74,7 @@ body[data-theme="boheme-terracotta"] .chargement-public { --cp-fond: #FBF2E7; --
 <!--INVITATION-->
 <script>
 // L'invitation est lue par le serveur et ecrite dans la page
-// (#invitation-prechargee, cf. netlify/functions/invitation.js) : elle
+// (#invitation-prechargee, cf. netlify/edge-functions/invitation) : elle
 // s'affiche sans attendre Firebase (~250 Ko + connexion a la base), qui
 // n'est charge qu'ensuite, en fond, pour les reponses des invites. Sans
 // donnees prechargees (page de secours), lecture classique via Firebase.

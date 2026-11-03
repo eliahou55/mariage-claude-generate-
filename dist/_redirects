@@ -1,3 +1,2 @@
 https://sasson.netlify.app/*  https://sasson-invit.fr/:splat  301!
-/i/:slug  /.netlify/functions/invitation?slug=:slug  200
 /i/*  /i/index.html  200
