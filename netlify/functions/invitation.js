@@ -13,7 +13,15 @@ const echappe = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;'
 function html(corps, maxAge) {
   return {
     statusCode: 200,
-    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': `public, max-age=${maxAge}` },
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': `public, max-age=${maxAge}`,
+      // Cache du CDN Netlify : la page (titre, icone, ecran d'ouverture) est
+      // servie aussitot, et rafraichie en arriere-plan apres 60 s. Le contenu
+      // de l'invitation, lui, est toujours relu en direct par le navigateur.
+      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=60, stale-while-revalidate=604800',
+      'Netlify-Vary': 'query=slug',
+    },
     body: corps,
   };
 }

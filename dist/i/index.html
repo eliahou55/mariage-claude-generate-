@@ -8,8 +8,13 @@
 <title>Invitation de mariage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&amp;family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&amp;family=Josefin+Sans:wght@200;300&amp;family=Italiana&amp;family=Pinyon+Script&amp;family=Libre+Baskerville&amp;family=Marcellus&amp;family=Parisienne&amp;family=Allura&amp;display=swap">
-<link rel="stylesheet" href="/base.css">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<!-- Rien ne bloque le premier affichage : l'ecran d'ouverture n'a besoin que
+     de ses styles (ci-dessous). Polices et base.css se chargent en fond
+     (base.css est attendu avant d'afficher l'invitation, cf. plus bas). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&amp;family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&amp;family=Josefin+Sans:wght@200;300&amp;family=Italiana&amp;family=Pinyon+Script&amp;family=Libre+Baskerville&amp;family=Marcellus&amp;family=Parisienne&amp;family=Allura&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="preload" href="/base.css" as="style">
 <style>
 /* Ecran d'ouverture (pendant la lecture de l'invitation) : les initiales
    dans un anneau dore qui se dessine, les prenoms, aux couleurs du theme
@@ -62,23 +67,31 @@ body[data-theme="boheme-terracotta"] .chargement-public { --cp-fond: #FBF2E7; --
     <span class="cp__filet" aria-hidden="true"></span>
   </div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="/stockage.js"></script>
-<script src="/sasson-firebase.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="/stockage.js"></script>
+<script defer src="/sasson-firebase.js"></script>
 <script>
-(function () {
+// Scripts en « defer » : l'ecran d'ouverture s'affiche tout de suite, la
+// lecture de l'invitation demarre une fois Firebase pret.
+document.addEventListener('DOMContentLoaded', function () {
   var POLICES = {"toile-de-jouy-vert":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","toile-de-jouy-bleu":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","marbre-or":"family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400\u0026family=Raleway:ital,wght@0,300;0,400;0,500;1,300\u0026family=Pinyon+Script\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","botanique-sauge":"family=Marcellus\u0026family=Lora:ital,wght@0,400;0,500;1,400\u0026family=Parisienne\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","nuit-etoilee":"family=Cinzel:wght@400;500;600\u0026family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400\u0026family=Cinzel+Decorative:wght@400;700\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","mediterranee":"family=Playfair+Display:ital,wght@0,400;0,600;1,400\u0026family=Crimson+Pro:ital,wght@0,400;0,500;1,400\u0026family=Dancing+Script:wght@500;600\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","rose-poudre":"family=Italiana\u0026family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300\u0026family=Great+Vibes\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","jardin-blanc":"family=Cormorant:ital,wght@0,300;0,400;0,600;1,300\u0026family=Spectral:ital,wght@0,300;0,400;1,300\u0026family=Alex+Brush\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","esquisse-illustree":"family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Caveat:wght@400;600\u0026family=David+Libre:wght@400;500;700","diner-chandelles":"family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400\u0026family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400\u0026family=Italianno\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","epure-minimaliste":"family=Jost:wght@200;300;400;500\u0026family=Cormorant+Garamond:ital,wght@1,300;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","boheme-terracotta":"family=DM+Serif+Display:ital@0;1\u0026family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300\u0026family=Satisfy\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700"};
   var attente = document.getElementById('chargement-public');
   function introuvable() {
     attente.classList.remove('chargement-public--fin');
     document.getElementById('chargement-contenu').innerHTML = '<p class="cp__msg"><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
   }
-  /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur. */
+  /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur, mais
+   *  jamais avant la fin de son animation (anneau, initiales, prenoms :
+   *  ~2,5 s depuis l'ouverture de la page), meme si tout est deja charge. */
+  var DUREE_ANIMATION = 2600;
   function devoiler() {
-    attente.classList.add('chargement-public--fin');
-    window.setTimeout(function () { attente.remove(); }, 800);
+    var reste = Math.max(0, DUREE_ANIMATION - (window.performance && performance.now ? performance.now() : DUREE_ANIMATION));
+    window.setTimeout(function () {
+      attente.classList.add('chargement-public--fin');
+      window.setTimeout(function () { attente.remove(); }, 800);
+    }, reste);
   }
   // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
   var slug = decodeURIComponent(location.pathname.replace(/^\/i\/?/, '').replace(/\/.*$/, '').replace(/index\.html$/, ''))
@@ -119,6 +132,7 @@ body[data-theme="boheme-terracotta"] .chargement-public { --cp-fond: #FBF2E7; --
     var polices = POLICES[theme];
     return Promise.all([
       polices ? chargerCss('https://fonts.googleapis.com/css2?' + polices + '&display=swap') : null,
+      chargerCss('/base.css'),
       chargerCss('/themes/' + theme + '/theme.css'),
     ]).then(function () {
       document.body.className = 'theme-' + theme;
@@ -141,7 +155,7 @@ body[data-theme="boheme-terracotta"] .chargement-public { --cp-fond: #FBF2E7; --
         .then(function () { window.setTimeout(devoiler, 250); });
     });
   }).catch(introuvable);
-})();
+});
 </script>
 </body>
 </html>

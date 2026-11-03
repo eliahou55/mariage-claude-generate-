@@ -567,8 +567,13 @@ function pagePublique() {
 <title>Invitation de mariage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${POLICES_LOGO.replace(/&/g, '&amp;')}">
-<link rel="stylesheet" href="/base.css">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<!-- Rien ne bloque le premier affichage : l'ecran d'ouverture n'a besoin que
+     de ses styles (ci-dessous). Polices et base.css se chargent en fond
+     (base.css est attendu avant d'afficher l'invitation, cf. plus bas). -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&amp;display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="${POLICES_LOGO.replace(/&/g, '&amp;')}" media="print" onload="this.media='all'">
+<link rel="preload" href="/base.css" as="style">
 <style>
 /* Ecran d'ouverture (pendant la lecture de l'invitation) : les initiales
    dans un anneau dore qui se dessine, les prenoms, aux couleurs du theme
@@ -610,23 +615,31 @@ ${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}
     <span class="cp__filet" aria-hidden="true"></span>
   </div>
 </div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="/stockage.js"></script>
-<script src="/sasson-firebase.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script defer src="/stockage.js"></script>
+<script defer src="/sasson-firebase.js"></script>
 <script>
-(function () {
+// Scripts en « defer » : l'ecran d'ouverture s'affiche tout de suite, la
+// lecture de l'invitation demarre une fois Firebase pret.
+document.addEventListener('DOMContentLoaded', function () {
   var POLICES = ${jsonSur(polices)};
   var attente = document.getElementById('chargement-public');
   function introuvable() {
     attente.classList.remove('chargement-public--fin');
     document.getElementById('chargement-contenu').innerHTML = '<p class="cp__msg"><strong>Invitation introuvable</strong>Vérifiez le lien reçu, ou demandez-le à nouveau aux mariés.</p>';
   }
-  /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur. */
+  /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur, mais
+   *  jamais avant la fin de son animation (anneau, initiales, prenoms :
+   *  ~2,5 s depuis l'ouverture de la page), meme si tout est deja charge. */
+  var DUREE_ANIMATION = 2600;
   function devoiler() {
-    attente.classList.add('chargement-public--fin');
-    window.setTimeout(function () { attente.remove(); }, 800);
+    var reste = Math.max(0, DUREE_ANIMATION - (window.performance && performance.now ? performance.now() : DUREE_ANIMATION));
+    window.setTimeout(function () {
+      attente.classList.add('chargement-public--fin');
+      window.setTimeout(function () { attente.remove(); }, 800);
+    }, reste);
   }
   // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
   var slug = decodeURIComponent(location.pathname.replace(/^\\/i\\/?/, '').replace(/\\/.*$/, '').replace(/index\\.html$/, ''))
@@ -667,6 +680,7 @@ ${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}
     var polices = POLICES[theme];
     return Promise.all([
       polices ? chargerCss('https://fonts.googleapis.com/css2?' + polices + '&display=swap') : null,
+      chargerCss('/base.css'),
       chargerCss('/themes/' + theme + '/theme.css'),
     ]).then(function () {
       document.body.className = 'theme-' + theme;
@@ -689,7 +703,7 @@ ${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}
         .then(function () { window.setTimeout(devoiler, 250); });
     });
   }).catch(introuvable);
-})();
+});
 </script>
 </body>
 </html>
