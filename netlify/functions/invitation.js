@@ -17,9 +17,9 @@ function html(corps, maxAge) {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': `public, max-age=${maxAge}`,
       // Cache du CDN Netlify : la page (titre, icone, ecran d'ouverture) est
-      // servie aussitot, et rafraichie en arriere-plan apres 60 s. Le contenu
-      // de l'invitation, lui, est toujours relu en direct par le navigateur.
-      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=60, stale-while-revalidate=604800',
+      // servie aussitot et rafraichie en arriere-plan (20 s) : une modification
+      // des maries apparait en moins d'une minute.
+      'Netlify-CDN-Cache-Control': 'public, durable, s-maxage=20, stale-while-revalidate=60',
       'Netlify-Vary': 'query=slug',
     },
     body: corps,
@@ -71,7 +71,13 @@ export const handler = async (event) => {
     // JavaScript) : prenoms, initiales et couleurs du theme.
     const initiales = [c.marie?.prenom, c.mariee?.prenom].map((p) => String(p || '').trim().charAt(0).toUpperCase()).join('');
     const theme = String(D.site?.themeSlug || '').replace(/[^a-z0-9-]/g, '');
+    // L'invitation elle-meme, ecrite dans la page : le navigateur l'affiche
+    // sans attendre Firebase (plusieurs secondes sur mobile). L'icone (image
+    // lourde) n'y est pas : elle est servie par la fonction icone.
+    const prechargee = { id: q.docs[0].id, donnees: { ...D, site: { ...(D.site || {}), favicon: null } } };
+    const json = JSON.stringify(prechargee).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
     const page = PAGE.replace(/<title>[^<]*<\/title>/, meta)
+      .replace('<!--INVITATION-->', `<script type="application/json" id="invitation-prechargee">${json}</script>`)
       .replace('<body>', theme ? `<body data-theme="${theme}">` : '<body>')
       .replace('<!--NOMS-->', c.marie?.prenom && c.mariee?.prenom ? echappe(noms) : '')
       .replace('<!--INITIALES-->', echappe(initiales));

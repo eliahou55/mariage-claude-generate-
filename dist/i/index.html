@@ -15,6 +15,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&amp;display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&amp;family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&amp;family=Josefin+Sans:wght@200;300&amp;family=Italiana&amp;family=Pinyon+Script&amp;family=Libre+Baskerville&amp;family=Marcellus&amp;family=Parisienne&amp;family=Allura&amp;display=swap" media="print" onload="this.media='all'">
 <link rel="preload" href="/base.css" as="style">
+<link rel="preload" href="/stockage.js" as="script">
+<link rel="preload" href="/versets.js" as="script">
+<link rel="preload" href="/client/logo-styles.js" as="script">
+<link rel="preload" href="/app.js" as="script">
 <style>
 /* Ecran d'ouverture (pendant la lecture de l'invitation) : les initiales
    dans un anneau dore qui se dessine, les prenoms, aux couleurs du theme
@@ -28,13 +32,13 @@
 .chargement-public--fin { opacity: 0; visibility: hidden; }
 .cp__anneau { position: relative; width: 132px; height: 132px; margin: 0 auto 26px; }
 .cp__anneau svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.cp__cercle { fill: none; stroke: var(--cp-or); stroke-width: 1.2; stroke-dasharray: 380; stroke-dashoffset: 380; animation: cp-trace 1.8s cubic-bezier(.6, .1, .2, 1) forwards; }
-.cp__cercle--fin { stroke-width: .6; opacity: .55; animation-delay: .35s; }
-.cp__etoile { fill: var(--cp-or); transform-origin: 66px 6px; animation: cp-scintille 2.4s ease-in-out infinite 1.4s; opacity: 0; }
-.cp__ini { position: absolute; inset: 0; display: grid; place-items: center; font: 400 44px/1 "Cormorant Garamond", Georgia, serif; letter-spacing: .04em; opacity: 0; animation: cp-apparait 1s ease .9s forwards; }
-.cp__noms { margin: 0; font: italic 400 clamp(26px, 8vw, 34px)/1.2 "Cormorant Garamond", Georgia, serif; opacity: 0; animation: cp-apparait 1.1s ease 1.1s forwards; }
+.cp__cercle { fill: none; stroke: var(--cp-or); stroke-width: 1.2; stroke-dasharray: 380; stroke-dashoffset: 380; animation: cp-trace 1.4s cubic-bezier(.25, .6, .3, 1) forwards; }
+.cp__cercle--fin { stroke-width: .6; opacity: .55; animation-delay: .15s; }
+.cp__etoile { fill: var(--cp-or); transform-origin: 66px 6px; animation: cp-scintille 2.4s ease-in-out infinite .9s; opacity: 0; }
+.cp__ini { position: absolute; inset: 0; display: grid; place-items: center; font: 400 44px/1 "Cormorant Garamond", Georgia, serif; letter-spacing: .04em; opacity: 0; animation: cp-apparait .8s ease .1s forwards; }
+.cp__noms { margin: 0; font: italic 400 clamp(26px, 8vw, 34px)/1.2 "Cormorant Garamond", Georgia, serif; opacity: 0; animation: cp-apparait .9s ease .3s forwards; }
 .cp__noms:empty { display: none; }
-.cp__filet { display: block; width: 46px; height: 1px; margin: 18px auto 0; background: var(--cp-or); transform: scaleX(0); animation: cp-filet 1.6s ease-in-out infinite alternate 1.6s; }
+.cp__filet { display: block; width: 46px; height: 1px; margin: 18px auto 0; background: var(--cp-or); transform: scaleX(0); animation: cp-filet 1.4s ease-in-out infinite alternate .8s; }
 .cp__msg { margin: 0; font: 300 15px/1.6 system-ui, sans-serif; opacity: .8; }
 .cp__msg strong { display: block; margin-bottom: 8px; font: 400 26px/1.2 "Cormorant Garamond", Georgia, serif; }
 @keyframes cp-trace { to { stroke-dashoffset: 0; } }
@@ -67,15 +71,14 @@ body[data-theme="boheme-terracotta"] .chargement-public { --cp-fond: #FBF2E7; --
     <span class="cp__filet" aria-hidden="true"></span>
   </div>
 </div>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script defer src="/stockage.js"></script>
-<script defer src="/sasson-firebase.js"></script>
+<!--INVITATION-->
 <script>
-// Scripts en « defer » : l'ecran d'ouverture s'affiche tout de suite, la
-// lecture de l'invitation demarre une fois Firebase pret.
-document.addEventListener('DOMContentLoaded', function () {
+// L'invitation est lue par le serveur et ecrite dans la page
+// (#invitation-prechargee, cf. netlify/functions/invitation.js) : elle
+// s'affiche sans attendre Firebase (~250 Ko + connexion a la base), qui
+// n'est charge qu'ensuite, en fond, pour les reponses des invites. Sans
+// donnees prechargees (page de secours), lecture classique via Firebase.
+(function () {
   var POLICES = {"toile-de-jouy-vert":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","toile-de-jouy-bleu":"family=IM+Fell+English:ital@0;1\u0026family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","marbre-or":"family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400\u0026family=Raleway:ital,wght@0,300;0,400;0,500;1,300\u0026family=Pinyon+Script\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","botanique-sauge":"family=Marcellus\u0026family=Lora:ital,wght@0,400;0,500;1,400\u0026family=Parisienne\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","nuit-etoilee":"family=Cinzel:wght@400;500;600\u0026family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400\u0026family=Cinzel+Decorative:wght@400;700\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","mediterranee":"family=Playfair+Display:ital,wght@0,400;0,600;1,400\u0026family=Crimson+Pro:ital,wght@0,400;0,500;1,400\u0026family=Dancing+Script:wght@500;600\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","rose-poudre":"family=Italiana\u0026family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300\u0026family=Great+Vibes\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","jardin-blanc":"family=Cormorant:ital,wght@0,300;0,400;0,600;1,300\u0026family=Spectral:ital,wght@0,300;0,400;1,300\u0026family=Alex+Brush\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","esquisse-illustree":"family=EB+Garamond:ital,wght@0,400;0,500;1,400\u0026family=Caveat:wght@400;600\u0026family=David+Libre:wght@400;500;700","diner-chandelles":"family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400\u0026family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400\u0026family=Italianno\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","epure-minimaliste":"family=Jost:wght@200;300;400;500\u0026family=Cormorant+Garamond:ital,wght@1,300;1,400\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700","boheme-terracotta":"family=DM+Serif+Display:ital@0;1\u0026family=Work+Sans:ital,wght@0,300;0,400;0,500;1,300\u0026family=Satisfy\u0026family=Frank+Ruhl+Libre:wght@300;400;500;700"};
   var attente = document.getElementById('chargement-public');
   function introuvable() {
@@ -84,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   /** L'invitation est prete : l'ecran d'ouverture s'efface en douceur, mais
    *  jamais avant la fin de son animation (anneau, initiales, prenoms :
-   *  ~2,5 s depuis l'ouverture de la page), meme si tout est deja charge. */
-  var DUREE_ANIMATION = 2600;
+   *  ~1,9 s depuis l'ouverture de la page), meme si tout est deja charge. */
+  var DUREE_ANIMATION = 1900;
   function devoiler() {
     var reste = Math.max(0, DUREE_ANIMATION - (window.performance && performance.now ? performance.now() : DUREE_ANIMATION));
     window.setTimeout(function () {
@@ -96,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // /i/ilan-yael (reecriture Netlify) ou /i/?s=ilan-yael
   var slug = decodeURIComponent(location.pathname.replace(/^\/i\/?/, '').replace(/\/.*$/, '').replace(/index\.html$/, ''))
     || (/[?&]s=([^&]+)/.exec(location.search) || [])[1] || '';
-  if (!slug || typeof SassonFB === 'undefined' || !SassonFB) { introuvable(); return; }
+  if (!slug) { introuvable(); return; }
 
   function chargerScript(src) {
     return new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.body.appendChild(s); });
@@ -104,8 +107,32 @@ document.addEventListener('DOMContentLoaded', function () {
   function chargerCss(href) {
     return new Promise(function (ok) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; l.onload = ok; l.onerror = ok; document.head.appendChild(l); });
   }
+  var FIREBASE = [
+    'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
+    'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+    '/stockage.js',
+    '/sasson-firebase.js',
+  ];
+  var firebasePret = null;
+  /** Firebase, charge une seule fois, a la demande. */
+  function chargerFirebase() {
+    if (!firebasePret) {
+      firebasePret = FIREBASE.reduce(function (p, src) { return p.then(function () { return chargerScript(src); }); }, Promise.resolve())
+        .then(function () { if (typeof SassonFB === 'undefined' || !SassonFB) throw new Error('Firebase indisponible'); return SassonFB; });
+      firebasePret.catch(function () { firebasePret = null; });
+    }
+    return firebasePret;
+  }
+  function lireInvitation() {
+    var pre = document.getElementById('invitation-prechargee');
+    if (pre) {
+      try { var x = JSON.parse(pre.textContent); if (x && x.donnees) return Promise.resolve(x); } catch (e) { /* page de secours */ }
+    }
+    return chargerFirebase().then(function (fb) { return fb.lireParSlug(slug); });
+  }
 
-  SassonFB.lireParSlug(slug).then(function (inv) {
+  lireInvitation().then(function (inv) {
     if (!inv || !inv.donnees) { introuvable(); return; }
     var D = inv.donnees;
     var theme = (D.site && D.site.themeSlug) || 'marbre-or';
@@ -127,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.SASSON_PUBLIC = true;
-    window.SassonReponse = function (reponse) { return SassonFB.envoyerReponse(inv.id, reponse); };
+    window.SassonReponse = function (reponse) { return chargerFirebase().then(function (fb) { return fb.envoyerReponse(inv.id, reponse); }); };
 
     var polices = POLICES[theme];
     return Promise.all([
@@ -148,14 +175,19 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.insertBefore(data, document.body.firstChild);
       document.body.insertBefore(app, document.body.firstChild);
       document.body.insertBefore(decor, document.body.firstChild);
-      return chargerScript('/versets.js')
+      return chargerScript('/stockage.js')
+        .then(function () { return chargerScript('/versets.js'); })
         .then(function () { return chargerScript('/client/logo-styles.js'); })
         .then(function () { return chargerScript('/app.js'); })
         // un court instant pour que la premiere image se peigne sous l'ecran
-        .then(function () { window.setTimeout(devoiler, 250); });
+        .then(function () {
+          window.setTimeout(devoiler, 250);
+          // Firebase en fond, pour que la reponse des invites parte sans attente.
+          window.setTimeout(function () { chargerFirebase().catch(function () {}); }, 2500);
+        });
     });
   }).catch(introuvable);
-});
+})();
 </script>
 </body>
 </html>
