@@ -9,9 +9,10 @@ service cloud.firestore {
     match /invitations/{id} {
       function proprietaire() { return connecte() && resource.data.ownerUid == request.auth.uid; }
 
-      // Lecture : les maries, ou n'importe qui si l'invitation est publiee
-      // (c'est la page que voient les invites).
-      allow read: if proprietaire() || resource.data.statut == 'publiee';
+      // Lecture : les maries SEULEMENT. Ce dossier est prive (e-mail,
+      // paiement, saisie complete). Les invites lisent la fiche publique
+      // (collection « publiques », ci-dessous).
+      allow read: if proprietaire();
 
       // Creation : toujours en brouillon, pour soi-meme, sans paiement.
       allow create: if connecte()
@@ -45,6 +46,27 @@ service cloud.firestore {
         // Seuls les maries lisent et suppriment les reponses.
         allow read, delete: if connecte() && invitation().ownerUid == request.auth.uid;
       }
+    }
+
+    // Fiche publique d'une invitation publiee, rangee sous son adresse
+    // (/i/<adresse>) : uniquement ce que voient les invites. Lisible par son
+    // adresse, mais impossible de lister toutes les fiches.
+    match /publiques/{slug} {
+      function invitationDe(data) { return get(/databases/$(database)/documents/invitations/$(data.invitationId)).data; }
+
+      allow get: if true;
+      allow list: if false;
+
+      // Les maries mettent a jour la fiche de LEUR invitation publiee (la
+      // premiere fiche est ecrite par le serveur au paiement).
+      allow create, update: if connecte()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['invitationId', 'ownerUid', 'aIcone', 'donneesJson', 'majLe'])
+        && request.resource.data.donneesJson is string && request.resource.data.donneesJson.size() < 500000
+        && invitationDe(request.resource.data).ownerUid == request.auth.uid
+        && invitationDe(request.resource.data).statut == 'publiee'
+        && invitationDe(request.resource.data).slug == slug;
+      allow delete: if false;
     }
   }
 }

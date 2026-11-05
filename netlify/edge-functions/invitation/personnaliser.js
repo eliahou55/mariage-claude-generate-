@@ -6,6 +6,7 @@
  *  - ecran d'ouverture (prenoms, initiales, couleurs du theme) ;
  *  - l'invitation elle-meme (#invitation-prechargee), affichee par le
  *    navigateur sans attendre Firebase.
+ * Source : la fiche PUBLIQUE publiques/<adresse> (jamais le dossier prive).
  */
 
 const echappe = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -19,38 +20,38 @@ export function slugDepuisChemin(chemin) {
   return String(brut).toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 80);
 }
 
-/** Requete Firestore (API REST) : l'invitation publiee de cette adresse.
- *  Meme lecture publique que celle du navigateur des invites (regle :
- *  lecture autorisee si statut == 'publiee'). */
-export function requeteFirestore(slug) {
-  const egal = (champ, valeur) => ({ fieldFilter: { field: { fieldPath: champ }, op: 'EQUAL', value: { stringValue: valeur } } });
+/** Fiche publique lue par l'API REST de Firestore (GET du document
+ *  publiques/<adresse>) -> { id, D, majSecondes, aIcone } ou null. */
+export function lireFiche(doc) {
+  const f = doc && doc.fields;
+  if (!f || !f.donneesJson) return null;
+  let D = {};
+  try { D = JSON.parse(f.donneesJson.stringValue || '{}'); } catch (e) { D = {}; }
+  const t = f.majLe && f.majLe.timestampValue;
   return {
-    structuredQuery: {
-      from: [{ collectionId: 'invitations' }],
-      where: { compositeFilter: { op: 'AND', filters: [egal('slug', slug), egal('statut', 'publiee')] } },
-      limit: 1,
-    },
+    id: (f.invitationId && f.invitationId.stringValue) || '',
+    D,
+    majSecondes: t ? Math.floor(Date.parse(t) / 1000) : '',
+    aIcone: !!(f.aIcone && f.aIcone.booleanValue),
   };
 }
 
-/** Reponse REST de runQuery -> { id, D, majSecondes } ou null. */
-export function lireReponse(json) {
-  const doc = Array.isArray(json) && json[0] && json[0].document;
-  if (!doc || !doc.fields) return null;
+/** Reponse de la fonction de secours /.netlify/functions/publique. */
+export function lireSecours(j) {
+  if (!j || !j.donneesJson) return null;
   let D = {};
-  try { D = JSON.parse((doc.fields.donneesJson && doc.fields.donneesJson.stringValue) || '{}'); } catch (e) { D = {}; }
-  const t = doc.fields.majLe && doc.fields.majLe.timestampValue;
-  return { id: String(doc.name || '').split('/').pop(), D, majSecondes: t ? Math.floor(Date.parse(t) / 1000) : '' };
+  try { D = JSON.parse(j.donneesJson); } catch (e) { D = {}; }
+  return { id: j.invitationId || '', D, majSecondes: j.majSecondes || '', aIcone: !!j.aIcone };
 }
 
 /** Injecte titre, icone, ecran d'ouverture et invitation dans la coquille. */
-export function personnaliser(page, { id, D, majSecondes }, { slug, origine }) {
+export function personnaliser(page, { id, D, majSecondes, aIcone }, { slug, origine }) {
   const c = D.couple || {};
   const p1 = c.marie && c.marie.prenom, p2 = c.mariee && c.mariee.prenom;
   const noms = [p1, p2].filter(Boolean).join(' & ') || 'Invitation de mariage';
   const date = (D.compteARebours && D.compteARebours.dateFr) || '';
   const description = 'Vous êtes invités à notre mariage' + (date ? ` — ${date}` : '') + '.';
-  const icone = D.site && D.site.favicon ? `${origine}/.netlify/functions/icone?slug=${slug}&v=${majSecondes}` : '';
+  const icone = aIcone || (D.site && D.site.favicon) ? `${origine}/.netlify/functions/icone?slug=${slug}&v=${majSecondes}` : '';
 
   const meta = [
     `<title>${echappe(noms)}</title>`,

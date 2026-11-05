@@ -90,6 +90,16 @@ async function creerSlug(db, donnees) {
   return `${base}-${Date.now().toString(36)}`;
 }
 
+/** Contenu de la fiche publique `publiques/<adresse>` : seulement ce que
+ *  voient les invites (l'icone, lourde, est servie par la fonction icone). */
+function ficheDonnees(invitationId, ownerUid, donneesJson) {
+  let D = {};
+  try { D = JSON.parse(donneesJson || '{}'); } catch (e) { D = {}; }
+  const aIcone = !!D.site?.favicon;
+  D.site = { ...(D.site || {}), favicon: null };
+  return { invitationId, ownerUid, aIcone, donneesJson: JSON.stringify(D), majLe: FieldValue.serverTimestamp() };
+}
+
 /** Publie l'invitation apres paiement confirme (idempotent).
  *  Le retour sur l'espace (confirmer-paiement) et le webhook Stripe peuvent
  *  arriver en meme temps : le passage a « publiee » se fait dans une
@@ -115,6 +125,9 @@ async function publier(invitationId, session, origine = 'https://sasson-invit.fr
       payeLe: FieldValue.serverTimestamp(),
       paiement: { sessionId: session.id, montant: session.amount_total, devise: session.currency, email: session.customer_details?.email || null },
     });
+    // Fiche publique (ce que voient les invites) : le dossier ci-dessus
+    // reste prive (e-mail, paiement, saisie complete).
+    t.set(db.collection('publiques').doc(slugPropose), ficheDonnees(invitationId, inv.ownerUid, inv.donneesJson));
     return { slug: slugPropose, nouveau: true };
   });
 
@@ -128,4 +141,4 @@ function reponse(statut, corps) {
   return { statusCode: statut, headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(corps) };
 }
 
-export { getStripe, getDb, utilisateurDepuis, publier, reponse, messageErreur, PRIX_CENTIMES };
+export { getStripe, getDb, utilisateurDepuis, publier, ficheDonnees, reponse, messageErreur, PRIX_CENTIMES };

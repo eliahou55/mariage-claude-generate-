@@ -110,11 +110,36 @@ var SassonFB = (function () {
     };
     // Etape atteinte (pour « reprendre la ou vous vous etiez arrete »).
     if (extra && extra.etape) contenu.etape = String(extra.etape);
-    if (id) return invitations.doc(id).update(contenu).then(function () { return id; });
+    if (id) return invitations.doc(id).update(contenu).then(function () { return majFichePublique(id, donnees); }).then(function () { return id; });
     contenu.ownerUid = u.uid;
     contenu.statut = 'brouillon';
     contenu.creeLe = maintenant();
     return invitations.add(contenu).then(function (ref) { return ref.id; });
+  }
+
+  /** Fiche publique (collection « publiques », sous l'adresse /i/<adresse>) :
+   *  uniquement ce que voient les invites. Le dossier « invitations » reste
+   *  prive (e-mail, paiement, saisie). Mise a jour quand les maries modifient
+   *  leur invitation deja publiee ; sans effet pour un brouillon. Une erreur
+   *  ici ne bloque jamais l'enregistrement. */
+  var publiques = db.collection('publiques');
+  function sansIcone(donnees) {
+    var d = Object.assign({}, donnees || {});
+    d.site = Object.assign({}, d.site || {}, { favicon: null });
+    return d;
+  }
+  function majFichePublique(id, donnees) {
+    return invitations.doc(id).get().then(function (d) {
+      var x = d.exists ? d.data() : null;
+      if (!x || x.statut !== 'publiee' || !x.slug) return null;
+      return publiques.doc(x.slug).set({
+        invitationId: id,
+        ownerUid: x.ownerUid,
+        aIcone: !!(donnees && donnees.site && donnees.site.favicon),
+        donneesJson: JSON.stringify(sansIcone(donnees)),
+        majLe: maintenant(),
+      });
+    }).catch(function (e) { if (window.console) console.warn('Fiche publique non mise a jour :', e && (e.code || e.message)); });
   }
 
   /** Document Firestore -> objet, avec donnees / brouillon deja relus. */
@@ -127,9 +152,14 @@ var SassonFB = (function () {
   function lire(id) {
     return invitations.doc(id).get().then(function (d) { return d.exists ? versObjet(d) : null; });
   }
+  /** Invitation publiee, pour la page des invites : la fiche publique. */
   function lireParSlug(slug) {
-    return invitations.where('slug', '==', slug).where('statut', '==', 'publiee').limit(1).get()
-      .then(function (q) { return q.empty ? null : versObjet(q.docs[0]); });
+    return publiques.doc(slug).get().then(function (d) {
+      if (!d.exists) return null;
+      var x = d.data(), donnees = null;
+      try { donnees = JSON.parse(x.donneesJson || 'null'); } catch (e) { donnees = null; }
+      return { id: x.invitationId, donnees: donnees };
+    });
   }
   function mesInvitations() {
     var u = auth.currentUser;
