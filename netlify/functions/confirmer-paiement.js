@@ -16,7 +16,8 @@ export const handler = async (event) => {
     if (session.metadata?.uid !== user.uid) return reponse(403, { erreur: 'Paiement d\'un autre compte.' });
     if (session.payment_status !== 'paid') return reponse(402, { erreur: 'Paiement non abouti.', statut: session.status });
 
-    const resultat = await publier(session.metadata.invitationId, session);
+    const origine = event.headers.origin || `https://${event.headers.host}`;
+    const resultat = await publier(session.metadata.invitationId, session, origine);
     return reponse(200, resultat);
   } catch (e) {
     console.error(e);

@@ -6,11 +6,13 @@
  *   STRIPE_WEBHOOK_SECRET    whsec_... (facultatif, pour le webhook)
  *   FIREBASE_CLIENT_EMAIL    compte de service Firebase (client_email)
  *   FIREBASE_PRIVATE_KEY     compte de service Firebase (private_key)
+ *   RESEND_API_KEY           e-mail de confirmation + facture (cf. facture.js)
  */
 import Stripe from 'stripe';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+import { facturerEtConfirmer } from './facture.js';
 
 const PROJET = 'e-faire-part';
 const PRIX_CENTIMES = 1999;
@@ -88,24 +90,38 @@ async function creerSlug(db, donnees) {
   return `${base}-${Date.now().toString(36)}`;
 }
 
-/** Publie l'invitation apres paiement confirme (idempotent). */
-async function publier(invitationId, session) {
+/** Publie l'invitation apres paiement confirme (idempotent).
+ *  Le retour sur l'espace (confirmer-paiement) et le webhook Stripe peuvent
+ *  arriver en meme temps : le passage a « publiee » se fait dans une
+ *  transaction, et seul l'appel qui l'a effectue cree la facture et envoie
+ *  l'e-mail de confirmation (jamais deux fois). */
+async function publier(invitationId, session, origine = 'https://sasson-invit.fr') {
   const db = getDb();
   const ref = db.collection('invitations').doc(invitationId);
-  const doc = await ref.get();
-  if (!doc.exists) throw new Error('Invitation introuvable.');
-  const inv = doc.data();
-  if (inv.statut === 'publiee') return { invitationId, slug: inv.slug };
+  const premier = await ref.get();
+  if (!premier.exists) throw new Error('Invitation introuvable.');
+  if (premier.data().statut === 'publiee') return { invitationId, slug: premier.data().slug };
   let donnees = {};
-  try { donnees = JSON.parse(inv.donneesJson || '{}'); } catch (e) { /* ignore */ }
-  const slug = await creerSlug(db, donnees);
-  await ref.update({
-    statut: 'publiee',
-    slug,
-    payeLe: FieldValue.serverTimestamp(),
-    paiement: { sessionId: session.id, montant: session.amount_total, devise: session.currency, email: session.customer_details?.email || null },
+  try { donnees = JSON.parse(premier.data().donneesJson || '{}'); } catch (e) { /* ignore */ }
+  const slugPropose = await creerSlug(db, donnees);
+
+  const resultat = await db.runTransaction(async (t) => {
+    const doc = await t.get(ref);
+    const inv = doc.data();
+    if (inv.statut === 'publiee') return { slug: inv.slug, nouveau: false };
+    t.update(ref, {
+      statut: 'publiee',
+      slug: slugPropose,
+      payeLe: FieldValue.serverTimestamp(),
+      paiement: { sessionId: session.id, montant: session.amount_total, devise: session.currency, email: session.customer_details?.email || null },
+    });
+    return { slug: slugPropose, nouveau: true };
   });
-  return { invitationId, slug };
+
+  if (resultat.nouveau) {
+    await facturerEtConfirmer(db, { invitationId, session, donnees, slug: resultat.slug, origine });
+  }
+  return { invitationId, slug: resultat.slug };
 }
 
 function reponse(statut, corps) {
