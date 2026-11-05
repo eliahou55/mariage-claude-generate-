@@ -543,3 +543,18 @@ body.site #form-invitation > *, body.site .lecteur-formulaire, body.site .lecteu
 }
 /* Ordinateur : un peu d'air entre « Se connecter » et « Creer un compte ». */
 .site-entete__compte { gap: 24px; }
+
+/* Bandeau « Reprenez … la ou vous vous etiez arrete » (entete.js). */
+.reprise-compte { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin: 0 auto; padding: 12px 18px; background: #171614; color: #F7F4EE; font-size: 14px; }
+.reprise-compte__texte { margin: 0; }
+.reprise-compte__texte strong { font-weight: 500; }
+.reprise-compte__ok { padding: 8px 16px; border: 0; background: #F7F4EE; color: #171614; font: 500 12px/1 var(--font-corps); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+.reprise-compte__fermer { width: 30px; height: 30px; border: 0; background: none; color: #c9c4ba; font-size: 20px; line-height: 1; cursor: pointer; }
+/* Publication : choix quand le compte a deja une invitation. */
+.choix-options { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.choix-option { display: block; width: 100%; padding: 15px 18px; text-align: left; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; transition: border-color .15s ease, background .15s ease; }
+.choix-option:hover, .choix-option:focus-visible { border-color: var(--ink); }
+.choix-option strong { display: block; font-weight: 500; font-size: 15px; }
+.choix-option span { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); }
+.choix-option--principal { border-color: var(--ink); background: #171614; color: #F7F4EE; }
+.choix-option--principal span { color: #c9c4ba; }

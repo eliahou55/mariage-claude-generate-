@@ -233,7 +233,10 @@ var SiteEntete = (function () {
     });
     document.addEventListener('click', function () { menu.hidden = true; bouton.setAttribute('aria-expanded', 'false'); });
     menu.querySelector('[data-deconnexion]').addEventListener('click', function () {
-      if (FB) FB.deconnecter().then(function () { if (/espace\.html/.test(location.pathname)) location.href = BASE + 'index.html'; });
+      // Deconnexion : la saisie est dans le compte ; on vide ce navigateur
+      // pour qu'une visite suivante (autre personne, ou nouvelle creation)
+      // ne reparte pas de ces donnees, et n'ecrase jamais cette invitation.
+      if (FB) FB.deconnecter().then(function () { viderSession(); location.href = BASE + 'index.html'; });
     });
     var wrap = el('div', 'site-compte');
     wrap.appendChild(bouton);
@@ -294,6 +297,130 @@ var SiteEntete = (function () {
     }
   }
 
+  /* ---------------- Session : compte <-> saisie de ce navigateur ----------------
+   * - Deconnexion : tout est vide (viderSession).
+   * - Une invitation du compte est « liee » a la saisie locale
+   *   (CLE_STOCKAGE_INVITATION + statut + proprietaire). Liee a un autre
+   *   compte que celui connecte : le lien est oublie (jamais d'ecrasement).
+   * - Connexion sans saisie en cours : bandeau « Reprendre … ».
+   * - Saisie liee a un brouillon : sauvegarde automatique dans le compte,
+   *   avec l'etape atteinte (reprise possible sur un autre appareil).
+   * - Saisie nouvelle alors que le compte a deja une invitation : rien
+   *   n'est enregistre ici ; le choix se fait a la publication.
+   * ------------------------------------------------------------------ */
+  var CLES_SESSION = [CLE_STOCKAGE_BROUILLON, CLE_STOCKAGE_DONNEES, CLE_STOCKAGE_INVITATION, CLE_STOCKAGE_LOGO,
+    CLE_STOCKAGE_PARCOURS, CLE_STOCKAGE_MODIF, CLE_STOCKAGE_STATUT, CLE_STOCKAGE_PROPRIETAIRE, 'invitation-client:avis-logo'];
+  function lireLocal(cle) { try { return window.localStorage.getItem(cle); } catch (e) { return null; } }
+  function viderSession() {
+    CLES_SESSION.forEach(function (c) { try { window.localStorage.removeItem(c); } catch (e) { /* ignore */ } });
+    try { window.sessionStorage.removeItem('sasson:reprise-vue'); } catch (e) { /* ignore */ }
+  }
+  /** Une creation est en cours dans ce navigateur (au moins un prenom saisi). */
+  function saisieEnCours() {
+    try {
+      var b = JSON.parse(lireLocal(CLE_STOCKAGE_BROUILLON) || 'null');
+      return !!(b && b.couple && ((b.couple.marie && b.couple.marie.prenom) || (b.couple.mariee && b.couple.mariee.prenom)));
+    } catch (e) { return false; }
+  }
+  /** Recopie une invitation du compte dans ce navigateur et l'y lie. */
+  function lier(inv, uid) {
+    try {
+      if (inv.brouillon) window.localStorage.setItem(CLE_STOCKAGE_BROUILLON, JSON.stringify(inv.brouillon));
+      if (inv.donnees) window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(inv.donnees));
+      window.localStorage.setItem(CLE_STOCKAGE_INVITATION, inv.id);
+      window.localStorage.setItem(CLE_STOCKAGE_STATUT, inv.statut || 'brouillon');
+      window.localStorage.setItem(CLE_STOCKAGE_PROPRIETAIRE, uid);
+      window.localStorage.removeItem(CLE_STOCKAGE_PARCOURS);
+      if (inv.statut === 'publiee') window.localStorage.setItem(CLE_STOCKAGE_MODIF, inv.id);
+      else window.localStorage.removeItem(CLE_STOCKAGE_MODIF);
+    } catch (e) { /* ignore */ }
+  }
+  /** Ou reprendre un brouillon : l'etape memorisee, sinon selon ce qui est rempli. */
+  function etapeDeReprise(inv) {
+    if (inv.statut === 'publiee') return 'espace.html';
+    var permises = ['configurateur.html', 'formulaire.html', '../apercu/index.html', 'logo.html', 'publication.html'];
+    if (inv.etape && permises.indexOf(inv.etape) !== -1) return inv.etape;
+    return inv.donnees && inv.donnees.evenements && inv.donnees.evenements.length ? '../apercu/index.html' : 'formulaire.html';
+  }
+  /** Etape de la page courante, telle qu'enregistree dans le compte. */
+  function etapeCourante() {
+    var p = location.pathname;
+    if (/configurateur\.html/.test(p)) return 'configurateur.html';
+    if (/formulaire\.html/.test(p)) return 'formulaire.html';
+    if (/logo\.html/.test(p)) return 'logo.html';
+    if (/\/apercu\//.test(p)) return '../apercu/index.html';
+    return '';
+  }
+
+  function bandeauReprise(inv) {
+    if (document.getElementById('reprise-compte')) return;
+    var noms = (inv.resume && inv.resume.noms) || 'votre invitation';
+    var enLigne = inv.statut === 'publiee';
+    var b = el('div', 'reprise-compte');
+    b.id = 'reprise-compte';
+    b.setAttribute('role', 'status');
+    b.innerHTML = '<p class="reprise-compte__texte">' + (enLigne
+      ? 'Votre invitation <strong></strong> est en ligne.'
+      : 'Reprenez <strong></strong> là où vous vous étiez arrêté.') + '</p>' +
+      '<button type="button" class="reprise-compte__ok">' + (enLigne ? 'Mon espace' : 'Reprendre') + '</button>' +
+      '<button type="button" class="reprise-compte__fermer" aria-label="Fermer">×</button>';
+    b.querySelector('strong').textContent = '« ' + noms + ' »';
+    b.querySelector('.reprise-compte__ok').addEventListener('click', function () {
+      lier(inv, compte.uid);
+      location.href = BASE + etapeDeReprise(inv);
+    });
+    b.querySelector('.reprise-compte__fermer').addEventListener('click', function () {
+      try { window.sessionStorage.setItem('sasson:reprise-vue', '1'); } catch (e) { /* ignore */ }
+      b.remove();
+    });
+    var barre = hote && hote.querySelector('.site-entete');
+    if (barre && barre.parentNode) barre.parentNode.insertBefore(b, barre.nextSibling);
+    else document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  var sauvegardeEnCours = false;
+  function sauvegardeAuto() {
+    if (!FB || !compte || sauvegardeEnCours || typeof ClientInvitation === 'undefined') return;
+    var etape = etapeCourante();
+    if (!etape || !saisieEnCours() || lireLocal(CLE_STOCKAGE_MODIF)) return;
+    var id = lireLocal(CLE_STOCKAGE_INVITATION);
+    if (id && lireLocal(CLE_STOCKAGE_STATUT) !== 'brouillon') return;   // jamais une invitation en ligne
+    var brouillon = ClientInvitation.lireBrouillon();
+    var donnees;
+    try { donnees = ClientInvitation.construireDonnees(brouillon); } catch (e) { return; }
+    sauvegardeEnCours = true;
+    // Saisie pas encore liee : on ne cree un brouillon que si le compte n'a
+    // encore aucune invitation (sinon, choix a la publication).
+    var cible = id ? Promise.resolve(id) : FB.mesInvitations().then(function (l) { return l.length ? false : null; });
+    cible.then(function (c) {
+      if (c === false) return null;
+      return FB.enregistrer(c, brouillon, donnees, { etape: etape }).then(function (nouvelId) {
+        if (!id) lier({ id: nouvelId, statut: 'brouillon' }, compte.uid);
+      });
+    }).catch(function () { /* hors ligne : la saisie reste dans le navigateur */ })
+      .then(function () { sauvegardeEnCours = false; });
+  }
+
+  surCompte(function (c) {
+    if (!c) return;
+    // Saisie liee a l'invitation d'un AUTRE compte : on oublie ce lien.
+    var proprio = lireLocal(CLE_STOCKAGE_PROPRIETAIRE);
+    if (lireLocal(CLE_STOCKAGE_INVITATION) && proprio && proprio !== c.uid) {
+      [CLE_STOCKAGE_INVITATION, CLE_STOCKAGE_STATUT, CLE_STOCKAGE_PROPRIETAIRE, CLE_STOCKAGE_MODIF].forEach(function (k) {
+        try { window.localStorage.removeItem(k); } catch (e) { /* ignore */ }
+      });
+    }
+    // Rien en cours ici : proposer de reprendre l'invitation du compte.
+    var surEspace = /espace\.html|publication\.html/.test(location.pathname);
+    var vue = false;
+    try { vue = !!window.sessionStorage.getItem('sasson:reprise-vue'); } catch (e) { /* ignore */ }
+    if (FB && !surEspace && !vue && !saisieEnCours() && !lireLocal(CLE_STOCKAGE_INVITATION)) {
+      FB.mesInvitations().then(function (liste) { if (liste.length) bandeauReprise(liste[0]); }).catch(function () {});
+    }
+    sauvegardeAuto();
+  });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') sauvegardeAuto(); });
+
   construireEntete();
-  return { ouvrir: ouvrir, voirExemple: voirExemple, lireCompte: lireCompte, surCompte: surCompte };
+  return { ouvrir: ouvrir, voirExemple: voirExemple, lireCompte: lireCompte, surCompte: surCompte, viderSession: viderSession, lier: lier, etapeDeReprise: etapeDeReprise };
 })();

@@ -24,3 +24,7 @@ var CLE_STOCKAGE_PARCOURS = 'invitation-client:parcours';
 // l'invitation) : le formulaire et les themes s'adaptent (« Conserver ce
 // theme », « Enregistrer et voir ma carte »). Efface apres l'enregistrement.
 var CLE_STOCKAGE_MODIF = 'invitation-client:modification';
+// Invitation du compte liee a cette saisie : son statut ('brouillon' ou
+// 'publiee') et le compte proprietaire (uid). Effaces a la deconnexion.
+var CLE_STOCKAGE_STATUT = 'invitation-client:statut';
+var CLE_STOCKAGE_PROPRIETAIRE = 'invitation-client:proprietaire';

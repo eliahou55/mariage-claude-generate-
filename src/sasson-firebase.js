@@ -92,8 +92,9 @@ var SassonFB = (function () {
 
   /** Cree ou met a jour l'invitation du compte connecte avec la saisie en
    *  cours (brouillon + donnees). Renvoie l'id. Le statut et le paiement
-   *  ne sont JAMAIS modifies ici (seulement par le serveur). */
-  function enregistrer(id, brouillon, donnees) {
+   *  ne sont JAMAIS modifies ici (seulement par le serveur). extra.etape :
+   *  derniere etape atteinte, pour reprendre plus tard. */
+  function enregistrer(id, brouillon, donnees, extra) {
     var u = auth.currentUser;
     if (!u) return Promise.reject(new Error('Non connecté'));
     var couple = (donnees && donnees.couple) || {};
@@ -107,6 +108,8 @@ var SassonFB = (function () {
       },
       majLe: maintenant(),
     };
+    // Etape atteinte (pour « reprendre la ou vous vous etiez arrete »).
+    if (extra && extra.etape) contenu.etape = String(extra.etape);
     if (id) return invitations.doc(id).update(contenu).then(function () { return id; });
     contenu.ownerUid = u.uid;
     contenu.statut = 'brouillon';

@@ -41,6 +41,9 @@
       if (inv.brouillon) window.localStorage.setItem(CLE_STOCKAGE_BROUILLON, JSON.stringify(inv.brouillon));
       if (inv.donnees) window.localStorage.setItem(CLE_STOCKAGE_DONNEES, JSON.stringify(inv.donnees));
       window.localStorage.setItem(CLE_STOCKAGE_INVITATION, inv.id);
+      window.localStorage.setItem(CLE_STOCKAGE_STATUT, inv.statut || 'brouillon');
+      var c = SiteEntete.lireCompte();
+      if (c) window.localStorage.setItem(CLE_STOCKAGE_PROPRIETAIRE, c.uid);
       // Mode modification : on n'est plus dans le parcours « exemple ».
       window.localStorage.setItem(CLE_STOCKAGE_MODIF, inv.id);
       window.localStorage.removeItem(CLE_STOCKAGE_PARCOURS);

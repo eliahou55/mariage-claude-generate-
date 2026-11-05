@@ -16,7 +16,7 @@
   var erreurEl = document.getElementById('erreur');
 
   function montrer(id) {
-    ['etat-chargement', 'etat-vide', 'etat-exemple', 'etat-compte', 'etat-paiement', 'etat-publiee'].forEach(function (x) {
+    ['etat-chargement', 'etat-vide', 'etat-exemple', 'etat-compte', 'etat-choix', 'etat-paiement', 'etat-publiee'].forEach(function (x) {
       document.getElementById(x).hidden = x !== id;
     });
   }
@@ -80,14 +80,67 @@
   function idLocal() { try { return window.localStorage.getItem(CLE_STOCKAGE_INVITATION) || null; } catch (e) { return null; } }
   function memoriserId(id) { try { window.localStorage.setItem(CLE_STOCKAGE_INVITATION, id); } catch (e) { /* ignore */ } }
 
-  /** Enregistre la saisie dans le compte ; si l'id memorise n'est pas a ce
-   *  compte (autre compte connecte), cree une nouvelle invitation. */
+  /** Nouvelle saisie (non liee) alors que le compte a deja une ou plusieurs
+   *  invitations : on demande quoi faire, au lieu de dupliquer ou d'ecraser
+   *  sans prevenir. Resout avec l'id a mettre a jour, ou null (nouvelle). */
+  function choisirCible(liste) {
+    return new Promise(function (resoudre) {
+      var zone = document.getElementById('choix-options');
+      zone.innerHTML = '';
+      function option(titre, detail, principal, action) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'choix-option' + (principal ? ' choix-option--principal' : '');
+        b.innerHTML = '<strong></strong><span></span>';
+        b.querySelector('strong').textContent = titre;
+        b.querySelector('span').textContent = detail;
+        b.addEventListener('click', action);
+        zone.appendChild(b);
+      }
+      var noms = function (inv) { return '« ' + ((inv.resume && inv.resume.noms) || 'Invitation') + ' »'; };
+      liste.slice(0, 3).forEach(function (inv, i) {
+        if (inv.statut === 'publiee') {
+          option('Mettre à jour ' + noms(inv) + ' avec ces informations', 'Invitation déjà en ligne : gratuit, son lien ne change pas.', i === 0,
+            function () { resoudre(inv.id); });
+        } else {
+          option('Remplacer mon brouillon ' + noms(inv) + ' par cette version', 'L’ancien brouillon est remplacé.', i === 0,
+            function () { resoudre(inv.id); });
+        }
+      });
+      var premier = liste[0];
+      option('Reprendre ' + noms(premier) + ' telle qu’elle était', 'Cette nouvelle saisie est abandonnée.', false, function () {
+        SiteEntete.lier(premier, SiteEntete.lireCompte().uid);
+        window.location.href = SiteEntete.etapeDeReprise(premier);
+      });
+      option('Créer une nouvelle invitation', 'Une invitation de plus dans votre espace, à publier séparément (19,99 €).', false,
+        function () { resoudre(null); });
+      document.getElementById('choix-texte').textContent = liste.length > 1
+        ? 'Votre compte contient déjà ' + liste.length + ' invitations. Que souhaitez-vous faire de cette saisie ?'
+        : 'Votre compte contient déjà ' + noms(premier) + (premier.statut === 'publiee' ? ', en ligne.' : ', en brouillon.') + ' Que souhaitez-vous faire de cette saisie ?';
+      montrer('etat-choix');
+      window.setTimeout(function () { document.getElementById('etat-choix').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
+    });
+  }
+
+  /** Enregistre la saisie dans le compte. Saisie deja liee : mise a jour.
+   *  Sinon : si le compte a deja des invitations, on demande ; s'il n'en a
+   *  aucune, on en cree une. Lien a un autre compte : nouvelle invitation. */
   function enregistrer() {
     var id = idLocal();
-    return iconePrete.then(function () { return FB.enregistrer(id, brouillon, D); }).catch(function (e) {
-      if (id) return FB.enregistrer(null, brouillon, D);
-      throw e;
-    }).then(function (nouvelId) { memoriserId(nouvelId); return nouvelId; });
+    return iconePrete.then(function () {
+      if (id) return id;
+      return FB.mesInvitations().then(function (liste) { return liste.length ? choisirCible(liste) : null; });
+    }).then(function (cible) {
+      montrer('etat-chargement');
+      return FB.enregistrer(cible, brouillon, D, { etape: 'publication.html' }).catch(function (e) {
+        if (cible) return FB.enregistrer(null, brouillon, D, { etape: 'publication.html' });
+        throw e;
+      });
+    }).then(function (nouvelId) {
+      memoriserId(nouvelId);
+      try { window.localStorage.setItem(CLE_STOCKAGE_PROPRIETAIRE, SiteEntete.lireCompte().uid); } catch (e) { /* ignore */ }
+      return nouvelId;
+    });
   }
 
   var paiementMonte = false;
@@ -130,6 +183,7 @@
     montrer('etat-chargement');
     enregistrer().then(function (id) {
       return FB.lire(id).then(function (inv) {
+        try { window.localStorage.setItem(CLE_STOCKAGE_STATUT, (inv && inv.statut) || 'brouillon'); } catch (e) { /* ignore */ }
         if (inv && inv.statut === 'publiee') montrer('etat-publiee');
         else monterPaiement(id);
       });
