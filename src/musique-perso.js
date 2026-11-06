@@ -11,7 +11,7 @@ var MusiquePerso = (function () {
   'use strict';
 
   var BASE_DB = 'invitation-client', MAGASIN = 'fichiers', CLE = 'musique';
-  var TAILLE_MAX = 20 * 1024 * 1024;   // 20 Mo
+  var TAILLE_MAX = 10 * 1024 * 1024;   // 10 Mo (bande passante : chaque invite telecharge le fichier)
 
   function ouvrir() {
     return new Promise(function (ok, ko) {
@@ -38,7 +38,7 @@ var MusiquePerso = (function () {
     if (!/^audio\//.test(fichier.type) && !/\.(mp3|m4a|aac|wav|ogg)$/i.test(fichier.name)) {
       return Promise.reject(new Error('Ce fichier n\'est pas un fichier audio (MP3, M4A…).'));
     }
-    if (fichier.size > TAILLE_MAX) return Promise.reject(new Error('Fichier trop lourd (20 Mo maximum).'));
+    if (fichier.size > TAILLE_MAX) return Promise.reject(new Error('Fichier trop lourd (10 Mo maximum, environ 5 minutes en qualité standard).'));
     var nom = fichier.name.replace(/\.[^.]+$/, '').replace(/[_]+/g, ' ');
     var type = fichier.type || 'audio/mpeg';
     // Donnees brutes (ArrayBuffer) plutot que le fichier lui-meme : Safari

@@ -103,3 +103,10 @@
 .menu-modifier button:hover, .menu-modifier button:focus-visible { background: var(--accent-bg); }
 .menu-modifier strong { display: block; font-weight: 500; font-size: 14px; }
 .menu-modifier span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }
+
+/* Case « e-mail a chaque reponse » (sous le lien de l'invitation). */
+.espace__notif { display: flex; gap: 12px; align-items: flex-start; margin: 14px 0 0; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface, #fff); cursor: pointer; }
+.espace__notif[hidden] { display: none; }
+.espace__notif input { flex: none; width: 20px; height: 20px; margin: 2px 0 0; accent-color: #171614; }
+.espace__notif strong { display: block; font-weight: 500; font-size: 14.5px; }
+.espace__notif small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--muted); }

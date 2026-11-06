@@ -2,7 +2,8 @@
  * POST /.netlify/functions/notifier-reponse  { invitationId, reponseId }
  *
  * Appelee par la page de l'invitation juste apres qu'un invite a repondu :
- * previent les maries par e-mail (Resend), avec le detail de la reponse et
+ * previent les maries par e-mail (Resend) S'ILS L'ONT DEMANDE (champ
+ * invitations.notifications, case de leur espace, decochee par defaut), avec le detail de la reponse et
  * le total des reponses recues.
  * Anti-abus : la reponse doit exister reellement dans Firestore (ecrite par
  * l'invite selon les regles), et chaque reponse n'est notifiee qu'UNE fois
@@ -87,6 +88,8 @@ export const handler = async (event) => {
     const aNotifier = await db.runTransaction(async (t) => {
       const [inv, rep] = await Promise.all([t.get(invRef), t.get(repRef)]);
       if (!inv.exists || !rep.exists || inv.data().statut !== 'publiee' || rep.data().notifiee) return null;
+      // Seulement si les maries l'ont demande (case dans leur espace, decochee par defaut).
+      if (inv.data().notifications !== true) return null;
       t.update(repRef, { notifiee: FieldValue.serverTimestamp() });
       return { inv: inv.data(), r: rep.data() };
     });

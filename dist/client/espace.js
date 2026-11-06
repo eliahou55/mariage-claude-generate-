@@ -82,6 +82,8 @@
 
     $('bloc-publier').hidden = publiee;
     $('bloc-lien').hidden = !publiee;
+    $('bloc-notif').hidden = !publiee;
+    $('notif-reponses').checked = inv.notifications === true;
     var voir = $('btn-voir');
     if (publiee) {
       var url = lienPublic(inv);
@@ -219,6 +221,21 @@
     });
   });
   $('btn-publier').addEventListener('click', function () { chargerLocalement(courante); window.location.href = 'publication.html'; });
+
+  /* Notifications par e-mail des reponses : au choix des maries (decoche par
+   * defaut), juste sous le lien, donc visible des le retour du paiement. */
+  $('notif-reponses').addEventListener('change', function () {
+    var c = this, etat = $('notif-etat');
+    if (!courante) return;
+    c.disabled = true;
+    FB.definirNotifications(courante.id, c.checked).then(function () {
+      courante.notifications = c.checked;
+      etat.textContent = c.checked ? 'C’est noté : vous recevrez un e-mail à chaque réponse.' : 'Vous ne recevrez plus d’e-mail à chaque réponse.';
+    }, function () {
+      c.checked = !c.checked;
+      etat.textContent = 'Enregistrement impossible, réessayez.';
+    }).then(function () { c.disabled = false; });
+  });
 
   /* ---------------- Demarrage ---------------- */
 

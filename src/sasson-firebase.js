@@ -170,6 +170,8 @@ var SassonFB = (function () {
     });
   }
   function supprimer(id) { return invitations.doc(id).delete(); }
+  /** E-mail aux maries a chaque reponse d'invite (choix des maries, desactive par defaut). */
+  function definirNotifications(id, actif) { return invitations.doc(id).update({ notifications: !!actif }); }
 
   /* ---------------- Reponses des invites ---------------- */
 
@@ -192,7 +194,7 @@ var SassonFB = (function () {
     auth: auth, db: db, messageErreur: messageErreur,
     surUtilisateur: surUtilisateur, utilisateur: utilisateur, inscrire: inscrire, connecter: connecter,
     google: google, motDePasseOublie: motDePasseOublie, deconnecter: deconnecter, jeton: jeton,
-    enregistrer: enregistrer, lire: lire, lireParSlug: lireParSlug, mesInvitations: mesInvitations, supprimer: supprimer,
+    enregistrer: enregistrer, lire: lire, lireParSlug: lireParSlug, mesInvitations: mesInvitations, supprimer: supprimer, definirNotifications: definirNotifications,
     envoyerReponse: envoyerReponse, ecouterReponses: ecouterReponses, supprimerReponse: supprimerReponse,
   };
 })();
