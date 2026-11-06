@@ -702,7 +702,16 @@ ${THEMES.map((t) => { const id = identite(t); return `body[data-theme="${t.slug}
     }
 
     window.SASSON_PUBLIC = true;
-    window.SassonReponse = function (reponse) { return chargerFirebase().then(function (fb) { return fb.envoyerReponse(inv.id, reponse); }); };
+    window.SassonReponse = function (reponse) {
+      return chargerFirebase().then(function (fb) { return fb.envoyerReponse(inv.id, reponse); }).then(function (ref) {
+        // Les maries sont prevenus par e-mail (une fois par reponse reelle).
+        try {
+          fetch('/.netlify/functions/notifier-reponse', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invitationId: inv.id, reponseId: ref && ref.id }) }).catch(function () {});
+        } catch (e) { /* ignore */ }
+        return ref;
+      });
+    };
 
     var polices = POLICES[theme];
     return Promise.all([
