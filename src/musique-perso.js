@@ -4,9 +4,8 @@
  * localStorage). Lu par le formulaire, l'etape 3 et les pages de theme
  * (app.js) quand site.musique vaut MUSIQUE_PERSO.
  *
- * Version sans serveur : le fichier n'est disponible que dans ce
- * navigateur. A la publication (paiement), il devra etre envoye au
- * serveur avec le reste de l'invitation.
+ * A la publication, le fichier est envoye au serveur (publication.js ->
+ * netlify/functions/musique-envoi.mjs) et servi aux invites par /musique/<id>.
  */
 var MusiquePerso = (function () {
   'use strict';
@@ -69,9 +68,21 @@ var MusiquePerso = (function () {
       .catch(function () { return null; });
   }
 
+  /** Fichier brut { octets, nom, type, taille } pour l'envoi au serveur, ou null. */
+  function lireFichier() {
+    return transaction('readonly', function (m) { return m.get(CLE); })
+      .then(function (v) {
+        if (!v) return null;
+        if (v.octets) return { octets: v.octets, nom: v.nom, type: v.type || 'audio/mpeg', taille: v.octets.byteLength };
+        if (v.blob && v.blob.arrayBuffer) return v.blob.arrayBuffer().then(function (o) { return { octets: o, nom: v.nom, type: v.blob.type || 'audio/mpeg', taille: o.byteLength }; });
+        return null;
+      })
+      .catch(function () { return null; });
+  }
+
   function supprimer() {
     return transaction('readwrite', function (m) { return m.delete(CLE); }).catch(function () {});
   }
 
-  return { CLE: 'perso', enregistrer: enregistrer, lire: lire, supprimer: supprimer };
+  return { CLE: 'perso', enregistrer: enregistrer, lire: lire, lireFichier: lireFichier, supprimer: supprimer };
 })();

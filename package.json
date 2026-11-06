@@ -9,6 +9,7 @@
     "dev": "npx --yes serve dist -l 3000"
   },
   "dependencies": {
+    "@netlify/blobs": "^11.1.7",
     "exceljs": "^4.4.0",
     "firebase-admin": "^14.5.0",
     "pdf-lib": "^1.17.1",

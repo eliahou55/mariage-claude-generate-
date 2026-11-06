@@ -139,7 +139,62 @@
     }).then(function (nouvelId) {
       memoriserId(nouvelId);
       try { window.localStorage.setItem(CLE_STOCKAGE_PROPRIETAIRE, SiteEntete.lireCompte().uid); } catch (e) { /* ignore */ }
-      return nouvelId;
+      // Musique importee : envoyee au serveur, puis l'invitation enregistree
+      // pointe vers elle (les invites l'entendent). Jamais bloquant.
+      return envoyerMusique(nouvelId).then(function (chemin) {
+        if (!chemin) return nouvelId;
+        var copie = JSON.parse(JSON.stringify(D));
+        copie.site.musique = chemin;
+        return FB.enregistrer(nouvelId, brouillon, copie, { etape: 'publication.html' }).then(function () { return nouvelId; });
+      });
+    });
+  }
+
+  /** Envoie la musique importee (si c'en est une) en morceaux de 3,5 Mo.
+   *  Resout avec son chemin (« musique/<id>?v=… »), ou null. Deja envoyee
+   *  (meme invitation, meme fichier) : rien a renvoyer. */
+  var CLE_MUSIQUE_ENVOYEE = 'invitation-client:musique-envoyee';
+  function envoyerMusique(id) {
+    if (!D || !D.site || D.site.musique !== 'perso' || typeof MusiquePerso === 'undefined') return Promise.resolve(null);
+    var etat = document.getElementById('musique-envoi');
+    function info(t) { if (etat) { etat.textContent = t; etat.hidden = !t; } }
+    return MusiquePerso.lireFichier().then(function (f) {
+      if (!f) return null;
+      var deja = null;
+      try { deja = JSON.parse(window.localStorage.getItem(CLE_MUSIQUE_ENVOYEE) || 'null'); } catch (e) { deja = null; }
+      if (deja && deja.id === id && deja.nom === f.nom && deja.taille === f.taille && deja.chemin) return deja.chemin;
+      var TAILLE = 3.5 * 1024 * 1024;
+      var parts = Math.ceil(f.taille / TAILLE), version = Date.now().toString(36);
+      return FB.jeton().then(function (jeton) {
+        var suite = Promise.resolve(null);
+        for (var i = 0; i < parts; i++) {
+          (function (i) {
+            suite = suite.then(function () {
+              info('Envoi de votre musique… ' + Math.round(i / parts * 100) + ' %');
+              var q = '?invitation=' + encodeURIComponent(id) + '&v=' + version + '&part=' + i + '&parts=' + parts
+                + '&type=' + encodeURIComponent(f.type) + '&nom=' + encodeURIComponent(f.nom || '');
+              return fetch('/.netlify/functions/musique-envoi' + q, {
+                method: 'POST',
+                headers: { Authorization: 'Bearer ' + jeton, 'Content-Type': 'application/octet-stream' },
+                body: f.octets.slice(i * TAILLE, Math.min(f.taille, (i + 1) * TAILLE)),
+              }).then(function (r) {
+                return r.json().catch(function () { return {}; }).then(function (j) {
+                  if (!r.ok) throw new Error(j.erreur || 'Envoi impossible');
+                  return j.chemin || null;
+                });
+              });
+            });
+          })(i);
+        }
+        return suite;
+      }).then(function (chemin) {
+        info('');
+        if (chemin) { try { window.localStorage.setItem(CLE_MUSIQUE_ENVOYEE, JSON.stringify({ id: id, nom: f.nom, taille: f.taille, chemin: chemin })); } catch (e) { /* ignore */ } }
+        return chemin;
+      });
+    }).catch(function (e) {
+      info('Votre musique n’a pas pu être envoyée (' + ((e && e.message) || 'erreur') + ') : la musique par défaut sera utilisée. Réessayez plus tard depuis votre espace.');
+      return null;
     });
   }
 

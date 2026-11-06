@@ -309,7 +309,8 @@ var SiteEntete = (function () {
    *   n'est enregistre ici ; le choix se fait a la publication.
    * ------------------------------------------------------------------ */
   var CLES_SESSION = [CLE_STOCKAGE_BROUILLON, CLE_STOCKAGE_DONNEES, CLE_STOCKAGE_INVITATION, CLE_STOCKAGE_LOGO,
-    CLE_STOCKAGE_PARCOURS, CLE_STOCKAGE_MODIF, CLE_STOCKAGE_STATUT, CLE_STOCKAGE_PROPRIETAIRE, 'invitation-client:avis-logo'];
+    CLE_STOCKAGE_PARCOURS, CLE_STOCKAGE_MODIF, CLE_STOCKAGE_STATUT, CLE_STOCKAGE_PROPRIETAIRE, 'invitation-client:avis-logo',
+    'invitation-client:musique-envoyee'];
   function lireLocal(cle) { try { return window.localStorage.getItem(cle); } catch (e) { return null; } }
   function viderSession() {
     CLES_SESSION.forEach(function (c) { try { window.localStorage.removeItem(c); } catch (e) { /* ignore */ } });
