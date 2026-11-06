@@ -83,7 +83,9 @@
         <div id="etat-paiement" class="etat" hidden>
           <h2 class="soustitre">Paiement sécurisé</h2>
           <p class="note">Apple Pay, Google Pay ou carte bancaire. Votre invitation est publiée dès le paiement validé.</p>
-          <div id="paiement" class="paiement"></div>
+          <label class="accord-cgv"><input type="checkbox" id="accord-cgv"> <span>J’accepte les <a href="cgv.html" target="_blank" rel="noopener">conditions générales de vente</a>. Je demande que mon invitation soit publiée immédiatement après le paiement et je reconnais perdre ainsi mon droit de rétractation (contenu numérique, art. L221-28 du Code de la consommation).</span></label>
+          <p class="note" id="accord-aide">Cochez la case pour afficher le paiement.</p>
+          <div id="paiement" class="paiement" aria-disabled="true"></div>
         </div>
 
         <div id="etat-choix" class="etat" hidden>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="icones/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icones/favicon-192.png">
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+<title>Politique de confidentialité — Sasson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="site">
+<div id="entete-site" data-base=""></div>
+
+<main class="page-legale site-largeur">
+  <p class="etiquette-fine">Informations légales</p>
+  <h1 class="titre">Politique de confidentialité</h1>
+  <p class="page-legale__maj">Dernière mise à jour : 6 novembre 2026</p>
+
+  <h2>Responsable du traitement</h2>
+  <p>
+    <span class="a-completer">[Raison sociale, adresse]</span> — contact :
+    <a href="mailto:contact@sasson-invit.fr">contact@sasson-invit.fr</a>.
+  </p>
+
+  <h2>Quelles données, pourquoi</h2>
+  <ul>
+    <li><strong>Compte des mariés</strong> (e-mail, nom affiché) : gérer le compte, publier l'invitation, envoyer la
+      facture et les notifications de réponses. Base légale : exécution du contrat.</li>
+    <li><strong>Contenu de l'invitation</strong> (prénoms, familles, dates, lieux, adresses, textes, logo, musique) :
+      afficher l'invitation. Ces informations sont visibles par toute personne disposant du lien de l'invitation.</li>
+    <li><strong>Réponses des invités</strong> (prénom, nom, présence, nombre de personnes, message) : les transmettre
+      aux mariés. Elles ne sont visibles que par les mariés. Base légale : intérêt légitime des mariés à organiser
+      leur mariage.</li>
+    <li><strong>Paiement</strong> : traité par Stripe ; Sasson conserve seulement la référence, le montant, la date et
+      l'e-mail de facturation. Base légale : exécution du contrat et obligations comptables.</li>
+    <li><strong>Brouillon en cours</strong> : conservé dans votre navigateur (stockage local) tant que vous n'avez pas
+      de compte ; effacé à la déconnexion.</li>
+  </ul>
+  <p>Aucune donnée n'est vendue ni utilisée à des fins publicitaires.</p>
+
+  <h2>Prestataires (sous-traitants)</h2>
+  <ul>
+    <li>Google Firebase / Cloud Firestore (comptes et données) — Google Ireland Ltd.</li>
+    <li>Netlify (hébergement du site) — Netlify, Inc., États-Unis.</li>
+    <li>Stripe (paiement) — Stripe Payments Europe, Ltd., Irlande.</li>
+    <li>Resend (envoi des e-mails) — Resend, Inc., États-Unis.</li>
+    <li>Google Fonts (polices d'écriture, chargées depuis les serveurs de Google).</li>
+  </ul>
+  <p>
+    Certains prestataires peuvent traiter des données hors de l'Union européenne ; ces transferts sont encadrés par les
+    clauses contractuelles types de la Commission européenne ou le cadre de protection des données UE–États-Unis.
+  </p>
+
+  <h2>Durée de conservation</h2>
+  <ul>
+    <li>Invitation et réponses : pendant la durée de mise en ligne, puis <span class="a-completer">[durée à confirmer, ex. 6 mois]</span> ; suppression sur demande à tout moment.</li>
+    <li>Compte : jusqu'à sa suppression.</li>
+    <li>Factures : 10 ans (obligation comptable).</li>
+  </ul>
+
+  <h2>Vos droits</h2>
+  <p>
+    Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de
+    vos données. Les invités peuvent demander la suppression de leur réponse aux mariés ou à Sasson. Pour exercer vos
+    droits : <a href="mailto:contact@sasson-invit.fr">contact@sasson-invit.fr</a>. Vous pouvez aussi introduire une
+    réclamation auprès de la CNIL (cnil.fr).
+  </p>
+
+  <h2>Cookies</h2>
+  <p>
+    Le site n'utilise pas de cookies publicitaires ni de mesure d'audience. Il utilise uniquement le stockage
+    nécessaire à son fonctionnement (connexion au compte, brouillon en cours, préférences de l'invitation).
+  </p>
+</main>
+
+<footer class="ac-pied">
+  <div class="site-largeur ac-pied__grille">
+    <span>Sasson · <span style="font-family:var(--font-he)">ששון</span></span>
+    <span><a href="mentions-legales.html">Mentions légales</a><a href="cgv.html">CGV</a><a href="confidentialite.html">Confidentialité</a></span>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../stockage.js"></script>
+<script src="../sasson-firebase.js"></script>
+<script src="client.js"></script>
+<script src="entete.js"></script>
+</body>
+</html>

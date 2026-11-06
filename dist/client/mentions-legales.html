@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" sizes="32x32" href="icones/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icones/favicon-192.png">
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+<title>Mentions légales — Sasson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Frank+Ruhl+Libre:wght@400&display=swap">
+<link rel="stylesheet" href="client.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body class="site">
+<div id="entete-site" data-base=""></div>
+
+<main class="page-legale site-largeur">
+  <p class="etiquette-fine">Informations légales</p>
+  <h1 class="titre">Mentions légales</h1>
+  <p class="page-legale__maj">Dernière mise à jour : 6 novembre 2026</p>
+
+  <h2>Éditeur du site</h2>
+  <p>
+    Le site <strong>sasson-invit.fr</strong> est édité par :<br>
+    <span class="a-completer">[Raison sociale ou Prénom Nom, statut — ex. entrepreneur individuel]</span><br>
+    <span class="a-completer">[Adresse du siège]</span><br>
+    SIREN / SIRET : <span class="a-completer">[à compléter]</span><br>
+    <span class="a-completer">[RCS ou RNE, le cas échéant]</span><br>
+    TVA : <span class="a-completer">[n° de TVA intracommunautaire, ou « TVA non applicable, art. 293 B du CGI »]</span><br>
+    Contact : <a href="mailto:contact@sasson-invit.fr">contact@sasson-invit.fr</a>
+  </p>
+  <p>Directeur de la publication : <span class="a-completer">[Prénom Nom]</span>.</p>
+
+  <h2>Hébergement</h2>
+  <p>
+    Site : Netlify, Inc. — 512 2nd Street, Suite 200, San Francisco, CA 94107, États-Unis — netlify.com<br>
+    Données (comptes, invitations, réponses des invités) : Google Firebase / Cloud Firestore, Google Ireland Limited —
+    Gordon House, Barrow Street, Dublin 4, Irlande.
+  </p>
+
+  <h2>Propriété intellectuelle</h2>
+  <p>
+    Les thèmes, illustrations, logos, textes et le code du site sont la propriété de l'éditeur ou font l'objet d'une
+    licence. Toute reproduction en dehors de l'usage normal du service (création et partage de son invitation) est
+    interdite sans autorisation.
+  </p>
+  <p>
+    Les contenus ajoutés par les utilisateurs (prénoms, textes, images, musique importée) restent sous leur
+    responsabilité : ils garantissent disposer des droits nécessaires à leur diffusion.
+  </p>
+
+  <h2>Données personnelles</h2>
+  <p>Voir la <a href="confidentialite.html">politique de confidentialité</a>.</p>
+
+  <h2>Conditions de vente</h2>
+  <p>Voir les <a href="cgv.html">conditions générales de vente</a>.</p>
+</main>
+
+<footer class="ac-pied">
+  <div class="site-largeur ac-pied__grille">
+    <span>Sasson · <span style="font-family:var(--font-he)">ששון</span></span>
+    <span><a href="mentions-legales.html">Mentions légales</a><a href="cgv.html">CGV</a><a href="confidentialite.html">Confidentialité</a></span>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../stockage.js"></script>
+<script src="../sasson-firebase.js"></script>
+<script src="client.js"></script>
+<script src="entete.js"></script>
+</body>
+</html>

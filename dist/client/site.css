@@ -558,3 +558,17 @@ body.site #form-invitation > *, body.site .lecteur-formulaire, body.site .lecteu
 .choix-option span { display: block; margin-top: 3px; font-size: 13px; color: var(--muted); }
 .choix-option--principal { border-color: var(--ink); background: #171614; color: #F7F4EE; }
 .choix-option--principal span { color: #c9c4ba; }
+
+/* Pages legales (mentions, CGV, confidentialite). */
+.page-legale { max-width: 760px; padding-top: 40px; padding-bottom: 60px; }
+.page-legale h2 { margin: 34px 0 10px; font-family: var(--font-titre); font-weight: 500; font-size: 23px; }
+.page-legale p, .page-legale li { font-size: 15px; line-height: 1.75; color: var(--ink); }
+.page-legale ul { padding-left: 20px; }
+.page-legale a { color: var(--accent-ink); }
+.page-legale__maj { margin: -6px 0 10px; font-size: 13px; color: var(--muted); }
+.a-completer { background: #FFF1C9; padding: 0 4px; border-radius: 2px; }
+/* Publication : accord CGV + execution immediate, avant le paiement. */
+.accord-cgv { display: flex; gap: 12px; align-items: flex-start; margin: 14px 0 18px; padding: 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--surface); cursor: pointer; font-size: 13.5px; line-height: 1.55; }
+.accord-cgv input { flex: none; width: 20px; height: 20px; margin: 1px 0 0; accent-color: #171614; }
+.accord-cgv a { color: var(--accent-ink); }
+.paiement[aria-disabled="true"] { opacity: .35; pointer-events: none; }

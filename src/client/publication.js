@@ -144,8 +144,19 @@
   }
 
   var paiementMonte = false;
+  /* Accord CGV + execution immediate (renonciation au droit de retractation,
+   * art. L221-28 13° C. conso) : obligatoire avant d'afficher le paiement ;
+   * transmis au serveur, qui l'enregistre avec la commande. */
+  var accord = document.getElementById('accord-cgv');
+  var idEnAttente = null;
+  accord.addEventListener('change', function () {
+    document.getElementById('paiement').setAttribute('aria-disabled', accord.checked ? 'false' : 'true');
+    document.getElementById('accord-aide').hidden = accord.checked;
+    if (accord.checked && idEnAttente) monterPaiement(idEnAttente);
+  });
   function monterPaiement(invitationId) {
     montrer('etat-paiement');
+    if (!accord.checked) { idEnAttente = invitationId; return; }
     if (paiementMonte) return;
     paiementMonte = true;
     if (typeof Stripe === 'undefined') { erreur('Le module de paiement ne s\'est pas chargé. Vérifiez votre connexion.'); return; }
@@ -155,7 +166,7 @@
         return fetch('/.netlify/functions/creer-paiement', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + jeton },
-          body: JSON.stringify({ invitationId: invitationId }),
+          body: JSON.stringify({ invitationId: invitationId, cgv: true }),
         });
       }).then(function (r) {
         return r.json().catch(function () { return {}; }).then(function (j) {
